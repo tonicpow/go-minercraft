@@ -208,6 +208,8 @@ func BenchmarkDefaultClientOptions(b *testing.B) {
 
 // TestDefaultClientOptions_NoRetry will set 0 retry counts
 func TestDefaultClientOptions_NoRetry(t *testing.T) {
+	t.Parallel()
+
 	options := DefaultClientOptions()
 	options.RequestRetryCount = 0
 	client, err := NewClient(options, nil)
@@ -316,6 +318,7 @@ func BenchmarkClient_AddMiner(b *testing.B) {
 
 // TestClient_MinerByName tests the method MinerByName()
 func TestClient_MinerByName(t *testing.T) {
+	t.Parallel()
 
 	client := newTestClient(&mockHTTPDefaultClient{})
 
@@ -372,6 +375,7 @@ func BenchmarkClient_MinerByName(b *testing.B) {
 
 // TestClient_MinerByID tests the method MinerByID()
 func TestClient_MinerByID(t *testing.T) {
+	t.Parallel()
 
 	client := newTestClient(&mockHTTPDefaultClient{})
 
@@ -428,6 +432,8 @@ func BenchmarkClient_MinerByID(b *testing.B) {
 
 // TestClient_MinerUpdateToken tests the method MinerUpdateToken()
 func TestClient_MinerUpdateToken(t *testing.T) {
+	t.Parallel()
+
 	client := newTestClient(&mockHTTPDefaultClient{})
 
 	// Add a valid miner
