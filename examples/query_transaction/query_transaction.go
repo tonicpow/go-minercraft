@@ -15,7 +15,7 @@ func main() {
 	}
 
 	// Select the miner
-	miner := client.MinerByName("taal")
+	miner := client.MinerByName(minercraft.MinerTaal)
 
 	// Query the transaction status
 	var response *minercraft.QueryTransactionResponse

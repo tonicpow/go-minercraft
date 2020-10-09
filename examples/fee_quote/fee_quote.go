@@ -15,7 +15,7 @@ func main() {
 	}
 
 	// Select the miner
-	miner := client.MinerByName("taal")
+	miner := client.MinerByName(minercraft.MinerTaal)
 
 	// Get a fee quote from a miner
 	var response *minercraft.FeeQuoteResponse
