@@ -180,19 +180,19 @@ func (c *Client) FeeQuote(miner *Miner) (*FeeQuoteResponse, error) {
 		return nil, errors.New("miner was nil")
 	}
 
-	// Make the HTTP request for the quote
+	// Make the HTTP request
 	result := getQuote(c, miner)
 	if result.Response.Error != nil {
 		return nil, result.Response.Error
 	}
 
-	// Parse the response into a quote
+	// Parse the response
 	response, err := result.parseQuote()
 	if err != nil {
 		return nil, err
 	}
 
-	// Valid quotes?
+	// Valid?
 	if response.Quote == nil || len(response.Quote.Fees) == 0 {
 		return nil, errors.New("failed getting quotes from: " + miner.Name)
 	}
@@ -234,7 +234,7 @@ func (c *Client) BestQuote(feeCategory, feeType string) (*FeeQuoteResponse, erro
 			return nil, result.Response.Error
 		}
 
-		// Parse the response into a Quote
+		// Parse the response
 		quote, err := result.parseQuote()
 		if err != nil {
 			return nil, err

@@ -44,7 +44,7 @@ View documentation on hosting your own [mAPI server](https://github.com/bitcoin-
 - Merchant API Support:
   - [x] FeeQuote
   - [x] Query Transaction Status
-  - [ ] Submit Transaction
+  - [x] Submit Transaction
   - [ ] Submit Multiple Transactions
 - Custom Features:
   - [Client](client.go) is completely configurable

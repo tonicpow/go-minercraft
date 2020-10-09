@@ -87,19 +87,19 @@ func (c *Client) QueryTransaction(miner *Miner, txID string) (*QueryTransactionR
 		return nil, errors.New("miner was nil")
 	}
 
-	// Make the HTTP request for the query
+	// Make the HTTP request
 	result := queryTransaction(c, miner, txID)
 	if result.Response.Error != nil {
 		return nil, result.Response.Error
 	}
 
-	// Parse the response into a query
+	// Parse the response
 	response, err := result.parseQuery()
 	if err != nil {
 		return nil, err
 	}
 
-	// Valid query?
+	// Valid?
 	if response.Query == nil {
 		return nil, errors.New("failed getting query response from: " + miner.Name)
 	}
