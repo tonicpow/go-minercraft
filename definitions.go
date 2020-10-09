@@ -16,11 +16,6 @@ type Miner struct {
 	URL     string `json:"url"`
 }
 
-// UpdateToken will update an auth token for a given miner
-func (m *Miner) UpdateToken(token string) {
-	m.Token = token
-}
-
 // JSONEnvelope is a standard response from the Merchant API requests
 //
 // Standard for serializing a JSON document in order to have consistency when ECDSA signing the document.
