@@ -7,9 +7,20 @@ const (
 
 	// defaultUserAgent is the default user agent for all requests
 	defaultUserAgent string = "go-minercraft: " + version
+
+	// MinerTaal is the name of the known miner for "Taal"
+	MinerTaal = "Taal"
+
+	// MinerMempool is the name of the known miner for "Mempool"
+	MinerMempool = "Mempool"
+
+	// MinerMatterpool is the name of the known miner for "Matterpool"
+	MinerMatterpool = "Matterpool"
 )
 
 // KnownMiners is a pre-filled list of known miners
+// Any pre-filled tokens are for free use only
+// update your custom token with client.MinerUpdateToken("name", "token")
 const KnownMiners = `
 [
   {
