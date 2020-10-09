@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"strings"
 )
 
 /*
@@ -95,7 +94,7 @@ func (c *Client) QueryTransaction(miner *Miner, txID string) (*QueryTransactionR
 	}
 
 	// Parse the response into a query
-	response, err := parseResponseIntoQuery(result)
+	response, err := result.parseQuery()
 	if err != nil {
 		return nil, err
 	}
@@ -110,8 +109,8 @@ func (c *Client) QueryTransaction(miner *Miner, txID string) (*QueryTransactionR
 }
 
 // queryTransaction will fire the HTTP request to retrieve the tx status
-func queryTransaction(client *Client, miner *Miner, txHash string) (result *feeResult) {
-	result = &feeResult{Miner: miner}
+func queryTransaction(client *Client, miner *Miner, txHash string) (result *internalResult) {
+	result = &internalResult{Miner: miner}
 	result.Response = httpRequest(
 		client,
 		http.MethodGet,
@@ -123,37 +122,17 @@ func queryTransaction(client *Client, miner *Miner, txHash string) (result *feeR
 	return
 }
 
-// parseResponseIntoQuery will convert the HTTP response into a struct and also
-// unmarshal the payload JSON data
-func parseResponseIntoQuery(result *feeResult) (response QueryTransactionResponse, err error) {
+// parseQuery will convert the HTTP response into a struct and also unmarshal the payload JSON data
+func (i *internalResult) parseQuery() (response QueryTransactionResponse, err error) {
 
-	// Set the miner on the response
-	response.Miner = result.Miner
-
-	// Unmarshal the response
-	if err = json.Unmarshal(result.Response.BodyContents, &response); err != nil {
+	// Process the initial response payload
+	if err = response.process(i.Miner, i.Response.BodyContents); err != nil {
 		return
 	}
 
 	// If we have a valid payload
 	if len(response.Payload) > 0 {
-
-		// Remove all escaped slashes from payload envelope
-		// Also needed for signature validation since it was signed before escaping
-		response.Payload = strings.Replace(response.Payload, "\\", "", -1)
-		if err = json.Unmarshal([]byte(response.Payload), &response.Query); err != nil {
-			return
-		}
+		err = json.Unmarshal([]byte(response.Payload), &response.Query)
 	}
-
-	// Verify using DER format
-	if response.Validated, err = validateSignature(
-		response.Signature,
-		response.PublicKey,
-		response.Payload,
-	); err != nil {
-		return
-	}
-
 	return
 }

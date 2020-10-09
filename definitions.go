@@ -2,6 +2,8 @@ package minercraft
 
 import (
 	"crypto/sha256"
+	"encoding/json"
+	"strings"
 
 	"github.com/bitcoinschema/go-bitcoin"
 )
@@ -41,6 +43,35 @@ type JSONEnvelope struct {
 	PublicKey string `json:"publicKey"`
 	Encoding  string `json:"encoding"`
 	MimeType  string `json:"mimetype"`
+}
+
+// process will take the raw payload and process into a struct
+// while also validating the signature vs payload
+func (p *JSONEnvelope) process(miner *Miner, bodyContents []byte) error {
+
+	// Set the miner on the response
+	p.Miner = miner
+
+	// Unmarshal the response
+	var err error
+	if err = json.Unmarshal(bodyContents, &p); err != nil {
+		return err
+	}
+
+	// Do we have a payload?
+	if len(p.Payload) > 0 {
+
+		// Remove all escaped slashes from payload envelope
+		// Also needed for signature validation since it was signed before escaping
+		p.Payload = strings.Replace(p.Payload, "\\", "", -1)
+	}
+
+	// Verify using DER format
+	if p.Validated, err = validateSignature(p.Signature, p.PublicKey, p.Payload); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // validateSignature will check the data against the pubkey + signature
