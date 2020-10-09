@@ -137,7 +137,7 @@ func submitTransaction(client *Client, miner *Miner, tx *Transaction) (result *i
 	result.Response = httpRequest(
 		client,
 		http.MethodPost,
-		"https://"+miner.URL+"/mapi/tx/",
+		"https://"+miner.URL+"/mapi/tx",
 		miner.Token,
 		data,
 		http.StatusOK,
