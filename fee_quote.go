@@ -291,7 +291,6 @@ func getQuote(client *Client, miner *Miner) (result *internalResult) {
 		"https://"+miner.URL+"/mapi/feeQuote",
 		miner.Token,
 		nil,
-		http.StatusOK,
 	)
 	return
 }

@@ -1,5 +1,5 @@
 # go-minercraft
-> Interact with Bitcoin Miner APIs (unofficial Go version of [Minercraft](https://github.com/interplanaria/minercraft))
+> Interact with Bitcoin Miner APIs (unofficial Go library of [Minercraft](https://github.com/interplanaria/minercraft))
 
 [![Release](https://img.shields.io/github/release-pre/tonicpow/go-minercraft.svg?logo=github&style=flat&v=2)](https://github.com/tonicpow/go-minercraft/releases)
 [![Build Status](https://travis-ci.com/tonicpow/go-minercraft.svg?branch=master&v=2)](https://travis-ci.com/tonicpow/go-minercraft)
@@ -45,14 +45,13 @@ View documentation on hosting your own [mAPI server](https://github.com/bitcoin-
   - [x] FeeQuote
   - [x] Query Transaction Status
   - [x] Submit Transaction
-  - [ ] Submit Multiple Transactions
+  - [ ] Submit Multiple Transactions (Providers have not implemented as of 10/9/20)
 - Custom Features:
   - [Client](client.go) is completely configurable
   - Using default [heimdall http client](https://github.com/gojek/heimdall) with exponential backoff & more
   - Use your own HTTP client
   - `BestQuote()` will fetch from all miners and return the best quote
   - `CalculateFee()` will return the fee for a given transaction
-  
 
 <details>
 <summary><strong><code>Library Deployment</code></strong></summary>

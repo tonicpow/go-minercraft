@@ -204,7 +204,7 @@ type RequestResponse struct {
 }
 
 // httpRequest is a generic request wrapper that can be used without constraints
-func httpRequest(client *Client, method, url, token string, payload []byte, statusCode int) (response *RequestResponse) {
+func httpRequest(client *Client, method, url, token string, payload []byte) (response *RequestResponse) {
 
 	// Set reader
 	var bodyReader io.Reader
@@ -259,8 +259,8 @@ func httpRequest(client *Client, method, url, token string, payload []byte, stat
 	response.StatusCode = resp.StatusCode
 
 	// Check status code
-	if statusCode != resp.StatusCode {
-		response.Error = fmt.Errorf("status code: %d does not match %d", resp.StatusCode, statusCode)
+	if http.StatusOK != resp.StatusCode {
+		response.Error = fmt.Errorf("status code: %d does not match %d", resp.StatusCode, http.StatusOK)
 		return
 	}
 

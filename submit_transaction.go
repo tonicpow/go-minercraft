@@ -7,27 +7,7 @@ import (
 )
 
 /*
-Example submit tx response from Merchant API:
-
-{
-  "payload": "{\"apiVersion\":\"0.1.0\",\"timestamp\":\"2020-01-15T11:40:29.826Z\",\"txid\":\"6bdbcfab0526d30e8d68279f79dff61fb4026ace8b7b32789af016336e54f2f0\",\"returnResult\":\"success\",\"resultDescription\":\"\",\"minerId\":\"03fcfcfcd0841b0a6ed2057fa8ed404788de47ceb3390c53e79c4ecd1e05819031\",\"currentHighestBlockHash\":\"71a7374389afaec80fcabbbf08dcd82d392cf68c9a13fe29da1a0c853facef01\",\"currentHighestBlockHeight\":207,\"txSecondMempoolExpiry\":0}",
-  "signature": "3045022100f65ae83b20bc60e7a5f0e9c1bd9aceb2b26962ad0ee35472264e83e059f4b9be022010ca2334ff088d6e085eb3c2118306e61ec97781e8e1544e75224533dcc32379",
-  "publicKey": "03fcfcfcd0841b0a6ed2057fa8ed404788de47ceb3390c53e79c4ecd1e05819031",
-  "encoding": "UTF-8",
-  "mimetype": "application/json"
-}
-*/
-
-// SubmitTransactionResponse is the raw response from the Merchant API request
-//
-// Specs: https://github.com/bitcoin-sv-specs/brfc-merchantapi/tree/v1.2-beta#Submit-transaction
-type SubmitTransactionResponse struct {
-	JSONEnvelope
-	Submission *SubmissionPayload `json:"submission"` // Custom field for unmarshalled payload data
-}
-
-/*
-Example Transaction Submission
+Example Transaction Submission (submitted in the body of the request)
 {
   "rawtx":        "[transaction_hex_string]",
   "callBackUrl":  "https://your.service.callback/endpoint",
@@ -46,6 +26,26 @@ type Transaction struct {
 	MerkleProof        string `json:"merkleProof,omitempty"`
 	DsCheck            string `json:"dsCheck,omitempty"`
 	CallBackEncryption string `json:"callBackEncryption,omitempty"`
+}
+
+/*
+Example submit tx response from Merchant API:
+
+{
+  "payload": "{\"apiVersion\":\"0.1.0\",\"timestamp\":\"2020-01-15T11:40:29.826Z\",\"txid\":\"6bdbcfab0526d30e8d68279f79dff61fb4026ace8b7b32789af016336e54f2f0\",\"returnResult\":\"success\",\"resultDescription\":\"\",\"minerId\":\"03fcfcfcd0841b0a6ed2057fa8ed404788de47ceb3390c53e79c4ecd1e05819031\",\"currentHighestBlockHash\":\"71a7374389afaec80fcabbbf08dcd82d392cf68c9a13fe29da1a0c853facef01\",\"currentHighestBlockHeight\":207,\"txSecondMempoolExpiry\":0}",
+  "signature": "3045022100f65ae83b20bc60e7a5f0e9c1bd9aceb2b26962ad0ee35472264e83e059f4b9be022010ca2334ff088d6e085eb3c2118306e61ec97781e8e1544e75224533dcc32379",
+  "publicKey": "03fcfcfcd0841b0a6ed2057fa8ed404788de47ceb3390c53e79c4ecd1e05819031",
+  "encoding": "UTF-8",
+  "mimetype": "application/json"
+}
+*/
+
+// SubmitTransactionResponse is the raw response from the Merchant API request
+//
+// Specs: https://github.com/bitcoin-sv-specs/brfc-merchantapi/tree/v1.2-beta#Submit-transaction
+type SubmitTransactionResponse struct {
+	JSONEnvelope
+	Results *SubmissionPayload `json:"results"` // Custom field for unmarshalled payload data
 }
 
 /*
@@ -107,7 +107,7 @@ func (c *Client) SubmitTransaction(miner *Miner, tx *Transaction) (*SubmitTransa
 	}
 
 	// Valid query?
-	if response.Submission == nil {
+	if response.Results == nil {
 		return nil, errors.New("failed getting submission response from: " + miner.Name)
 	}
 
@@ -125,7 +125,7 @@ func (i *internalResult) parseSubmission() (response SubmitTransactionResponse, 
 
 	// If we have a valid payload
 	if len(response.Payload) > 0 {
-		err = json.Unmarshal([]byte(response.Payload), &response.Submission)
+		err = json.Unmarshal([]byte(response.Payload), &response.Results)
 	}
 	return
 }
@@ -140,7 +140,6 @@ func submitTransaction(client *Client, miner *Miner, tx *Transaction) (result *i
 		"https://"+miner.URL+"/mapi/tx",
 		miner.Token,
 		data,
-		http.StatusOK,
 	)
 	return
 }

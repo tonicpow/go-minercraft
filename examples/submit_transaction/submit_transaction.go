@@ -28,6 +28,6 @@ func main() {
 
 	// Display the results
 	log.Printf("miner: %s", response.Miner.Name)
-	log.Printf("status: %s [%s]", response.Submission.ReturnResult, response.Submission.ResultDescription)
+	log.Printf("status: %s [%s]", response.Results.ReturnResult, response.Results.ResultDescription)
 	log.Printf("payload validated: %v", response.Validated)
 }

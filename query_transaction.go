@@ -117,7 +117,6 @@ func queryTransaction(client *Client, miner *Miner, txHash string) (result *inte
 		"https://"+miner.URL+"/mapi/tx/"+txHash,
 		miner.Token,
 		nil,
-		http.StatusOK,
 	)
 	return
 }
