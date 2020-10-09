@@ -42,15 +42,17 @@ View documentation on hosting your own [mAPI server](https://github.com/bitcoin-
 
 ### Features
 - Merchant API Support:
-    - [x] FeeQuote
-    - [ ] Submit Transaction
-    - [ ] Submit Multiple Transactions
-    - [ ] Query Transaction Status
+  - [x] FeeQuote
+  - [x] Query Transaction Status
+  - [ ] Submit Transaction
+  - [ ] Submit Multiple Transactions
 - Custom Features:
-    - [Client](client.go) is completely configurable
-    - Using default [heimdall http client](https://github.com/gojek/heimdall) with exponential backoff & more
-    - Use your own HTTP client
-    - `BestQuote()` will fetch from all miners and return the best quote
+  - [Client](client.go) is completely configurable
+  - Using default [heimdall http client](https://github.com/gojek/heimdall) with exponential backoff & more
+  - Use your own HTTP client
+  - `BestQuote()` will fetch from all miners and return the best quote
+  - `CalculateFee()` will return the fee for a given transaction
+  
 
 <details>
 <summary><strong><code>Library Deployment</code></strong></summary>

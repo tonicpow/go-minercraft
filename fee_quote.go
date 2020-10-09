@@ -1,15 +1,12 @@
 package minercraft
 
 import (
-	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 	"strings"
 	"sync"
-
-	"github.com/bitcoinschema/go-bitcoin"
 )
 
 const (
@@ -43,14 +40,8 @@ Example feeQuote response from Merchant API:
 //
 // Specs: https://github.com/bitcoin-sv-specs/brfc-merchantapi/tree/v1.2-beta#get-fee-quote
 type FeeQuoteResponse struct {
-	Miner     *Miner      `json:"miner"` // Custom field for our internal Miner configuration
-	Quote     *FeePayload `json:"quote"` // Custom field for unmarshalled payload data
-	Payload   string      `json:"payload"`
-	Validated bool        `json:"validated"` // Custom field if the signature has been validated
-	Signature string      `json:"signature"`
-	PublicKey string      `json:"publicKey"`
-	Encoding  string      `json:"encoding"`
-	MimeType  string      `json:"mimetype"`
+	JSONEnvelope
+	Quote *FeePayload `json:"quote"` // Custom field for unmarshalled payload data
 }
 
 /*
@@ -103,14 +94,14 @@ type FeePayload struct {
 	Fees                      []*feeType  `json:"fees"`
 }
 
-// GetFee will return the fee for the given txBytes
+// CalculateFee will return the fee for the given txBytes
 // Type: "FeeTypeData" or "FeeTypeStandard"
 // Category: "FeeCategoryMining" or "FeeCategoryRelay"
 //
 // If no fee is found or fee is 0, returns 1 & error
 //
 // Spec: https://github.com/bitcoin-sv-specs/brfc-misc/tree/master/feespec#deterministic-transaction-fee-calculation-dtfc
-func (f *FeePayload) GetFee(feeCategory, feeType string, txBytes int64) (int64, error) {
+func (f *FeePayload) CalculateFee(feeCategory, feeType string, txBytes int64) (int64, error) {
 
 	// Valid feeType?
 	if !strings.EqualFold(feeType, FeeTypeData) && !strings.EqualFold(feeType, FeeTypeStandard) {
@@ -252,11 +243,11 @@ func (c *Client) BestQuote(feeCategory, feeType string) (*FeeQuoteResponse, erro
 		// Do we have a rate set?
 		if bestRate == 0 {
 			bestQuote = quote
-			if bestRate, err = quote.Quote.GetFee(feeCategory, feeType, 1000); err != nil {
+			if bestRate, err = quote.Quote.CalculateFee(feeCategory, feeType, 1000); err != nil {
 				return nil, err
 			}
 		} else { // Test the other quotes
-			if testRate, err = quote.Quote.GetFee(feeCategory, feeType, 1000); err != nil {
+			if testRate, err = quote.Quote.CalculateFee(feeCategory, feeType, 1000); err != nil {
 				return nil, err
 			}
 			if testRate < bestRate {
@@ -299,17 +290,13 @@ func parseResponseIntoQuote(result *feeResult) (response FeeQuoteResponse, err e
 		}
 	}
 
-	// Validate the signature if found
-	if len(response.Signature) > 0 && len(response.PublicKey) > 0 {
-
-		// Verify using DER format
-		if response.Validated, err = bitcoin.VerifyMessageDER(
-			sha256.Sum256([]byte(response.Payload)),
-			response.PublicKey,
-			response.Signature,
-		); err != nil {
-			return
-		}
+	// Verify using DER format
+	if response.Validated, err = validateSignature(
+		response.Signature,
+		response.PublicKey,
+		response.Payload,
+	); err != nil {
+		return
 	}
 
 	return

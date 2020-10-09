@@ -28,7 +28,7 @@ func main() {
 
 	// Get the fee for a specific tx size (for mining and for data)
 	var fee int64
-	if fee, err = response.Quote.GetFee(minercraft.FeeCategoryMining, minercraft.FeeTypeData, txSizeInBytes); err != nil {
+	if fee, err = response.Quote.CalculateFee(minercraft.FeeCategoryMining, minercraft.FeeTypeData, txSizeInBytes); err != nil {
 		log.Fatalf("error occurred: %s", err.Error())
 	}
 

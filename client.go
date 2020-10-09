@@ -267,7 +267,5 @@ func httpRequest(client *Client, method, url, token string, payload []byte, stat
 	// Read the body
 	response.BodyContents, response.Error = ioutil.ReadAll(resp.Body)
 
-	// log.Println("url: ", url, "code: ", resp.StatusCode, "body: ", string(response.BodyContents))
-
 	return
 }
