@@ -80,7 +80,7 @@ func (c *Client) MinerByID(minerID string) *Miner {
 // MinerUpdateToken will find a miner by name and update the token
 func (c *Client) MinerUpdateToken(name, token string) {
 	if miner := c.MinerByName(name); miner != nil {
-		miner.UpdateToken(token)
+		miner.Token = token
 	}
 }
 
