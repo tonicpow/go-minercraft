@@ -10,10 +10,12 @@ import (
 )
 
 const (
-	testMinerName  = "TestMiner"
-	testMinerURL   = defaultProtocol + "testminer.com"
+	testEncoding   = "UTF-8"
+	testMimeType   = "application/json"
 	testMinerID    = "1234567"
+	testMinerName  = "TestMiner"
 	testMinerToken = "0987654321"
+	testMinerURL   = defaultProtocol + "testminer.com"
 )
 
 // mockHTTPDefaultClient for mocking requests

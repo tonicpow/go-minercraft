@@ -28,7 +28,7 @@ func (m *mockHTTPValidFeeQuote) Do(req *http.Request) (*http.Response, error) {
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
     	"payload": "{\"apiVersion\":\"0.1.0\",\"timestamp\":\"2020-10-09T21:26:17.410Z\",\"expiryTime\":\"2020-10-09T21:36:17.410Z\",\"minerId\":\"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270\",\"currentHighestBlockHash\":\"0000000000000000035c5f8c0294802a01e500fa7b95337963bb3640da3bd565\",\"currentHighestBlockHeight\":656169,\"minerReputation\":null,\"fees\":[{\"id\":1,\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}},{\"id\":2,\"feeType\":\"data\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}}]}",
    	 	"signature": "3045022100eed49f6bf75d8f975f581271e3df658fbe8ec67e6301ea8fc25a72d18c92e30e022056af253f0d24db6a8fde4e2c1ee95e7a5ecf2c7cdc93246f8328c9e0ca582fc4",
-    	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "UTF-8","mimetype": "application/json"}`)))
+    	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
 	}
 
 	// Default is valid
@@ -119,7 +119,7 @@ func (m *mockHTTPMissingFees) Do(req *http.Request) (*http.Response, error) {
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
     	"payload": "{\"apiVersion\":\"0.1.0\",\"timestamp\":\"2020-10-09T21:26:17.410Z\",\"expiryTime\":\"2020-10-09T21:36:17.410Z\",\"minerId\":\"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270\",\"currentHighestBlockHash\":\"0000000000000000035c5f8c0294802a01e500fa7b95337963bb3640da3bd565\",\"currentHighestBlockHeight\":656169,\"minerReputation\":null,\"fees\":[]}",
    	 	"signature": "3045022100eed49f6bf75d8f975f581271e3df658fbe8ec67e6301ea8fc25a72d18c92e30e022056af253f0d24db6a8fde4e2c1ee95e7a5ecf2c7cdc93246f8328c9e0ca582fc4",
-    	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "UTF-8","mimetype": "application/json"}`)))
+    	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
 	}
 
 	// Default is valid
@@ -145,7 +145,7 @@ func (m *mockHTTPValidBestQuote) Do(req *http.Request) (*http.Response, error) {
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
     	"payload": "{\"apiVersion\":\"0.1.0\",\"timestamp\":\"2020-10-09T21:26:17.410Z\",\"expiryTime\":\"2020-10-09T21:36:17.410Z\",\"minerId\":\"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270\",\"currentHighestBlockHash\":\"0000000000000000035c5f8c0294802a01e500fa7b95337963bb3640da3bd565\",\"currentHighestBlockHeight\":656169,\"minerReputation\":null,\"fees\":[{\"id\":1,\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}},{\"id\":2,\"feeType\":\"data\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}}]}",
    	 	"signature": "3045022100eed49f6bf75d8f975f581271e3df658fbe8ec67e6301ea8fc25a72d18c92e30e022056af253f0d24db6a8fde4e2c1ee95e7a5ecf2c7cdc93246f8328c9e0ca582fc4",
-    	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "UTF-8","mimetype": "application/json"}`)))
+    	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
 	}
 
 	if req.URL.String() == defaultProtocol+"merchantapi.matterpool.io/mapi/feeQuote" {
@@ -153,14 +153,14 @@ func (m *mockHTTPValidBestQuote) Do(req *http.Request) (*http.Response, error) {
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
     	"payload": "{\"apiVersion\":\"0.1.0\",\"timestamp\":\"2020-10-09T22:08:26.236Z\",\"expiryTime\":\"2020-10-09T22:18:26.236Z\",\"minerId\":\"0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087\",\"currentHighestBlockHash\":\"0000000000000000028285a9168c95457521a743765f499de389c094e883f42a\",\"currentHighestBlockHeight\":656171,\"minerReputation\":null,\"fees\":[{\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":100,\"bytes\":1000}},{\"feeType\":\"data\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":100,\"bytes\":1000}}]}",
     	"signature": "3044022011f90db2661726eb2659c3447ccaa9fd3368194f87d5d86a23e673c45d5d714502200c51eb600e3370b49d759aa4d441000286937b0803037a1d6de4c5a5c559d74c",
-    	"publicKey": "0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087","encoding": "UTF-8","mimetype": "application/json"}`)))
+    	"publicKey": "0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
 	}
 
 	if req.URL.String() == defaultProtocol+"www.ddpurse.com/openapi/mapi/feeQuote" {
 		resp.StatusCode = http.StatusOK
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
     	"payload": "{\"apiVersion\":\"0.1.0\",\"timestamp\":\"2020-10-09T22:09:04.433Z\",\"expiryTime\":\"2020-10-09T22:19:04.433Z\",\"minerId\":null,\"currentHighestBlockHash\":\"0000000000000000028285a9168c95457521a743765f499de389c094e883f42a\",\"currentHighestBlockHeight\":656171,\"minerReputation\":null,\"fees\":[{\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}},{\"feeType\":\"data\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}}]}",
-    	"signature": null,"publicKey": null,"encoding": "UTF-8","mimetype": "application/json"}`)))
+    	"signature": null,"publicKey": null,"encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
 	}
 
 	// Default is valid
@@ -186,7 +186,7 @@ func (m *mockHTTPMissingFeeType) Do(req *http.Request) (*http.Response, error) {
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
     	"payload": "{\"apiVersion\":\"0.1.0\",\"timestamp\":\"2020-10-09T21:26:17.410Z\",\"expiryTime\":\"2020-10-09T21:36:17.410Z\",\"minerId\":\"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270\",\"currentHighestBlockHash\":\"0000000000000000035c5f8c0294802a01e500fa7b95337963bb3640da3bd565\",\"currentHighestBlockHeight\":656169,\"minerReputation\":null,\"fees\":[{\"id\":2,\"feeType\":\"data\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}}]}",
    	 	"signature": "3045022100eed49f6bf75d8f975f581271e3df658fbe8ec67e6301ea8fc25a72d18c92e30e022056af253f0d24db6a8fde4e2c1ee95e7a5ecf2c7cdc93246f8328c9e0ca582fc4",
-    	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "UTF-8","mimetype": "application/json"}`)))
+    	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
 	}
 
 	// Default is valid
@@ -221,11 +221,11 @@ func TestClient_FeeQuote(t *testing.T) {
 	if response.PublicKey != testPublicKey {
 		t.Fatalf("expected response.PublicKey to be %s, got %s", testPublicKey, response.PublicKey)
 	}
-	if response.Encoding != "UTF-8" {
-		t.Fatalf("expected response.Encoding to be %s, got %s", "UTF-8", response.Encoding)
+	if response.Encoding != testEncoding {
+		t.Fatalf("expected response.Encoding to be %s, got %s", testEncoding, response.Encoding)
 	}
-	if response.MimeType != "application/json" {
-		t.Fatalf("expected response.MimeType to be %s, got %s", "application/json", response.MimeType)
+	if response.MimeType != testMimeType {
+		t.Fatalf("expected response.MimeType to be %s, got %s", testMimeType, response.MimeType)
 	}
 }
 
@@ -427,11 +427,11 @@ func TestClient_BestQuote(t *testing.T) {
 	}
 
 	// Check returned values
-	if response.Encoding != "UTF-8" {
-		t.Fatalf("expected response.Encoding to be %s, got %s", "UTF-8", response.Encoding)
+	if response.Encoding != testEncoding {
+		t.Fatalf("expected response.Encoding to be %s, got %s", testEncoding, response.Encoding)
 	}
-	if response.MimeType != "application/json" {
-		t.Fatalf("expected response.MimeType to be %s, got %s", "application/json", response.MimeType)
+	if response.MimeType != testMimeType {
+		t.Fatalf("expected response.MimeType to be %s, got %s", testMimeType, response.MimeType)
 	}
 
 	// Check that we got fees
