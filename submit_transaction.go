@@ -134,12 +134,6 @@ func (i *internalResult) parseSubmission() (response SubmitTransactionResponse, 
 func submitTransaction(client *Client, miner *Miner, tx *Transaction) (result *internalResult) {
 	result = &internalResult{Miner: miner}
 	data, _ := json.Marshal(tx) // Ignoring error - if it fails, the submission would also fail
-	result.Response = httpRequest(
-		client,
-		http.MethodPost,
-		"https://"+miner.URL+"/mapi/tx",
-		miner.Token,
-		data,
-	)
+	result.Response = httpRequest(client, http.MethodPost, defaultProtocol+miner.URL+routeSubmitTx, miner.Token, data)
 	return
 }

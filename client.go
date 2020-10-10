@@ -49,7 +49,7 @@ func (c *Client) AddMiner(miner Miner) error {
 	}
 
 	// Remove any protocol(s)
-	miner.URL = strings.Replace(miner.URL, "https://", "", -1)
+	miner.URL = strings.Replace(miner.URL, defaultProtocol, "", -1)
 	miner.URL = strings.Replace(miner.URL, "http://", "", -1)
 
 	// Append the new miner

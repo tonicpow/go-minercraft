@@ -8,6 +8,25 @@ const (
 	// defaultUserAgent is the default user agent for all requests
 	defaultUserAgent string = "go-minercraft: " + version
 
+	// defaultProtocol is used for url endpoints in requests
+	defaultProtocol = "https://"
+)
+
+const (
+	// routeFeeQuote is the route for getting a fee quote
+	routeFeeQuote = "/mapi/feeQuote"
+
+	// routeQueryTx is the route for querying a transaction
+	routeQueryTx = "/mapi/tx/"
+
+	// routeSubmitTx is the route for submit a transaction
+	routeSubmitTx = "/mapi/tx"
+
+	// routeSubmitTxs is the route for submitting transactions
+	routeSubmitTxs = "/mapi/txs"
+)
+
+const (
 	// MinerTaal is the name of the known miner for "Taal"
 	MinerTaal = "Taal"
 

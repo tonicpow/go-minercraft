@@ -129,7 +129,7 @@ func (f *FeePayload) CalculateFee(feeCategory, feeType string, txBytes int64) (i
 				return calcFee, nil
 			}
 
-			// todo: maybe the error is not needed here?
+			// If txBytes is zero this error will occur
 			return 1, fmt.Errorf("warning: fee calculation was 0")
 		}
 	}
@@ -285,13 +285,7 @@ func (i *internalResult) parseQuote() (response FeeQuoteResponse, err error) {
 // getQuote will fire the HTTP request to retrieve the fee quote
 func getQuote(client *Client, miner *Miner) (result *internalResult) {
 	result = &internalResult{Miner: miner}
-	result.Response = httpRequest(
-		client,
-		http.MethodGet,
-		"https://"+miner.URL+"/mapi/feeQuote",
-		miner.Token,
-		nil,
-	)
+	result.Response = httpRequest(client, http.MethodGet, defaultProtocol+miner.URL+routeFeeQuote, miner.Token, nil)
 	return
 }
 
@@ -301,5 +295,3 @@ func getQuoteRoutine(wg *sync.WaitGroup, client *Client, miner *Miner, resultsCh
 	defer wg.Done()
 	resultsChannel <- getQuote(client, miner)
 }
-
-// todo: add new method (FastestQuote) (tries all, cancels after first one succeeds)

@@ -11,7 +11,7 @@ import (
 
 const (
 	testMinerName  = "TestMiner"
-	testMinerURL   = "https://testminer.com"
+	testMinerURL   = defaultProtocol + "testminer.com"
 	testMinerID    = "1234567"
 	testMinerToken = "0987654321"
 )
