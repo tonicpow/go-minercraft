@@ -100,7 +100,7 @@ func (c *Client) QueryTransaction(miner *Miner, txID string) (*QueryTransactionR
 	}
 
 	// Valid?
-	if response.Query == nil {
+	if response.Query == nil || len(response.Query.ReturnResult) == 0 {
 		return nil, errors.New("failed getting query response from: " + miner.Name)
 	}
 

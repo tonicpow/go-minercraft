@@ -35,6 +35,32 @@ func (m *mockHTTPValidQuery) Do(req *http.Request) (*http.Response, error) {
 	return resp, nil
 }
 
+// mockHTTPBadQuery for mocking requests
+type mockHTTPBadQuery struct{}
+
+// Do is a mock http request
+func (m *mockHTTPBadQuery) Do(req *http.Request) (*http.Response, error) {
+	resp := new(http.Response)
+	resp.StatusCode = http.StatusBadRequest
+
+	// No req found
+	if req == nil {
+		return resp, fmt.Errorf("missing request")
+	}
+
+	// Valid response
+	if strings.Contains(req.URL.String(), "/mapi/tx/"+testTx) {
+		resp.StatusCode = http.StatusOK
+		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
+    	"payload": "{}",
+    	"signature": "3044022066a8a39ff5f5eae818636aa03fdfc386ea4f33f41993cf41d4fb6d4745ae032102206a8895a6f742d809647ad1a1df12230e9b480275853ed28bc178f4b48afd802a",
+    	"publicKey": "0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+	}
+
+	// Default is valid
+	return resp, nil
+}
+
 // TestClient_QueryTransaction tests the method QueryTransaction()
 func TestClient_QueryTransaction(t *testing.T) {
 	t.Parallel()
@@ -182,6 +208,22 @@ func TestClient_QueryTransactionInvalidSignature(t *testing.T) {
 
 	// Create a client
 	client := newTestClient(&mockHTTPInvalidSignature{})
+
+	// Create a req
+	response, err := client.QueryTransaction(client.MinerByName(MinerMatterpool), testTx)
+	if err == nil {
+		t.Fatalf("error should have occurred")
+	} else if response != nil {
+		t.Fatalf("expected response to be nil")
+	}
+}
+
+// TestClient_QueryTransactionBadQuery tests the method QueryTransaction()
+func TestClient_QueryTransactionBadQuery(t *testing.T) {
+	t.Parallel()
+
+	// Create a client
+	client := newTestClient(&mockHTTPBadQuery{})
 
 	// Create a req
 	response, err := client.QueryTransaction(client.MinerByName(MinerMatterpool), testTx)

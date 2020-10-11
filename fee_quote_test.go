@@ -631,6 +631,13 @@ func TestClient_BestQuoteBetterRate(t *testing.T) {
 	} else if fee != 100 {
 		t.Fatalf("expected fee to %d but got %d", 100, fee)
 	}
+
+	fee, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 1000)
+	if err != nil {
+		t.Fatalf("error occurred: %s", err.Error())
+	} else if fee != 500 {
+		t.Fatalf("expected fee to %d but got %d", 500, fee)
+	}
 }
 
 // ExampleClient_BestQuote example using BestQuote()
@@ -729,7 +736,7 @@ func ExampleFeePayload_CalculateFee() {
 
 	// Note: cannot show response since the miner might be different each time
 	fmt.Printf("got best quote and fee for 1000 byte tx is: %d", fee)
-	// Output:got best quote and fee for 1000 byte tx is: 500
+	// Output:got best quote and fee for 1000 byte tx is: 420
 }
 
 // BenchmarkFeePayload_CalculateFee benchmarks the method CalculateFee()
