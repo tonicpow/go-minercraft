@@ -62,18 +62,14 @@ func (p *JSONEnvelope) process(miner *Miner, bodyContents []byte) error {
 	}
 
 	// Verify using DER format
-	if p.Validated, err = validateSignature(p.Signature, p.PublicKey, p.Payload); err != nil {
-		return err
-	}
-
-	return nil
+	p.Validated, err = validateSignature(p.Signature, p.PublicKey, p.Payload)
+	return err
 }
 
 // validateSignature will check the data against the pubkey + signature
 func validateSignature(signature, pubKey, data string) (bool, error) {
 	// Only if we have a signature and pubkey
 	if len(signature) > 0 && len(pubKey) > 0 {
-		// Verify using DER format
 		return bitcoin.VerifyMessageDER(sha256.Sum256([]byte(data)), pubKey, signature)
 	}
 	return false, nil
