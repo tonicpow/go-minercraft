@@ -1,11 +1,11 @@
 # go-minercraft
 > Interact with Bitcoin Miner APIs (unofficial Go library of [Minercraft](https://github.com/interplanaria/minercraft))
 
-[![Release](https://img.shields.io/github/release-pre/tonicpow/go-minercraft.svg?logo=github&style=flat&v=3)](https://github.com/tonicpow/go-minercraft/releases)
-[![Build Status](https://travis-ci.com/tonicpow/go-minercraft.svg?branch=master&v=3)](https://travis-ci.com/tonicpow/go-minercraft)
-[![Report](https://goreportcard.com/badge/github.com/tonicpow/go-minercraft?style=flat&v=3)](https://goreportcard.com/report/github.com/tonicpow/go-minercraft)
-[![codecov](https://codecov.io/gh/tonicpow/go-minercraft/branch/master/graph/badge.svg?v=3)](https://codecov.io/gh/tonicpow/go-minercraft)
-[![Go](https://img.shields.io/github/go-mod/go-version/tonicpow/go-minercraft?v=3)](https://golang.org/)
+[![Release](https://img.shields.io/github/release-pre/tonicpow/go-minercraft.svg?logo=github&style=flat&v=4)](https://github.com/tonicpow/go-minercraft/releases)
+[![Build Status](https://travis-ci.com/tonicpow/go-minercraft.svg?branch=master&v=4)](https://travis-ci.com/tonicpow/go-minercraft)
+[![Report](https://goreportcard.com/badge/github.com/tonicpow/go-minercraft?style=flat&v=4)](https://goreportcard.com/report/github.com/tonicpow/go-minercraft)
+[![codecov](https://codecov.io/gh/tonicpow/go-minercraft/branch/master/graph/badge.svg?v=4)](https://codecov.io/gh/tonicpow/go-minercraft)
+[![Go](https://img.shields.io/github/go-mod/go-version/tonicpow/go-minercraft?v=4)](https://golang.org/)
 
 <br/>
 
@@ -165,4 +165,4 @@ nChain & team for developing the [brfc-merchant-api](https://github.com/bitcoin-
 
 ## License
 
-![License](https://img.shields.io/github/license/tonicpow/go-minercraft.svg?style=flat&v=3)
+![License](https://img.shields.io/github/license/tonicpow/go-minercraft.svg?style=flat&v=4)

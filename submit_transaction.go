@@ -107,7 +107,7 @@ func (c *Client) SubmitTransaction(miner *Miner, tx *Transaction) (*SubmitTransa
 	}
 
 	// Valid query?
-	if response.Results == nil {
+	if response.Results == nil || len(response.Results.ReturnResult) == 0 {
 		return nil, errors.New("failed getting submission response from: " + miner.Name)
 	}
 

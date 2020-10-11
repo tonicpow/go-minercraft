@@ -10,6 +10,7 @@ import (
 )
 
 const (
+	testAPIVersion = "0.1.0"
 	testEncoding   = "UTF-8"
 	testMimeType   = "application/json"
 	testMinerID    = "1234567"
