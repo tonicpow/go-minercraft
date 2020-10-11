@@ -23,7 +23,7 @@ func (m *mockHTTPValidQuery) Do(req *http.Request) (*http.Response, error) {
 	}
 
 	// Valid response
-	if strings.Contains(req.URL.String(), "/mapi/tx/7e0c4651fc256c0433bd704d7e13d24c8d10235f4b28ba192849c5d318de974b") {
+	if strings.Contains(req.URL.String(), "/mapi/tx/"+testTx) {
 		resp.StatusCode = http.StatusOK
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
     	"payload": "{\"apiVersion\":\"0.1.0\",\"timestamp\":\"2020-10-10T13:07:26.014Z\",\"returnResult\":\"success\",\"resultDescription\":\"\",\"blockHash\":\"0000000000000000050a09fe90b0e8542bba9e712edb8cc9349e61888fe45ac5\",\"blockHeight\":612530,\"confirmations\":43733,\"minerId\":\"0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087\",\"txSecondMempoolExpiry\":0}",
@@ -46,7 +46,7 @@ func TestClient_QueryTransaction(t *testing.T) {
 	client := newTestClient(&mockHTTPValidQuery{})
 
 	// Create a req
-	response, err := client.QueryTransaction(client.MinerByName(MinerMatterpool), "7e0c4651fc256c0433bd704d7e13d24c8d10235f4b28ba192849c5d318de974b")
+	response, err := client.QueryTransaction(client.MinerByName(MinerMatterpool), testTx)
 	if err != nil {
 		t.Fatalf("error occurred: %s", err.Error())
 	} else if response == nil {
@@ -81,7 +81,7 @@ func TestClient_QueryTransactionParsedValues(t *testing.T) {
 	client := newTestClient(&mockHTTPValidQuery{})
 
 	// Create a req
-	response, err := client.QueryTransaction(client.MinerByName(MinerMatterpool), "7e0c4651fc256c0433bd704d7e13d24c8d10235f4b28ba192849c5d318de974b")
+	response, err := client.QueryTransaction(client.MinerByName(MinerMatterpool), testTx)
 	if err != nil {
 		t.Fatalf("error occurred: %s", err.Error())
 	} else if response == nil {
@@ -120,7 +120,71 @@ func TestClient_QueryTransactionInvalidMiner(t *testing.T) {
 	client := newTestClient(&mockHTTPValidFeeQuote{})
 
 	// Create a req
-	response, err := client.QueryTransaction(nil, "7e0c4651fc256c0433bd704d7e13d24c8d10235f4b28ba192849c5d318de974b")
+	response, err := client.QueryTransaction(nil, testTx)
+	if err == nil {
+		t.Fatalf("error should have occurred")
+	} else if response != nil {
+		t.Fatalf("expected response to be nil")
+	}
+}
+
+// TestClient_QueryTransactionHTTPError tests the method QueryTransaction()
+func TestClient_QueryTransactionHTTPError(t *testing.T) {
+	t.Parallel()
+
+	// Create a client
+	client := newTestClient(&mockHTTPError{})
+
+	// Create a req
+	response, err := client.QueryTransaction(client.MinerByName(MinerMatterpool), testTx)
+	if err == nil {
+		t.Fatalf("error should have occurred")
+	} else if response != nil {
+		t.Fatalf("expected response to be nil")
+	}
+}
+
+// TestClient_QueryTransactionBadRequest tests the method QueryTransaction()
+func TestClient_QueryTransactionBadRequest(t *testing.T) {
+	t.Parallel()
+
+	// Create a client
+	client := newTestClient(&mockHTTPBadRequest{})
+
+	// Create a req
+	response, err := client.QueryTransaction(client.MinerByName(MinerMatterpool), testTx)
+	if err == nil {
+		t.Fatalf("error should have occurred")
+	} else if response != nil {
+		t.Fatalf("expected response to be nil")
+	}
+}
+
+// TestClient_QueryTransactionInvalidJSON tests the method QueryTransaction()
+func TestClient_QueryTransactionInvalidJSON(t *testing.T) {
+	t.Parallel()
+
+	// Create a client
+	client := newTestClient(&mockHTTPInvalidJSON{})
+
+	// Create a req
+	response, err := client.QueryTransaction(client.MinerByName(MinerMatterpool), testTx)
+	if err == nil {
+		t.Fatalf("error should have occurred")
+	} else if response != nil {
+		t.Fatalf("expected response to be nil")
+	}
+}
+
+// TestClient_QueryTransactionInvalidSignature tests the method QueryTransaction()
+func TestClient_QueryTransactionInvalidSignature(t *testing.T) {
+	t.Parallel()
+
+	// Create a client
+	client := newTestClient(&mockHTTPInvalidSignature{})
+
+	// Create a req
+	response, err := client.QueryTransaction(client.MinerByName(MinerMatterpool), testTx)
 	if err == nil {
 		t.Fatalf("error should have occurred")
 	} else if response != nil {
