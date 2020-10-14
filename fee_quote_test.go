@@ -415,7 +415,7 @@ func TestClient_FeeQuoteGetRate(t *testing.T) {
 	}
 
 	// Test getting rate from request
-	var rate int64
+	var rate uint64
 	rate, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 1000)
 	if err != nil {
 		t.Fatalf("error occurred: %s", err.Error())
@@ -674,7 +674,7 @@ func TestClient_BestQuoteBetterRate(t *testing.T) {
 		t.Fatalf("expected response.Quote.Fees to be a length of %d, got %d", 2, len(response.Quote.Fees))
 	}
 
-	var fee int64
+	var fee uint64
 	fee, err = response.Quote.CalculateFee(FeeCategoryRelay, FeeTypeData, 1000)
 	if err != nil {
 		t.Fatalf("error occurred: %s", err.Error())
@@ -747,7 +747,7 @@ func TestFeePayload_CalculateFee(t *testing.T) {
 	}
 
 	// Mining & Data
-	var fee int64
+	var fee uint64
 	fee, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 1000)
 	if err != nil {
 		t.Fatalf("error occurred: %s", err.Error())
@@ -793,7 +793,7 @@ func ExampleFeePayload_CalculateFee() {
 	}
 
 	// Calculate fee for tx
-	var fee int64
+	var fee uint64
 	fee, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 1000)
 	if err != nil {
 		fmt.Printf("error occurred: %s", err.Error())
@@ -830,7 +830,7 @@ func TestFeePayload_CalculateFeeZero(t *testing.T) {
 	}
 
 	// Zero tx size produces 0 fee and error
-	var fee int64
+	var fee uint64
 	fee, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 0)
 	if err == nil {
 		t.Fatalf("error should have occurred")
@@ -855,7 +855,7 @@ func TestFeePayload_CalculateFeeMissingFeeType(t *testing.T) {
 	}
 
 	// Zero tx size produces 0 fee and error
-	var fee int64
+	var fee uint64
 	fee, err = response.Quote.CalculateFee(FeeCategoryRelay, FeeTypeStandard, 1000)
 	if err == nil {
 		t.Fatalf("error should have occurred")

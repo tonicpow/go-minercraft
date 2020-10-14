@@ -101,7 +101,7 @@ type FeePayload struct {
 // If no fee is found or fee is 0, returns 1 & error
 //
 // Spec: https://github.com/bitcoin-sv-specs/brfc-misc/tree/master/feespec#deterministic-transaction-fee-calculation-dtfc
-func (f *FeePayload) CalculateFee(feeCategory, feeType string, txBytes int64) (int64, error) {
+func (f *FeePayload) CalculateFee(feeCategory, feeType string, txBytes uint64) (uint64, error) {
 
 	// Valid feeType?
 	if !strings.EqualFold(feeType, FeeTypeData) && !strings.EqualFold(feeType, FeeTypeStandard) {
@@ -117,7 +117,7 @@ func (f *FeePayload) CalculateFee(feeCategory, feeType string, txBytes int64) (i
 		if fee.FeeType == feeType {
 
 			// Multiply & Divide
-			var calcFee int64
+			var calcFee uint64
 			if strings.EqualFold(feeCategory, FeeCategoryMining) {
 				calcFee = (fee.MiningFee.Satoshis * txBytes) / fee.MiningFee.Bytes
 			} else {
@@ -162,8 +162,8 @@ type feeType struct {
 
 // feeAmount is the actual fee for the given feeType
 type feeAmount struct {
-	Bytes    int64 `json:"bytes"`
-	Satoshis int64 `json:"satoshis"`
+	Bytes    uint64 `json:"bytes"`
+	Satoshis uint64 `json:"satoshis"`
 }
 
 // FeeQuote will fire a Merchant API request to retrieve the fees from a given miner
@@ -208,7 +208,7 @@ func (c *Client) FeeQuote(miner *Miner) (*FeeQuoteResponse, error) {
 func (c *Client) BestQuote(feeCategory, feeType string) (*FeeQuoteResponse, error) {
 
 	// Best rate & quote
-	var bestRate int64
+	var bestRate uint64
 	var bestQuote FeeQuoteResponse
 
 	// The channel for the internal results
@@ -226,7 +226,7 @@ func (c *Client) BestQuote(feeCategory, feeType string) (*FeeQuoteResponse, erro
 	close(resultsChannel)
 
 	// Loop the results of the channel
-	var testRate int64
+	var testRate uint64
 	for result := range resultsChannel {
 
 		// Check for error?
