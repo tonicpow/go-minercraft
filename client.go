@@ -163,37 +163,39 @@ func createClient(options *ClientOptions, customHTTPClient *http.Client) (c *Cli
 		TLSHandshakeTimeout:   options.TransportTLSHandshakeTimeout,
 	}
 
-	// Determine the strategy for the http client (no retry enabled)
-	if options.RequestRetryCount <= 0 {
-		c.httpClient = httpclient.NewClient(
-			httpclient.WithHTTPTimeout(options.RequestTimeout),
-			httpclient.WithHTTPClient(&http.Client{
-				Transport: clientDefaultTransport,
-				Timeout:   options.RequestTimeout,
-			}),
-		)
-	} else { // Retry enabled
-		// Create exponential back-off
-		backOff := heimdall.NewExponentialBackoff(
-			options.BackOffInitialTimeout,
-			options.BackOffMaxTimeout,
-			options.BackOffExponentFactor,
-			options.BackOffMaximumJitterInterval,
-		)
-
-		c.httpClient = httpclient.NewClient(
-			httpclient.WithHTTPTimeout(options.RequestTimeout),
-			httpclient.WithRetrier(heimdall.NewRetrier(backOff)),
-			httpclient.WithRetryCount(options.RequestRetryCount),
-			httpclient.WithHTTPClient(&http.Client{
-				Transport: clientDefaultTransport,
-				Timeout:   options.RequestTimeout,
-			}),
-		)
-	}
-
 	// Set the options
 	c.Options = options
+
+	// Determine the strategy for the http client
+	if options.RequestRetryCount <= 0 {
+
+		// no retry enabled
+		c.httpClient = httpclient.NewClient(
+			httpclient.WithHTTPTimeout(options.RequestTimeout),
+			httpclient.WithHTTPClient(&http.Client{
+				Transport: clientDefaultTransport,
+				Timeout:   options.RequestTimeout,
+			}),
+		)
+		return
+	}
+
+	// Retry enabled - create exponential back-off
+	c.httpClient = httpclient.NewClient(
+		httpclient.WithHTTPTimeout(options.RequestTimeout),
+		httpclient.WithRetrier(heimdall.NewRetrier(
+			heimdall.NewExponentialBackoff(
+				options.BackOffInitialTimeout,
+				options.BackOffMaxTimeout,
+				options.BackOffExponentFactor,
+				options.BackOffMaximumJitterInterval,
+			))),
+		httpclient.WithRetryCount(options.RequestRetryCount),
+		httpclient.WithHTTPClient(&http.Client{
+			Transport: clientDefaultTransport,
+			Timeout:   options.RequestTimeout,
+		}),
+	)
 
 	return
 }
