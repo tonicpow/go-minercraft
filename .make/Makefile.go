@@ -64,11 +64,13 @@ test-travis: ## Runs all tests via Travis (also exports coverage)
 	@$(MAKE) lint
 	@echo "running tests..."
 	@go test ./... -race -coverprofile=coverage.txt -covermode=atomic
+	@cp coverage.txt c.out
 
 test-travis-short: ## Runs unit tests via Travis (also exports coverage)
 	@$(MAKE) lint
 	@echo "running tests (short)..."
 	@go test ./... -test.short -race -coverprofile=coverage.txt -covermode=atomic
+	@cp coverage.txt c.out
 
 uninstall: ## Uninstall the application (and remove files)
 	@test $(BINARY_NAME)
