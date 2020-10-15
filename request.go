@@ -20,7 +20,7 @@ type RequestResponse struct {
 }
 
 // httpRequest is a generic request wrapper that can be used without constraints
-func httpRequest(client *Client, method, url, token string, payload []byte) (response *RequestResponse) {
+func httpRequest(ctx context.Context, client *Client, method, url, token string, payload []byte) (response *RequestResponse) {
 
 	// Set reader
 	var bodyReader io.Reader
@@ -40,7 +40,7 @@ func httpRequest(client *Client, method, url, token string, payload []byte) (res
 
 	// Start the request
 	var request *http.Request
-	if request, response.Error = http.NewRequestWithContext(context.Background(), method, url, bodyReader); response.Error != nil {
+	if request, response.Error = http.NewRequestWithContext(ctx, method, url, bodyReader); response.Error != nil {
 		return
 	}
 

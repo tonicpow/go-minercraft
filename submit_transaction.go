@@ -1,6 +1,7 @@
 package minercraft
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -95,7 +96,7 @@ func (c *Client) SubmitTransaction(miner *Miner, tx *Transaction) (*SubmitTransa
 	}
 
 	// Make the HTTP request
-	result := submitTransaction(c, miner, tx)
+	result := submitTransaction(context.Background(), c, miner, tx)
 	if result.Response.Error != nil {
 		return nil, result.Response.Error
 	}
@@ -131,9 +132,9 @@ func (i *internalResult) parseSubmission() (response SubmitTransactionResponse, 
 }
 
 // submitTransaction will fire the HTTP request to submit a transaction
-func submitTransaction(client *Client, miner *Miner, tx *Transaction) (result *internalResult) {
+func submitTransaction(ctx context.Context, client *Client, miner *Miner, tx *Transaction) (result *internalResult) {
 	result = &internalResult{Miner: miner}
 	data, _ := json.Marshal(tx) // Ignoring error - if it fails, the submission would also fail
-	result.Response = httpRequest(client, http.MethodPost, defaultProtocol+miner.URL+routeSubmitTx, miner.Token, data)
+	result.Response = httpRequest(ctx, client, http.MethodPost, defaultProtocol+miner.URL+routeSubmitTx, miner.Token, data)
 	return
 }
