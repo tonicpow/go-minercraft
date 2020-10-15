@@ -5,7 +5,6 @@
 [![Build Status](https://travis-ci.com/tonicpow/go-minercraft.svg?branch=master&v=1)](https://travis-ci.com/tonicpow/go-minercraft)
 [![Report](https://goreportcard.com/badge/github.com/tonicpow/go-minercraft?style=flat&v=1)](https://goreportcard.com/report/github.com/tonicpow/go-minercraft)
 [![codecov](https://codecov.io/gh/tonicpow/go-minercraft/branch/master/graph/badge.svg?v=1)](https://codecov.io/gh/tonicpow/go-minercraft)
-[![codebeat badge](https://codebeat.co/badges/4c57d747-0f08-4b95-b6f9-a45e442a67a5?v=1)](https://codebeat.co/projects/github-com-tonicpow-go-minercraft-master)
 [![Go](https://img.shields.io/github/go-mod/go-version/tonicpow/go-minercraft?v=1)](https://golang.org/)
 
 <br/>
@@ -46,7 +45,7 @@ View documentation on hosting your own [mAPI server](https://github.com/bitcoin-
   - [x] [Fee Quote](https://github.com/bitcoin-sv-specs/brfc-merchantapi#get-fee-quote)
   - [x] [Query Transaction Status](https://github.com/bitcoin-sv-specs/brfc-merchantapi#Query-transaction-status)
   - [x] [Submit Transaction](https://github.com/bitcoin-sv-specs/brfc-merchantapi#Submit-transaction)
-  - [ ] [Submit Multiple Transactions](https://github.com/bitcoin-sv-specs/brfc-merchantapi#Submit-multiple-transactions) `(Miners have not implemented as of 10/9/20)`
+  - [ ] [Submit Multiple Transactions](https://github.com/bitcoin-sv-specs/brfc-merchantapi#Submit-multiple-transactions) `(Miners have not implemented as of 10/15/20)`
 - Custom Features:
   - [Client](client.go) is completely configurable
   - Using default [heimdall http client](https://github.com/gojektech/heimdall) with exponential backoff & more
