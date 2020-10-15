@@ -11,7 +11,8 @@ go:
 # Environment variables
 env:
  - GO111MODULE=on
- - CC_TEST_REPORTER_ID=4c57d747-0f08-4b95-b6f9-a45e442a67a5
+ global:
+  - CC_TEST_REPORTER_ID=4c57d747-0f08-4b95-b6f9-a45e442a67a5
 
 # Only clone the most recent commit
 git:
