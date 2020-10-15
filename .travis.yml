@@ -11,8 +11,6 @@ go:
 # Environment variables
 env:
  - GO111MODULE=on
- global:
-  - CC_TEST_REPORTER_ID=4c57d747-0f08-4b95-b6f9-a45e442a67a5
 
 # Only clone the most recent commit
 git:
@@ -22,11 +20,6 @@ git:
 notifications:
  email: false
 
-before_script:
- - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
- - chmod +x ./cc-test-reporter
- - ./cc-test-reporter before-build
-
 # Run all scripts
 script:
  - make test-travis
@@ -34,4 +27,3 @@ script:
 # After build success
 after_success:
  - bash <(curl -s https://codecov.io/bash)
- - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
