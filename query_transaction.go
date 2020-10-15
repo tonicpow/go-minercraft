@@ -112,7 +112,11 @@ func (c *Client) QueryTransaction(miner *Miner, txID string) (*QueryTransactionR
 // queryTransaction will fire the HTTP request to retrieve the tx status
 func queryTransaction(ctx context.Context, client *Client, miner *Miner, txHash string) (result *internalResult) {
 	result = &internalResult{Miner: miner}
-	result.Response = httpRequest(ctx, client, http.MethodGet, defaultProtocol+miner.URL+routeQueryTx+txHash, miner.Token, nil)
+	result.Response = httpRequest(ctx, client, &httpPayload{
+		Method: http.MethodGet,
+		URL:    defaultProtocol + miner.URL + routeQueryTx + txHash,
+		Token:  miner.Token,
+	})
 	return
 }
 

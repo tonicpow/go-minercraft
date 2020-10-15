@@ -26,7 +26,10 @@ func (c *Client) BestQuote(feeCategory, feeType string) (*FeeQuoteResponse, erro
 	var wg sync.WaitGroup
 	for _, miner := range c.Miners {
 		wg.Add(1)
-		go getQuoteRoutine(ctx, &wg, c, miner, resultsChannel)
+		go func(ctx context.Context, wg *sync.WaitGroup, client *Client, miner *Miner, resultsChannel chan *internalResult) {
+			defer wg.Done()
+			resultsChannel <- getQuote(ctx, client, miner)
+		}(ctx, &wg, c, miner, resultsChannel)
 	}
 
 	// Waiting for all requests to finish
@@ -48,30 +51,18 @@ func (c *Client) BestQuote(feeCategory, feeType string) (*FeeQuoteResponse, erro
 			return nil, err
 		}
 
-		// Do we have a rate set?
-		if bestRate == 0 {
+		// Get a test rate
+		if testRate, err = quote.Quote.CalculateFee(feeCategory, feeType, 1000); err != nil {
+			return nil, err
+		}
+
+		// Never set (or better)
+		if bestRate == 0 || testRate < bestRate {
+			bestRate = testRate
 			bestQuote = quote
-			if bestRate, err = quote.Quote.CalculateFee(feeCategory, feeType, 1000); err != nil {
-				return nil, err
-			}
-		} else { // Test the other quotes
-			if testRate, err = quote.Quote.CalculateFee(feeCategory, feeType, 1000); err != nil {
-				return nil, err
-			}
-			if testRate < bestRate {
-				bestRate = testRate
-				bestQuote = quote
-			}
 		}
 	}
 
 	// Return the best quote found
 	return &bestQuote, nil
-}
-
-// getQuoteRoutine will fire getQuote as part of a WaitGroup and return
-// the results into a channel
-func getQuoteRoutine(ctx context.Context, wg *sync.WaitGroup, client *Client, miner *Miner, resultsChannel chan *internalResult) {
-	defer wg.Done()
-	resultsChannel <- getQuote(ctx, client, miner)
 }

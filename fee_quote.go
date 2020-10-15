@@ -225,6 +225,10 @@ func (i *internalResult) parseQuote() (response FeeQuoteResponse, err error) {
 // getQuote will fire the HTTP request to retrieve the fee quote
 func getQuote(ctx context.Context, client *Client, miner *Miner) (result *internalResult) {
 	result = &internalResult{Miner: miner}
-	result.Response = httpRequest(ctx, client, http.MethodGet, defaultProtocol+miner.URL+routeFeeQuote, miner.Token, nil)
+	result.Response = httpRequest(ctx, client, &httpPayload{
+		Method: http.MethodGet,
+		URL:    defaultProtocol + miner.URL + routeFeeQuote,
+		Token:  miner.Token,
+	})
 	return
 }

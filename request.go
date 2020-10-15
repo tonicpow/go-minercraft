@@ -19,8 +19,16 @@ type RequestResponse struct {
 	URL          string `json:"url"`           // URL is used for the request
 }
 
+// httpPayload is used for a httpRequest
+type httpPayload struct {
+	Method string `json:"method"`
+	URL    string `json:"url"`
+	Token  string `json:"token"`
+	Data   []byte `json:"data"`
+}
+
 // httpRequest is a generic request wrapper that can be used without constraints
-func httpRequest(ctx context.Context, client *Client, method, url, token string, payload []byte) (response *RequestResponse) {
+func httpRequest(ctx context.Context, client *Client, payload *httpPayload) (response *RequestResponse) {
 
 	// Set reader
 	var bodyReader io.Reader
@@ -29,18 +37,18 @@ func httpRequest(ctx context.Context, client *Client, method, url, token string,
 	response = new(RequestResponse)
 
 	// Add post data if applicable
-	if method == http.MethodPost || method == http.MethodPut {
-		bodyReader = bytes.NewBuffer(payload)
-		response.PostData = string(payload)
+	if payload.Method == http.MethodPost || payload.Method == http.MethodPut {
+		bodyReader = bytes.NewBuffer(payload.Data)
+		response.PostData = string(payload.Data)
 	}
 
 	// Store for debugging purposes
-	response.Method = method
-	response.URL = url
+	response.Method = payload.Method
+	response.URL = payload.URL
 
 	// Start the request
 	var request *http.Request
-	if request, response.Error = http.NewRequestWithContext(ctx, method, url, bodyReader); response.Error != nil {
+	if request, response.Error = http.NewRequestWithContext(ctx, payload.Method, payload.URL, bodyReader); response.Error != nil {
 		return
 	}
 
@@ -48,13 +56,13 @@ func httpRequest(ctx context.Context, client *Client, method, url, token string,
 	request.Header.Set("User-Agent", client.Options.UserAgent)
 
 	// Set the content type on Method
-	if method == http.MethodPost || method == http.MethodPut {
+	if payload.Method == http.MethodPost || payload.Method == http.MethodPut {
 		request.Header.Set("Content-Type", "application/json")
 	}
 
 	// Set a token if supplied
-	if len(token) > 0 {
-		request.Header.Set("token", token)
+	if len(payload.Token) > 0 {
+		request.Header.Set("token", payload.Token)
 	}
 
 	// Fire the http request
