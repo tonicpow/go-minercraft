@@ -20,6 +20,11 @@ git:
 notifications:
  email: false
 
+before_script:
+ - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+ - chmod +x ./cc-test-reporter
+ - ./cc-test-reporter before-build
+
 # Run all scripts
 script:
  - make test-travis
@@ -27,3 +32,4 @@ script:
 # After build success
 after_success:
  - bash <(curl -s https://codecov.io/bash)
+ - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
