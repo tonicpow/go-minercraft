@@ -114,24 +114,25 @@ func (f *FeePayload) CalculateFee(feeCategory, feeType string, txBytes uint64) (
 	for _, fee := range f.Fees {
 
 		// Detect the type (data or standard)
-		if fee.FeeType == feeType {
-
-			// Multiply & Divide
-			var calcFee uint64
-			if strings.EqualFold(feeCategory, FeeCategoryMining) {
-				calcFee = (fee.MiningFee.Satoshis * txBytes) / fee.MiningFee.Bytes
-			} else {
-				calcFee = (fee.RelayFee.Satoshis * txBytes) / fee.RelayFee.Bytes
-			}
-
-			// Check for zero
-			if calcFee != 0 {
-				return calcFee, nil
-			}
-
-			// If txBytes is zero this error will occur
-			return 1, fmt.Errorf("warning: fee calculation was 0")
+		if fee.FeeType != feeType {
+			continue
 		}
+
+		// Multiply & Divide
+		var calcFee uint64
+		if strings.EqualFold(feeCategory, FeeCategoryMining) {
+			calcFee = (fee.MiningFee.Satoshis * txBytes) / fee.MiningFee.Bytes
+		} else {
+			calcFee = (fee.RelayFee.Satoshis * txBytes) / fee.RelayFee.Bytes
+		}
+
+		// Check for zero
+		if calcFee != 0 {
+			return calcFee, nil
+		}
+
+		// If txBytes is zero this error will occur
+		return 1, fmt.Errorf("warning: fee calculation was 0")
 	}
 
 	// No fee type found in the slice of fees
