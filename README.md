@@ -52,6 +52,7 @@ View documentation on hosting your own [mAPI server](https://github.com/bitcoin-
   - Use your own HTTP client
   - Current miner information located at `response.Miner.name` and [defaults](config.go)
   - Automatic Signature Validation `response.Validated=true/false`
+  - `FastestQuote()` will get request quotes from all miners and return the quickest to respond
   - `BestQuote()` will get quotes from all miners and return the best quote
   - `CalculateFee()` will return the fee for a given transaction
 
