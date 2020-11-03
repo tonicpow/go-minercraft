@@ -158,7 +158,7 @@ func TestClient_QueryTransactionParsedValues(t *testing.T) {
 	if response.Query.BlockHeight != 612530 {
 		t.Fatalf("expected response.Query.BlockHeight to be %d, got %d", 612530, response.Query.BlockHeight)
 	}
-	if response.Query.ReturnResult != "success" {
+	if response.Query.ReturnResult != QueryTransactionSuccess {
 		t.Fatalf("expected response.Query.ReturnResult to be %s, got %s", "success", response.Query.ReturnResult)
 	}
 }

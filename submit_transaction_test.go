@@ -167,7 +167,7 @@ func TestClient_SubmitTransactionParsedValues(t *testing.T) {
 	if response.Results.APIVersion != testAPIVersion {
 		t.Fatalf("expected response.Results.APIVersion to be %s, got %s", testAPIVersion, response.Results.APIVersion)
 	}
-	if response.Results.ReturnResult != "success" {
+	if response.Results.ReturnResult != QueryTransactionSuccess {
 		t.Fatalf("expected response.Results.ReturnResult to be %s, got %s", "success", response.Results.ReturnResult)
 	}
 	if response.Results.TxID != "6bdbcfab0526d30e8d68279f79dff61fb4026ace8b7b32789af016336e54f2f0" {

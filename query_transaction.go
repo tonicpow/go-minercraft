@@ -7,11 +7,13 @@ import (
 	"net/http"
 )
 
-// Results
+// QueryTransactionSuccess is on success
 const QueryTransactionSuccess = "success"
+
+// QueryTransactionFailure is on failure
 const QueryTransactionFailure = "failure"
 
-// Result descriptions
+// QueryTransactionInMempoolFailure in mempool but not in a block yet
 const QueryTransactionInMempoolFailure = "Transaction in mempool but not yet in block"
 
 /*
