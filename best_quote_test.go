@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // mockHTTPValidBestQuote for mocking requests
@@ -94,153 +96,82 @@ func (m *mockHTTPBadRate) Do(req *http.Request) (*http.Response, error) {
 func TestClient_BestQuote(t *testing.T) {
 	t.Parallel()
 
-	// Create a client
-	client := newTestClient(&mockHTTPValidBestQuote{})
+	t.Run("get a valid best quote", func(t *testing.T) {
 
-	// Create a req
-	response, err := client.BestQuote(FeeCategoryMining, FeeTypeData)
-	if err != nil {
-		t.Fatalf("error occurred: %s", err.Error())
-	} else if response == nil {
-		t.Fatalf("expected response to not be nil")
-	}
+		// Create a client
+		client := newTestClient(&mockHTTPValidBestQuote{})
 
-	// Check returned values
-	if response.Encoding != testEncoding {
-		t.Fatalf("expected response.Encoding to be %s, got %s", testEncoding, response.Encoding)
-	}
-	if response.MimeType != testMimeType {
-		t.Fatalf("expected response.MimeType to be %s, got %s", testMimeType, response.MimeType)
-	}
+		// Create a req
+		response, err := client.BestQuote(FeeCategoryMining, FeeTypeData)
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
 
-	// Check that we got fees
-	if len(response.Quote.Fees) != 2 {
-		t.Fatalf("expected response.Quote.Fees to be a length of %d, got %d", 2, len(response.Quote.Fees))
-	}
-}
+		// Check returned values
+		assert.Equal(t, testEncoding, response.Encoding)
+		assert.Equal(t, testMimeType, response.MimeType)
 
-// TestClient_BestQuoteHTTPError tests the method BestQuote()
-func TestClient_BestQuoteHTTPError(t *testing.T) {
-	t.Parallel()
+		// Check that we got fees
+		assert.Equal(t, 2, len(response.Quote.Fees))
+	})
 
-	// Create a client
-	client := newTestClient(&mockHTTPError{})
+	t.Run("http error", func(t *testing.T) {
+		client := newTestClient(&mockHTTPError{})
+		response, err := client.BestQuote(FeeCategoryMining, FeeTypeData)
+		assert.Error(t, err)
+		assert.Nil(t, response)
+	})
 
-	// Create a req
-	response, err := client.BestQuote(FeeCategoryMining, FeeTypeData)
-	if err == nil {
-		t.Fatalf("error should have occurred")
-	} else if response != nil {
-		t.Fatalf("expected response to be nil")
-	}
-}
+	t.Run("bad request", func(t *testing.T) {
+		client := newTestClient(&mockHTTPBadRequest{})
+		response, err := client.BestQuote(FeeCategoryMining, FeeTypeData)
+		assert.Error(t, err)
+		assert.Nil(t, response)
+	})
 
-// TestClient_BestQuoteBadRequest tests the method BestQuote()
-func TestClient_BestQuoteBadRequest(t *testing.T) {
-	t.Parallel()
+	t.Run("invalid JSON", func(t *testing.T) {
+		client := newTestClient(&mockHTTPInvalidJSON{})
+		response, err := client.BestQuote(FeeCategoryMining, FeeTypeData)
+		assert.Error(t, err)
+		assert.Nil(t, response)
+	})
 
-	// Create a client
-	client := newTestClient(&mockHTTPBadRequest{})
+	t.Run("invalid category", func(t *testing.T) {
+		client := newTestClient(&mockHTTPValidBestQuote{})
+		response, err := client.BestQuote("invalid", FeeTypeData)
+		assert.Error(t, err)
+		assert.Nil(t, response)
 
-	// Create a req
-	response, err := client.BestQuote(FeeCategoryMining, FeeTypeData)
-	if err == nil {
-		t.Fatalf("error should have occurred")
-	} else if response != nil {
-		t.Fatalf("expected response to be nil")
-	}
-}
+		// Create a req
+		response, err = client.BestQuote(FeeCategoryMining, "invalid")
+		assert.Error(t, err)
+		assert.Nil(t, response)
+	})
 
-// TestClient_BestQuoteInvalidJSON tests the method BestQuote()
-func TestClient_BestQuoteInvalidJSON(t *testing.T) {
-	t.Parallel()
+	t.Run("better rate", func(t *testing.T) {
+		client := newTestClient(&mockHTTPBetterRate{})
+		response, err := client.BestQuote(FeeCategoryRelay, FeeTypeData)
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
 
-	// Create a client
-	client := newTestClient(&mockHTTPInvalidJSON{})
+		// Check that we got fees
+		assert.Equal(t, 2, len(response.Quote.Fees))
 
-	// Create a req
-	response, err := client.BestQuote(FeeCategoryMining, FeeTypeData)
-	if err == nil {
-		t.Fatalf("error should have occurred")
-	} else if response != nil {
-		t.Fatalf("expected response to be nil")
-	}
-}
+		var fee uint64
+		fee, err = response.Quote.CalculateFee(FeeCategoryRelay, FeeTypeData, 1000)
+		assert.NoError(t, err)
+		assert.Equal(t, uint64(100), fee)
 
-// TestClient_BestQuote tests the method BestQuote()
-func TestClient_BestQuoteInvalidCategory(t *testing.T) {
-	t.Parallel()
+		fee, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 1000)
+		assert.NoError(t, err)
+		assert.Equal(t, uint64(500), fee)
+	})
 
-	// Create a client
-	client := newTestClient(&mockHTTPValidBestQuote{})
-
-	// Create a req
-	response, err := client.BestQuote("invalid", FeeTypeData)
-	if err == nil {
-		t.Fatalf("error should have occurred")
-	} else if response != nil {
-		t.Fatalf("expected response to be nil")
-	}
-
-	// Create a req
-	response, err = client.BestQuote(FeeCategoryMining, "invalid")
-	if err == nil {
-		t.Fatalf("error should have occurred")
-	} else if response != nil {
-		t.Fatalf("expected response to be nil")
-	}
-}
-
-// TestClient_BestQuoteBetterRate tests the method BestQuote()
-func TestClient_BestQuoteBetterRate(t *testing.T) {
-	t.Parallel()
-
-	// Create a client
-	client := newTestClient(&mockHTTPBetterRate{})
-
-	// Create a req
-	response, err := client.BestQuote(FeeCategoryRelay, FeeTypeData)
-	if err != nil {
-		t.Fatalf("error occurred: %s", err.Error())
-	} else if response == nil {
-		t.Fatalf("expected response to not be nil")
-	}
-
-	// Check that we got fees
-	if len(response.Quote.Fees) != 2 {
-		t.Fatalf("expected response.Quote.Fees to be a length of %d, got %d", 2, len(response.Quote.Fees))
-	}
-
-	var fee uint64
-	fee, err = response.Quote.CalculateFee(FeeCategoryRelay, FeeTypeData, 1000)
-	if err != nil {
-		t.Fatalf("error occurred: %s", err.Error())
-	} else if fee != 100 {
-		t.Fatalf("expected fee to %d but got %d", 100, fee)
-	}
-
-	fee, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 1000)
-	if err != nil {
-		t.Fatalf("error occurred: %s", err.Error())
-	} else if fee != 500 {
-		t.Fatalf("expected fee to %d but got %d", 500, fee)
-	}
-}
-
-// TestClient_BestQuoteBadRate tests the method BestQuote()
-func TestClient_BestQuoteBadRate(t *testing.T) {
-	t.Parallel()
-
-	// Create a client
-	client := newTestClient(&mockHTTPBadRate{})
-
-	// Create a req
-	response, err := client.BestQuote(FeeCategoryRelay, FeeTypeData)
-	if err == nil {
-		t.Fatalf("error was expected but not found")
-	} else if response != nil {
-		t.Fatalf("expected response to not be nil")
-	}
+	t.Run("bad rate", func(t *testing.T) {
+		client := newTestClient(&mockHTTPBadRate{})
+		response, err := client.BestQuote(FeeCategoryRelay, FeeTypeData)
+		assert.Error(t, err)
+		assert.Nil(t, response)
+	})
 }
 
 // ExampleClient_BestQuote example using BestQuote()

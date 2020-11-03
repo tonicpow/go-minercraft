@@ -7,7 +7,12 @@ import (
 	"net/http"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
+
+const feeTestSignature = "3045022100eed49f6bf75d8f975f581271e3df658fbe8ec67e6301ea8fc25a72d18c92e30e022056af253f0d24db6a8fde4e2c1ee95e7a5ecf2c7cdc93246f8328c9e0ca582fc4"
+const feeTestPublicKey = "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270"
 
 // mockHTTPValidFeeQuote for mocking requests
 type mockHTTPValidFeeQuote struct{}
@@ -241,210 +246,107 @@ func (m *mockHTTPMissingFeeType) Do(req *http.Request) (*http.Response, error) {
 func TestClient_FeeQuote(t *testing.T) {
 	t.Parallel()
 
-	testSignature := "3045022100eed49f6bf75d8f975f581271e3df658fbe8ec67e6301ea8fc25a72d18c92e30e022056af253f0d24db6a8fde4e2c1ee95e7a5ecf2c7cdc93246f8328c9e0ca582fc4"
-	testPublicKey := "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270"
+	t.Run("get a valid fee quote", func(t *testing.T) {
+		// Create a client
+		client := newTestClient(&mockHTTPValidFeeQuote{})
 
-	// Create a client
-	client := newTestClient(&mockHTTPValidFeeQuote{})
+		// Create a req
+		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
 
-	// Create a req
-	response, err := client.FeeQuote(client.MinerByName(MinerTaal))
-	if err != nil {
-		t.Fatalf("error occurred: %s", err.Error())
-	} else if response == nil {
-		t.Fatalf("expected response to not be nil")
-	}
+		// Check returned values
+		assert.Equal(t, true, response.Validated)
+		assert.Equal(t, feeTestSignature, response.Signature)
+		assert.Equal(t, feeTestPublicKey, response.PublicKey)
+		assert.Equal(t, testEncoding, response.Encoding)
+		assert.Equal(t, testMimeType, response.MimeType)
+	})
 
-	// Check returned values
-	if !response.Validated {
-		t.Fatalf("expected response.Validated to be true, got false")
-	}
-	if response.Signature != testSignature {
-		t.Fatalf("expected response.Signature to be %s, got %s", testSignature, response.Signature)
-	}
-	if response.PublicKey != testPublicKey {
-		t.Fatalf("expected response.PublicKey to be %s, got %s", testPublicKey, response.PublicKey)
-	}
-	if response.Encoding != testEncoding {
-		t.Fatalf("expected response.Encoding to be %s, got %s", testEncoding, response.Encoding)
-	}
-	if response.MimeType != testMimeType {
-		t.Fatalf("expected response.MimeType to be %s, got %s", testMimeType, response.MimeType)
-	}
-}
+	t.Run("valid parse values", func(t *testing.T) {
 
-// TestClient_FeeQuoteParsedValues tests the method FeeQuote()
-func TestClient_FeeQuoteParsedValues(t *testing.T) {
-	t.Parallel()
+		// Create a client
+		client := newTestClient(&mockHTTPValidFeeQuote{})
 
-	testID := "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270"
+		// Create a req
+		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
 
-	// Create a client
-	client := newTestClient(&mockHTTPValidFeeQuote{})
+		// Test parsed values
+		assert.Equal(t, MinerTaal, response.Miner.Name)
+		assert.Equal(t, feeTestPublicKey, response.Quote.MinerID)
+		assert.Equal(t, "2020-10-09T21:36:17.410Z", response.Quote.ExpirationTime)
+		assert.Equal(t, "2020-10-09T21:26:17.410Z", response.Quote.Timestamp)
+		assert.Equal(t, testAPIVersion, response.Quote.APIVersion)
+		assert.Equal(t, "0000000000000000035c5f8c0294802a01e500fa7b95337963bb3640da3bd565", response.Quote.CurrentHighestBlockHash)
+		assert.Equal(t, uint64(656169), response.Quote.CurrentHighestBlockHeight)
+		assert.Equal(t, 2, len(response.Quote.Fees))
+	})
 
-	// Create a req
-	response, err := client.FeeQuote(client.MinerByName(MinerTaal))
-	if err != nil {
-		t.Fatalf("error occurred: %s", err.Error())
-	} else if response == nil {
-		t.Fatalf("expected response to not be nil")
-	}
+	t.Run("get actual rates", func(t *testing.T) {
 
-	// Test parsed values
-	if response.Miner.Name != MinerTaal {
-		t.Fatalf("expected response.Miner.Name to be %s, got %s", MinerTaal, response.Miner.Name)
-	}
-	if response.Quote.MinerID != testID {
-		t.Fatalf("expected response.Quote.MinerID to be %s, got %s", testID, response.Quote.MinerID)
-	}
-	if response.Quote.ExpirationTime != "2020-10-09T21:36:17.410Z" {
-		t.Fatalf("expected response.Quote.ExpirationTime to be %s, got %s", "2020-10-09T21:36:17.410Z", response.Quote.ExpirationTime)
-	}
-	if response.Quote.Timestamp != "2020-10-09T21:26:17.410Z" {
-		t.Fatalf("expected response.Quote.Timestamp to be %s, got %s", "2020-10-09T21:26:17.410Z", response.Quote.Timestamp)
-	}
-	if response.Quote.APIVersion != testAPIVersion {
-		t.Fatalf("expected response.Quote.APIVersion to be %s, got %s", testAPIVersion, response.Quote.APIVersion)
-	}
-	if response.Quote.CurrentHighestBlockHash != "0000000000000000035c5f8c0294802a01e500fa7b95337963bb3640da3bd565" {
-		t.Fatalf("expected response.Quote.CurrentHighestBlockHash to be %s, got %s", "0000000000000000035c5f8c0294802a01e500fa7b95337963bb3640da3bd565", response.Quote.CurrentHighestBlockHash)
-	}
-	if response.Quote.CurrentHighestBlockHeight != 656169 {
-		t.Fatalf("expected response.Quote.CurrentHighestBlockHeight to be %d, got %d", 656169, response.Quote.CurrentHighestBlockHeight)
-	}
-	if len(response.Quote.Fees) != 2 {
-		t.Fatalf("expected response.Quote.Fees to be length of %d, got: %d", 2, len(response.Quote.Fees))
-	}
-}
+		// Create a client
+		client := newTestClient(&mockHTTPValidFeeQuote{})
 
-// TestClient_FeeQuoteGetRate tests the method FeeQuote()
-func TestClient_FeeQuoteGetRate(t *testing.T) {
-	t.Parallel()
+		// Create a req
+		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
 
-	// Create a client
-	client := newTestClient(&mockHTTPValidFeeQuote{})
+		// Test getting rate from request
+		var rate uint64
+		rate, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 1000)
+		assert.NoError(t, err)
+		assert.Equal(t, uint64(500), rate)
 
-	// Create a req
-	response, err := client.FeeQuote(client.MinerByName(MinerTaal))
-	if err != nil {
-		t.Fatalf("error occurred: %s", err.Error())
-	} else if response == nil {
-		t.Fatalf("expected response to not be nil")
-	}
+		// Test relay rate
+		rate, err = response.Quote.CalculateFee(FeeCategoryRelay, FeeTypeData, 1000)
+		assert.NoError(t, err)
+		assert.Equal(t, uint64(250), rate)
+	})
 
-	// Test getting rate from request
-	var rate uint64
-	rate, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 1000)
-	if err != nil {
-		t.Fatalf("error occurred: %s", err.Error())
-	} else if rate != 500 {
-		t.Fatalf("rate was %d but expected: %d", rate, 500)
-	}
+	t.Run("invalid miner", func(t *testing.T) {
+		client := newTestClient(&mockHTTPValidFeeQuote{})
+		response, err := client.FeeQuote(nil)
+		assert.Error(t, err)
+		assert.Nil(t, response)
+	})
 
-	// Test relay rate
-	rate, err = response.Quote.CalculateFee(FeeCategoryRelay, FeeTypeData, 1000)
-	if err != nil {
-		t.Fatalf("error occurred: %s", err.Error())
-	} else if rate != 250 {
-		t.Fatalf("rate was %d but expected: %d", rate, 250)
-	}
+	t.Run("http error", func(t *testing.T) {
+		client := newTestClient(&mockHTTPError{})
+		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		assert.Error(t, err)
+		assert.Nil(t, response)
+	})
 
-}
+	t.Run("bad request", func(t *testing.T) {
+		client := newTestClient(&mockHTTPBadRequest{})
+		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		assert.Error(t, err)
+		assert.Nil(t, response)
+	})
 
-// TestClient_FeeQuoteInvalidMiner tests the method FeeQuote()
-func TestClient_FeeQuoteInvalidMiner(t *testing.T) {
-	t.Parallel()
+	t.Run("invalid JSON", func(t *testing.T) {
+		client := newTestClient(&mockHTTPInvalidJSON{})
+		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		assert.Error(t, err)
+		assert.Nil(t, response)
+	})
 
-	// Create a client
-	client := newTestClient(&mockHTTPValidFeeQuote{})
+	t.Run("invalid signature", func(t *testing.T) {
+		client := newTestClient(&mockHTTPInvalidSignature{})
+		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		assert.Error(t, err)
+		assert.Nil(t, response)
+	})
 
-	// Create a req
-	response, err := client.FeeQuote(nil)
-	if err == nil {
-		t.Fatalf("error should have occurred")
-	} else if response != nil {
-		t.Fatalf("expected response to be nil")
-	}
-}
-
-// TestClient_FeeQuoteHTTPError tests the method FeeQuote()
-func TestClient_FeeQuoteHTTPError(t *testing.T) {
-	t.Parallel()
-
-	// Create a client
-	client := newTestClient(&mockHTTPError{})
-
-	// Create a req
-	response, err := client.FeeQuote(client.MinerByName(MinerTaal))
-	if err == nil {
-		t.Fatalf("error should have occurred")
-	} else if response != nil {
-		t.Fatalf("expected response to be nil")
-	}
-}
-
-// TestClient_FeeQuoteBadRequest tests the method FeeQuote()
-func TestClient_FeeQuoteBadRequest(t *testing.T) {
-	t.Parallel()
-
-	// Create a client
-	client := newTestClient(&mockHTTPBadRequest{})
-
-	// Create a req
-	response, err := client.FeeQuote(client.MinerByName(MinerTaal))
-	if err == nil {
-		t.Fatalf("error should have occurred")
-	} else if response != nil {
-		t.Fatalf("expected response to be nil")
-	}
-}
-
-// TestClient_FeeQuoteInvalidJSON tests the method FeeQuote()
-func TestClient_FeeQuoteInvalidJSON(t *testing.T) {
-	t.Parallel()
-
-	// Create a client
-	client := newTestClient(&mockHTTPInvalidJSON{})
-
-	// Create a req
-	response, err := client.FeeQuote(client.MinerByName(MinerTaal))
-	if err == nil {
-		t.Fatalf("error should have occurred")
-	} else if response != nil {
-		t.Fatalf("expected response to be nil")
-	}
-}
-
-// TestClient_FeeQuoteInvalidSignature tests the method FeeQuote()
-func TestClient_FeeQuoteInvalidSignature(t *testing.T) {
-	t.Parallel()
-
-	// Create a client
-	client := newTestClient(&mockHTTPInvalidSignature{})
-
-	// Create a req
-	response, err := client.FeeQuote(client.MinerByName(MinerTaal))
-	if err == nil {
-		t.Fatalf("error should have occurred")
-	} else if response != nil {
-		t.Fatalf("expected response to be nil")
-	}
-}
-
-// TestClient_FeeQuoteMissingFees tests the method FeeQuote()
-func TestClient_FeeQuoteMissingFees(t *testing.T) {
-	t.Parallel()
-
-	// Create a client
-	client := newTestClient(&mockHTTPMissingFees{})
-
-	// Create a req
-	response, err := client.FeeQuote(client.MinerByName(MinerTaal))
-	if err == nil {
-		t.Fatalf("error should have occurred")
-	} else if response != nil {
-		t.Fatalf("expected response to be nil")
-	}
+	t.Run("missing fees", func(t *testing.T) {
+		client := newTestClient(&mockHTTPMissingFees{})
+		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		assert.Error(t, err)
+		assert.Nil(t, response)
+	})
 }
 
 // ExampleClient_FeeQuote example using FeeQuote()
@@ -475,49 +377,64 @@ func BenchmarkClient_FeeQuote(b *testing.B) {
 func TestFeePayload_CalculateFee(t *testing.T) {
 	t.Parallel()
 
-	// Create a client
-	client := newTestClient(&mockHTTPValidFeeQuote{})
+	t.Run("calculate valid fees", func(t *testing.T) {
 
-	// Create a req
-	response, err := client.FeeQuote(client.MinerByName(MinerTaal))
-	if err != nil {
-		t.Fatalf("error occurred: %s", err.Error())
-	} else if response == nil {
-		t.Fatalf("expected response to not be nil")
-	}
+		// Create a client
+		client := newTestClient(&mockHTTPValidFeeQuote{})
 
-	// Mining & Data
-	var fee uint64
-	fee, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 1000)
-	if err != nil {
-		t.Fatalf("error occurred: %s", err.Error())
-	} else if fee != 500 {
-		t.Fatalf("fee was: %d but expected: %d", fee, 500)
-	}
+		// Create a req
+		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
 
-	// Mining and standard
-	fee, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeStandard, 1000)
-	if err != nil {
-		t.Fatalf("error occurred: %s", err.Error())
-	} else if fee != 500 {
-		t.Fatalf("fee was: %d but expected: %d", fee, 500)
-	}
+		// Mining & Data
+		var fee uint64
+		fee, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 1000)
+		assert.NoError(t, err)
+		assert.Equal(t, uint64(500), fee)
 
-	// Relay & Data
-	fee, err = response.Quote.CalculateFee(FeeCategoryRelay, FeeTypeData, 1000)
-	if err != nil {
-		t.Fatalf("error occurred: %s", err.Error())
-	} else if fee != 250 {
-		t.Fatalf("fee was: %d but expected: %d", fee, 250)
-	}
+		// Mining and standard
+		fee, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeStandard, 1000)
+		assert.NoError(t, err)
+		assert.Equal(t, uint64(500), fee)
 
-	// Relay and standard
-	fee, err = response.Quote.CalculateFee(FeeCategoryRelay, FeeTypeStandard, 1000)
-	if err != nil {
-		t.Fatalf("error occurred: %s", err.Error())
-	} else if fee != 250 {
-		t.Fatalf("fee was: %d but expected: %d", fee, 250)
-	}
+		// Relay & Data
+		fee, err = response.Quote.CalculateFee(FeeCategoryRelay, FeeTypeData, 1000)
+		assert.NoError(t, err)
+		assert.Equal(t, uint64(250), fee)
+
+		// Relay and standard
+		fee, err = response.Quote.CalculateFee(FeeCategoryRelay, FeeTypeStandard, 1000)
+		assert.NoError(t, err)
+		assert.Equal(t, uint64(250), fee)
+	})
+
+	t.Run("calculate zero fee", func(t *testing.T) {
+		client := newTestClient(&mockHTTPValidFeeQuote{})
+		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
+
+		// Zero tx size produces 0 fee and error
+		var fee uint64
+		fee, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 0)
+		assert.Error(t, err)
+		assert.Equal(t, uint64(1), fee)
+	})
+
+	t.Run("missing fee type", func(t *testing.T) {
+		client := newTestClient(&mockHTTPMissingFeeType{})
+		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
+
+		// Zero tx size produces 0 fee and error
+		var fee uint64
+		fee, err = response.Quote.CalculateFee(FeeCategoryRelay, FeeTypeStandard, 1000)
+		assert.Error(t, err)
+		assert.Equal(t, uint64(1), fee)
+	})
+
 }
 
 // ExampleFeePayload_CalculateFee example using CalculateFee()
@@ -551,55 +468,5 @@ func BenchmarkFeePayload_CalculateFee(b *testing.B) {
 	response, _ := client.BestQuote(FeeCategoryMining, FeeTypeData)
 	for i := 0; i < b.N; i++ {
 		_, _ = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 1000)
-	}
-}
-
-// TestFeePayload_CalculateFeeZero tests the method CalculateFee()
-func TestFeePayload_CalculateFeeZero(t *testing.T) {
-	t.Parallel()
-
-	// Create a client
-	client := newTestClient(&mockHTTPValidFeeQuote{})
-
-	// Create a req
-	response, err := client.FeeQuote(client.MinerByName(MinerTaal))
-	if err != nil {
-		t.Fatalf("error occurred: %s", err.Error())
-	} else if response == nil {
-		t.Fatalf("expected response to not be nil")
-	}
-
-	// Zero tx size produces 0 fee and error
-	var fee uint64
-	fee, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 0)
-	if err == nil {
-		t.Fatalf("error should have occurred")
-	} else if fee != 1 {
-		t.Fatalf("fee was: %d but expected: %d", fee, 1)
-	}
-}
-
-// TestFeePayload_CalculateFeeMissingFeeType tests the method CalculateFee()
-func TestFeePayload_CalculateFeeMissingFeeType(t *testing.T) {
-	t.Parallel()
-
-	// Create a client
-	client := newTestClient(&mockHTTPMissingFeeType{})
-
-	// Create a req
-	response, err := client.FeeQuote(client.MinerByName(MinerTaal))
-	if err != nil {
-		t.Fatalf("error occurred: %s", err.Error())
-	} else if response == nil {
-		t.Fatalf("expected response to not be nil")
-	}
-
-	// Zero tx size produces 0 fee and error
-	var fee uint64
-	fee, err = response.Quote.CalculateFee(FeeCategoryRelay, FeeTypeStandard, 1000)
-	if err == nil {
-		t.Fatalf("error should have occurred")
-	} else if fee != 1 {
-		t.Fatalf("fee was: %d but expected: %d", fee, 1)
 	}
 }

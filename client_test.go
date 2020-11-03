@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 const (
@@ -53,18 +55,38 @@ func newTestClient(httpClient httpInterface) *Client {
 func TestNewClient(t *testing.T) {
 	t.Parallel()
 
-	client, err := NewClient(nil, nil)
+	t.Run("valid new client", func(t *testing.T) {
+		client, err := NewClient(nil, nil)
+		assert.NotNil(t, client)
+		assert.NoError(t, err)
 
-	if client == nil {
-		t.Fatal("failed to load client")
-	} else if err != nil {
-		t.Fatalf("error occurred: %s", err.Error())
-	}
+		// Test default miners
+		assert.Equal(t, 3, len(client.Miners))
+	})
 
-	// Test default miners
-	if len(client.Miners) != 3 {
-		t.Fatalf("expected %d default miners, got %d", 3, len(client.Miners))
-	}
+	t.Run("custom http client", func(t *testing.T) {
+		client, err := NewClient(nil, http.DefaultClient)
+		assert.NotNil(t, client)
+		assert.NoError(t, err)
+	})
+
+	t.Run("default miners", func(t *testing.T) {
+		client, err := NewClient(nil, http.DefaultClient)
+		assert.NotNil(t, client)
+		assert.NoError(t, err)
+
+		// Get Taal
+		miner := client.MinerByName(MinerTaal)
+		assert.Equal(t, MinerTaal, miner.Name)
+
+		// Get Mempool
+		miner = client.MinerByName(MinerMempool)
+		assert.Equal(t, MinerMempool, miner.Name)
+
+		// Get Matterpool
+		miner = client.MinerByName(MinerMatterpool)
+		assert.Equal(t, MinerMatterpool, miner.Name)
+	})
 }
 
 // ExampleNewClient example using NewClient()
@@ -86,107 +108,35 @@ func BenchmarkNewClient(b *testing.B) {
 	}
 }
 
-// TestNewClient_CustomHttpClient tests new client with custom HTTP client
-func TestNewClient_CustomHttpClient(t *testing.T) {
-	t.Parallel()
-
-	client, err := NewClient(nil, http.DefaultClient)
-
-	if client == nil {
-		t.Fatal("failed to load client")
-	} else if err != nil {
-		t.Fatalf("error occurred: %s", err.Error())
-	}
-}
-
-// TestNewClient_DefaultMiners tests NewClient with default miners
-func TestNewClient_DefaultMiners(t *testing.T) {
-	t.Parallel()
-
-	client, err := NewClient(nil, http.DefaultClient)
-
-	if client == nil {
-		t.Fatal("failed to load client")
-	} else if err != nil {
-		t.Fatalf("error occurred: %s", err.Error())
-	}
-
-	// Get Taal
-	miner := client.MinerByName(MinerTaal)
-	if miner.Name != MinerTaal {
-		t.Fatalf("expected miner named %s", MinerTaal)
-	}
-
-	// Get Mempool
-	miner = client.MinerByName(MinerMempool)
-	if miner.Name != MinerMempool {
-		t.Fatalf("expected miner named %s", MinerMempool)
-	}
-
-	// Get Matterpool
-	miner = client.MinerByName(MinerMatterpool)
-	if miner.Name != MinerMatterpool {
-		t.Fatalf("expected miner named %s", MinerMatterpool)
-	}
-}
-
 // TestDefaultClientOptions tests setting DefaultClientOptions()
 func TestDefaultClientOptions(t *testing.T) {
 	t.Parallel()
 
-	options := DefaultClientOptions()
+	t.Run("default client options", func(t *testing.T) {
+		options := DefaultClientOptions()
 
-	if options.UserAgent != defaultUserAgent {
-		t.Fatalf("expected value: %s got: %s", defaultUserAgent, options.UserAgent)
-	}
+		assert.Equal(t, defaultUserAgent, options.UserAgent)
+		assert.Equal(t, 2.0, options.BackOffExponentFactor)
+		assert.Equal(t, 2*time.Millisecond, options.BackOffInitialTimeout)
+		assert.Equal(t, 2*time.Millisecond, options.BackOffMaximumJitterInterval)
+		assert.Equal(t, 10*time.Millisecond, options.BackOffMaxTimeout)
+		assert.Equal(t, 20*time.Second, options.DialerKeepAlive)
+		assert.Equal(t, 5*time.Second, options.DialerTimeout)
+		assert.Equal(t, 2, options.RequestRetryCount)
+		assert.Equal(t, 10*time.Second, options.RequestTimeout)
+		assert.Equal(t, 3*time.Second, options.TransportExpectContinueTimeout)
+		assert.Equal(t, 20*time.Second, options.TransportIdleTimeout)
+		assert.Equal(t, 10, options.TransportMaxIdleConnections)
+		assert.Equal(t, 5*time.Second, options.TransportTLSHandshakeTimeout)
+	})
 
-	if options.BackOffExponentFactor != 2.0 {
-		t.Fatalf("expected value: %f got: %f", 2.0, options.BackOffExponentFactor)
-	}
-
-	if options.BackOffInitialTimeout != 2*time.Millisecond {
-		t.Fatalf("expected value: %v got: %v", 2*time.Millisecond, options.BackOffInitialTimeout)
-	}
-
-	if options.BackOffMaximumJitterInterval != 2*time.Millisecond {
-		t.Fatalf("expected value: %v got: %v", 2*time.Millisecond, options.BackOffMaximumJitterInterval)
-	}
-
-	if options.BackOffMaxTimeout != 10*time.Millisecond {
-		t.Fatalf("expected value: %v got: %v", 10*time.Millisecond, options.BackOffMaxTimeout)
-	}
-
-	if options.DialerKeepAlive != 20*time.Second {
-		t.Fatalf("expected value: %v got: %v", 20*time.Second, options.DialerKeepAlive)
-	}
-
-	if options.DialerTimeout != 5*time.Second {
-		t.Fatalf("expected value: %v got: %v", 5*time.Second, options.DialerTimeout)
-	}
-
-	if options.RequestRetryCount != 2 {
-		t.Fatalf("expected value: %v got: %v", 2, options.RequestRetryCount)
-	}
-
-	if options.RequestTimeout != 10*time.Second {
-		t.Fatalf("expected value: %v got: %v", 10*time.Second, options.RequestTimeout)
-	}
-
-	if options.TransportExpectContinueTimeout != 3*time.Second {
-		t.Fatalf("expected value: %v got: %v", 3*time.Second, options.TransportExpectContinueTimeout)
-	}
-
-	if options.TransportIdleTimeout != 20*time.Second {
-		t.Fatalf("expected value: %v got: %v", 20*time.Second, options.TransportIdleTimeout)
-	}
-
-	if options.TransportMaxIdleConnections != 10 {
-		t.Fatalf("expected value: %v got: %v", 10, options.TransportMaxIdleConnections)
-	}
-
-	if options.TransportTLSHandshakeTimeout != 5*time.Second {
-		t.Fatalf("expected value: %v got: %v", 5*time.Second, options.TransportTLSHandshakeTimeout)
-	}
+	t.Run("no retry", func(t *testing.T) {
+		options := DefaultClientOptions()
+		options.RequestRetryCount = 0
+		client, err := NewClient(options, nil)
+		assert.NotNil(t, client)
+		assert.NoError(t, err)
+	})
 }
 
 // ExampleDefaultClientOptions example using DefaultClientOptions()
@@ -210,87 +160,117 @@ func BenchmarkDefaultClientOptions(b *testing.B) {
 	}
 }
 
-// TestDefaultClientOptions_NoRetry will set 0 retry counts
-func TestDefaultClientOptions_NoRetry(t *testing.T) {
-	t.Parallel()
-
-	options := DefaultClientOptions()
-	options.RequestRetryCount = 0
-	client, err := NewClient(options, nil)
-
-	if client == nil {
-		t.Fatal("failed to load client")
-	} else if err != nil {
-		t.Fatalf("error occurred: %s", err.Error())
-	}
-}
-
 // TestClient_AddMiner tests the method AddMiner()
 func TestClient_AddMiner(t *testing.T) {
 	t.Parallel()
 
-	// Create the list of tests
-	var tests = []struct {
-		inputMiner    Miner
-		expectedName  string
-		expectedURL   string
-		expectedNil   bool
-		expectedError bool
-	}{
-		{Miner{
-			MinerID: testMinerID,
-			Name:    "Test",
-			Token:   testMinerToken,
-			URL:     testMinerURL,
-		}, "Test", "testminer.com", false, false},
-		{Miner{
-			MinerID: testMinerID,
-			Name:    "Test",
-			Token:   testMinerToken,
-			URL:     testMinerURL,
-		}, "Test", "testminer.com", false, true},
-		{Miner{
-			MinerID: testMinerID,
-			Name:    "Test2",
-			Token:   testMinerToken,
-			URL:     testMinerURL,
-		}, "Test", "testminer.com", true, true},
-		{Miner{
-			MinerID: testMinerID,
-			Name:    "",
-			Token:   testMinerToken,
-			URL:     testMinerURL,
-		}, "Test", "testminer.com", true, true},
-		{Miner{
-			MinerID: testMinerID,
-			Name:    "Test2",
-			Token:   testMinerToken,
-			URL:     "",
-		}, "Test", "testminer.com", true, true},
-	}
+	t.Run("valid cases", func(t *testing.T) {
 
-	// Create a client
-	client := newTestClient(&mockHTTPDefaultClient{})
+		// Create the list of tests
+		var tests = []struct {
+			testCase     string
+			inputMiner   Miner
+			expectedName string
+			expectedURL  string
+		}{
+			{
+				"valid miner",
+				Miner{
+					MinerID: testMinerID,
+					Name:    "Test",
+					Token:   testMinerToken,
+					URL:     "testminer.com",
+				},
+				"Test",
+				"testminer.com",
+			},
+			{
+				"valid miner - remove https from url",
+				Miner{
+					MinerID: testMinerID + "2",
+					Name:    "Test2",
+					Token:   testMinerToken,
+					URL:     testMinerURL,
+				},
+				"Test2",
+				"testminer.com",
+			},
+		}
 
-	// Run tests
-	for _, test := range tests {
-		if err := client.AddMiner(test.inputMiner); err != nil && !test.expectedError {
-			t.Errorf("%s Failed: [%v] inputted and error not expected but got: %s", t.Name(), test.inputMiner, err.Error())
-		} else if err == nil && test.expectedError {
-			t.Errorf("%s Failed: [%v] inputted and error was expected", t.Name(), test.inputMiner)
+		// Run tests
+		client := newTestClient(&mockHTTPDefaultClient{})
+		for _, test := range tests {
+			t.Run(test.testCase, func(t *testing.T) {
+				err := client.AddMiner(test.inputMiner)
+				assert.NoError(t, err)
+
+				// Get the miner
+				miner := client.MinerByName(test.inputMiner.Name)
+				assert.Equal(t, test.expectedName, miner.Name)
+				assert.Equal(t, test.expectedURL, miner.URL)
+			})
 		}
-		// Get the miner
-		miner := client.MinerByName(test.inputMiner.Name)
-		if miner == nil && !test.expectedNil {
-			t.Errorf("%s Failed: [%v] inputted and nil was not expected", t.Name(), test.inputMiner)
-		} else if miner != nil && test.expectedNil {
-			t.Errorf("%s Failed: [%v] inputted and nil was expected", t.Name(), test.inputMiner)
-		} else if miner != nil && miner.Name != test.expectedName {
-			t.Errorf("%s Failed: [%v] inputted and [%s] expected but got: %s", t.Name(), test.inputMiner, test.expectedName, miner.Name)
-		} else if miner != nil && miner.URL != test.expectedURL {
-			t.Errorf("%s Failed: [%v] inputted and [%s] expected but got: %s", t.Name(), test.inputMiner, test.expectedURL, miner.URL)
+	})
+
+	t.Run("invalid cases", func(t *testing.T) {
+
+		// Create the list of tests
+		var tests = []struct {
+			testCase   string
+			inputMiner Miner
+		}{
+			{
+				"duplicate miner - by name",
+				Miner{
+					MinerID: testMinerID + "123",
+					Name:    "Test",
+					Token:   testMinerToken,
+					URL:     testMinerURL,
+				},
+			},
+			{
+				"duplicate miner - by id",
+				Miner{
+					MinerID: testMinerID,
+					Name:    "Test123",
+					Token:   testMinerToken,
+					URL:     testMinerURL,
+				},
+			},
+			{
+				"missing miner name",
+				Miner{
+					MinerID: testMinerID,
+					Name:    "",
+					Token:   testMinerToken,
+					URL:     testMinerURL,
+				},
+			},
+			{
+				"missing miner url",
+				Miner{
+					MinerID: testMinerID,
+					Name:    "TestURL",
+					Token:   testMinerToken,
+					URL:     "",
+				},
+			},
 		}
-	}
+
+		// Run tests
+		client := newTestClient(&mockHTTPDefaultClient{})
+
+		// Add a miner to start
+		err := client.AddMiner(Miner{MinerID: testMinerID, Name: "Test", URL: testMinerURL})
+		assert.NoError(t, err)
+
+		for _, test := range tests {
+			t.Run(test.testCase, func(t *testing.T) {
+				err = client.AddMiner(test.inputMiner)
+				assert.Error(t, err)
+			})
+		}
+	})
 }
 
 // ExampleClient_AddMiner example using AddMiner()
@@ -324,29 +304,35 @@ func BenchmarkClient_AddMiner(b *testing.B) {
 func TestClient_MinerByName(t *testing.T) {
 	t.Parallel()
 
-	client := newTestClient(&mockHTTPDefaultClient{})
+	t.Run("get valid miner", func(t *testing.T) {
+		client := newTestClient(&mockHTTPDefaultClient{})
 
-	// Add a valid miner
-	err := client.AddMiner(Miner{
-		Name: testMinerName,
-		URL:  testMinerURL,
+		// Add a valid miner
+		err := client.AddMiner(Miner{
+			Name: testMinerName,
+			URL:  testMinerURL,
+		})
+		assert.NoError(t, err)
+
+		// Get valid miner
+		miner := client.MinerByName(testMinerName)
+		assert.NotNil(t, miner)
 	})
-	if err != nil {
-		t.Fatalf("error occurred: %s", err.Error())
-	}
 
-	// Get valid miner
-	miner := client.MinerByName(testMinerName)
-	if miner == nil {
-		t.Fatalf("expected miner to not be nil using: %s", testMinerName)
-	}
+	t.Run("get invalid miner", func(t *testing.T) {
+		client := newTestClient(&mockHTTPDefaultClient{})
 
-	// Get invalid miner
-	miner = client.MinerByName("Unknown")
-	if miner != nil {
-		t.Fatalf("expected miner to be nil but got: %v", miner)
-	}
+		// Add a valid miner
+		err := client.AddMiner(Miner{
+			Name: testMinerName,
+			URL:  testMinerURL,
+		})
+		assert.NoError(t, err)
 
+		// Get invalid miner
+		miner := client.MinerByName("Unknown")
+		assert.Nil(t, miner)
+	})
 }
 
 // ExampleClient_MinerByName example using MinerByName()
@@ -381,29 +367,37 @@ func BenchmarkClient_MinerByName(b *testing.B) {
 func TestClient_MinerByID(t *testing.T) {
 	t.Parallel()
 
-	client := newTestClient(&mockHTTPDefaultClient{})
+	t.Run("get valid miner", func(t *testing.T) {
+		client := newTestClient(&mockHTTPDefaultClient{})
 
-	// Add a valid miner
-	err := client.AddMiner(Miner{
-		Name:    testMinerName,
-		MinerID: testMinerID,
-		URL:     testMinerURL,
+		// Add a valid miner
+		err := client.AddMiner(Miner{
+			Name:    testMinerName,
+			MinerID: testMinerID,
+			URL:     testMinerURL,
+		})
+		assert.NoError(t, err)
+
+		// Get valid miner
+		miner := client.MinerByID(testMinerID)
+		assert.NotNil(t, miner)
 	})
-	if err != nil {
-		t.Fatalf("error occurred: %s", err.Error())
-	}
 
-	// Get valid miner
-	miner := client.MinerByID(testMinerID)
-	if miner == nil {
-		t.Fatalf("expected miner to not be nil using: %s", testMinerID)
-	}
+	t.Run("get invalid miner", func(t *testing.T) {
+		client := newTestClient(&mockHTTPDefaultClient{})
 
-	// Get invalid miner
-	miner = client.MinerByID("00000")
-	if miner != nil {
-		t.Fatalf("expected miner to be nil but got: %v", miner)
-	}
+		// Add a valid miner
+		err := client.AddMiner(Miner{
+			Name:    testMinerName,
+			MinerID: testMinerID,
+			URL:     testMinerURL,
+		})
+		assert.NoError(t, err)
+
+		// Get invalid miner
+		miner := client.MinerByID("00000")
+		assert.Nil(t, miner)
+	})
 }
 
 // ExampleClient_MinerByID example using MinerByID()
@@ -438,32 +432,42 @@ func BenchmarkClient_MinerByID(b *testing.B) {
 func TestClient_MinerUpdateToken(t *testing.T) {
 	t.Parallel()
 
-	client := newTestClient(&mockHTTPDefaultClient{})
+	t.Run("update valid miner", func(t *testing.T) {
+		client := newTestClient(&mockHTTPDefaultClient{})
 
-	// Add a valid miner
-	err := client.AddMiner(Miner{
-		Name:    testMinerName,
-		MinerID: testMinerID,
-		Token:   testMinerToken,
-		URL:     testMinerURL,
+		// Add a valid miner
+		err := client.AddMiner(Miner{
+			Name:    testMinerName,
+			MinerID: testMinerID,
+			Token:   testMinerToken,
+			URL:     testMinerURL,
+		})
+		assert.NoError(t, err)
+
+		// Update a valid miner token
+		client.MinerUpdateToken(testMinerName, "99999")
+
+		// Get valid miner
+		miner := client.MinerByID(testMinerID)
+		assert.NotNil(t, miner)
+		assert.Equal(t, "99999", miner.Token)
 	})
-	if err != nil {
-		t.Fatalf("error occurred: %s", err.Error())
-	}
 
-	// Update a valid miner token
-	client.MinerUpdateToken(testMinerName, "99999")
+	t.Run("update unknown miner", func(t *testing.T) {
+		client := newTestClient(&mockHTTPDefaultClient{})
 
-	// Get valid miner
-	miner := client.MinerByID(testMinerID)
-	if miner == nil {
-		t.Fatalf("expected miner to not be nil using: %s", testMinerID)
-	} else if miner.Token != "99999" {
-		t.Fatalf("failed to update token to %s got: %s", "99999", miner.Token)
-	}
+		// Add a valid miner
+		err := client.AddMiner(Miner{
+			Name:    testMinerName,
+			MinerID: testMinerID,
+			Token:   testMinerToken,
+			URL:     testMinerURL,
+		})
+		assert.NoError(t, err)
 
-	// Update a invalid miner token
-	client.MinerUpdateToken("Unknown", "99999")
+		// Update a invalid miner token
+		client.MinerUpdateToken("Unknown", "99999")
+	})
 }
 
 // ExampleClient_MinerUpdateToken example using MinerUpdateToken()

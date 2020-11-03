@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // mockHTTPValidFastestQuote for mocking requests
@@ -53,77 +55,44 @@ func (m *mockHTTPValidFastestQuote) Do(req *http.Request) (*http.Response, error
 func TestClient_FastestQuote(t *testing.T) {
 	t.Parallel()
 
-	// Create a client
-	client := newTestClient(&mockHTTPValidFastestQuote{})
+	t.Run("get a valid fastest quote", func(t *testing.T) {
+		// Create a client
+		client := newTestClient(&mockHTTPValidFastestQuote{})
 
-	// Create a req
-	response, err := client.FastestQuote()
-	if err != nil {
-		t.Fatalf("error occurred: %s", err.Error())
-	} else if response == nil {
-		t.Fatalf("expected response to not be nil")
-	}
+		// Create a req
+		response, err := client.FastestQuote()
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
 
-	// Check returned values
-	if response.Encoding != testEncoding {
-		t.Fatalf("expected response.Encoding to be %s, got %s", testEncoding, response.Encoding)
-	}
-	if response.MimeType != testMimeType {
-		t.Fatalf("expected response.MimeType to be %s, got %s", testMimeType, response.MimeType)
-	}
+		// Check returned values
+		assert.Equal(t, testEncoding, response.Encoding)
+		assert.Equal(t, testMimeType, response.MimeType)
 
-	// Check that we got fees
-	if len(response.Quote.Fees) != 2 {
-		t.Fatalf("expected response.Quote.Fees to be a length of %d, got %d", 2, len(response.Quote.Fees))
-	}
-}
+		// Check that we got fees
+		assert.Equal(t, 2, len(response.Quote.Fees))
+	})
 
-// TestClient_FastestQuoteHTTPError tests the method FastestQuote()
-func TestClient_FastestQuoteHTTPError(t *testing.T) {
-	t.Parallel()
+	t.Run("http error", func(t *testing.T) {
+		client := newTestClient(&mockHTTPError{})
+		response, err := client.FastestQuote()
+		assert.Error(t, err)
+		assert.Nil(t, response)
+	})
 
-	// Create a client
-	client := newTestClient(&mockHTTPError{})
+	t.Run("bad request", func(t *testing.T) {
+		client := newTestClient(&mockHTTPBadRequest{})
+		response, err := client.FastestQuote()
+		assert.Error(t, err)
+		assert.Nil(t, response)
+	})
 
-	// Create a req
-	response, err := client.FastestQuote()
-	if err == nil {
-		t.Fatalf("error should have occurred")
-	} else if response != nil {
-		t.Fatalf("expected response to be nil")
-	}
-}
+	t.Run("invalid JSON", func(t *testing.T) {
+		client := newTestClient(&mockHTTPInvalidJSON{})
+		response, err := client.FastestQuote()
+		assert.Error(t, err)
+		assert.Nil(t, response)
+	})
 
-// TestClient_FastestQuoteBadRequest tests the method FastestQuote()
-func TestClient_FastestQuoteBadRequest(t *testing.T) {
-	t.Parallel()
-
-	// Create a client
-	client := newTestClient(&mockHTTPBadRequest{})
-
-	// Create a req
-	response, err := client.FastestQuote()
-	if err == nil {
-		t.Fatalf("error should have occurred")
-	} else if response != nil {
-		t.Fatalf("expected response to be nil")
-	}
-}
-
-// TestClient_FastestQuoteInvalidJSON tests the method FastestQuote()
-func TestClient_FastestQuoteInvalidJSON(t *testing.T) {
-	t.Parallel()
-
-	// Create a client
-	client := newTestClient(&mockHTTPInvalidJSON{})
-
-	// Create a req
-	response, err := client.FastestQuote()
-	if err == nil {
-		t.Fatalf("error should have occurred")
-	} else if response != nil {
-		t.Fatalf("expected response to be nil")
-	}
 }
 
 // ExampleClient_FastestQuote example using FastestQuote()
