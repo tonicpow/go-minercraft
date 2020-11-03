@@ -7,6 +7,13 @@ import (
 	"net/http"
 )
 
+// Results
+const QueryTransactionSuccess = "success"
+const QueryTransactionFailure = "failure"
+
+// Result descriptions
+const QueryTransactionInMempoolFailure = "Transaction in mempool but not yet in block"
+
 /*
 Example query tx response from Merchant API:
 
