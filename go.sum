@@ -1,7 +1,7 @@
 github.com/DataDog/datadog-go v3.7.1+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
 github.com/afex/hystrix-go v0.0.0-20180209013831-27fae8d30f1a/go.mod h1:SkGFH1ia65gfNATL8TAiHDNxPzPdmEL5uirI2Uyuz6c=
-github.com/bitcoinschema/go-bitcoin v0.2.13 h1:8c1gvkIKx8ZrZiQjaESPkSbkDTAWNf/8PyTYnhhnwJI=
-github.com/bitcoinschema/go-bitcoin v0.2.13/go.mod h1:ry5msjygxaPU7Wsd9YVn857z7iHepTQZacyNrDmd/+w=
+github.com/bitcoinschema/go-bitcoin v0.2.26 h1:Q4peTwqsAV9uA7Y8jGGuKSnjZMLV7Daa5bLf1pf0VVY=
+github.com/bitcoinschema/go-bitcoin v0.2.26/go.mod h1:j7Fw/tNdIM6+IIWhUldgYRXTWPOROhs/rAspvluuaNA=
 github.com/bitcoinsv/bsvd v0.0.0-20190609155523-4c29707f7173 h1:2yTIV9u7H0BhRDGXH5xrAwAz7XibWJtX2dNezMeNsUo=
 github.com/bitcoinsv/bsvd v0.0.0-20190609155523-4c29707f7173/go.mod h1:BZ1UcC9+tmcDEcdVXgpt13hMczwJxWzpAn68wNs7zRA=
 github.com/bitcoinsv/bsvlog v0.0.0-20181216181007-cb81b076bf2e h1:6f+gRvaPE/4h0g39dqTNPr9/P4mikw0aB+dhiExaWN8=
@@ -20,9 +20,6 @@ github.com/gojektech/valkyrie v0.0.0-20180215180059-6aee720afcdf/go.mod h1:tDYRk
 github.com/gojektech/valkyrie v0.0.0-20190210220504-8f62c1e7ba45 h1:MO2DsGCZz8phRhLnpFvHEQgTH521sVN/6F2GZTbNO3Q=
 github.com/gojektech/valkyrie v0.0.0-20190210220504-8f62c1e7ba45/go.mod h1:tDYRk1s5Pms6XJjj5m2PxAzmQvaDU8GqDf1u6x7yxKw=
 github.com/gopherjs/gopherjs v0.0.0-20181103185306-d547d1d9531e/go.mod h1:wJfORRmW1u3UXTncJ5qlYoELFm8eSnnEO6hX4iZ3EWY=
-github.com/itchyny/base58-go v0.1.0 h1:zF5spLDo956exUAD17o+7GamZTRkXOZlqJjRciZwd1I=
-github.com/itchyny/base58-go v0.1.0/go.mod h1:SrMWPE3DFuJJp1M/RUhu4fccp/y9AlB8AL3o3duPToU=
-github.com/jessevdk/go-flags v1.4.0/go.mod h1:4FA24M0QyGHXBuZZK/XkWh8h0e1EYbRYJSGM75WSRxI=
 github.com/jtolds/gls v4.2.1+incompatible/go.mod h1:QJZ7F/aHp+rZTRtaJ1ow/lLfFfVYBRgL+9YlvaHOwJU=
 github.com/libsv/libsv v0.0.11 h1:tb2w/RFpsZLEfPNDGl4tlwk3haMSXYXKspta16+nyv4=
 github.com/libsv/libsv v0.0.11/go.mod h1:jhXD2sLtYUNMWoD9mWmsQN0hoGZUK1wCvindT1Odijo=
