@@ -2,6 +2,7 @@ package minercraft
 
 import (
 	"context"
+	"errors"
 	"sync"
 )
 
@@ -13,6 +14,9 @@ func (c *Client) FastestQuote() (*FeeQuoteResponse, error) {
 
 	// Get the fastest quote
 	result := c.fetchFastestQuote()
+	if result == nil {
+		return nil, errors.New("no quotes found")
+	}
 
 	// Check for error?
 	if result.Response.Error != nil {
@@ -45,7 +49,10 @@ func (c *Client) fetchFastestQuote() *internalResult {
 		wg.Add(1)
 		go func(ctx context.Context, client *Client, miner *Miner) {
 			defer wg.Done()
-			resultsChannel <- getQuote(ctx, client, miner)
+			res := getQuote(ctx, client, miner)
+			if res.Response.Error == nil {
+				resultsChannel <- res
+			}
 		}(ctx, c, miner)
 	}
 
