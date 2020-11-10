@@ -1,7 +1,6 @@
 package minercraft
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net"
@@ -126,9 +125,6 @@ func NewClient(clientOptions *ClientOptions, customHTTPClient *http.Client) (cli
 
 	// Create the new client
 	client = createClient(clientOptions, customHTTPClient)
-
-	// Load all known miners
-	err = json.Unmarshal([]byte(KnownMiners), &client.Miners)
 
 	return
 }
