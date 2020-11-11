@@ -62,7 +62,7 @@ func httpRequest(ctx context.Context, client *Client, payload *httpPayload) (res
 
 	// Set a token if supplied
 	if len(payload.Token) > 0 {
-		request.Header.Set("token", payload.Token)
+		request.Header.Set("Authorization", payload.Token)
 	}
 
 	// Fire the http request
