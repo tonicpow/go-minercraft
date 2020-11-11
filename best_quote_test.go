@@ -82,10 +82,76 @@ func (m *mockHTTPBadRate) Do(req *http.Request) (*http.Response, error) {
 	}
 
 	if req.URL.String() == defaultProtocol+"www.ddpurse.com/openapi/mapi/feeQuote" {
+		resp.StatusCode = http.StatusBadRequest
+		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(``)))
+	}
+
+	// Default is valid
+	return resp, nil
+}
+
+// mockHTTPBestQuoteTwoFailed for mocking requests
+type mockHTTPBestQuoteTwoFailed struct{}
+
+// Do is a mock http request
+func (m *mockHTTPBestQuoteTwoFailed) Do(req *http.Request) (*http.Response, error) {
+	resp := new(http.Response)
+	resp.StatusCode = http.StatusBadRequest
+
+	// No req found
+	if req == nil {
+		return resp, fmt.Errorf("missing request")
+	}
+
+	// Valid response
+	if req.URL.String() == defaultProtocol+"merchantapi.taal.com/mapi/feeQuote" {
+		resp.StatusCode = http.StatusBadRequest
+		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(``)))
+	}
+
+	if req.URL.String() == defaultProtocol+"merchantapi.matterpool.io/mapi/feeQuote" {
+		resp.StatusCode = http.StatusBadRequest
+		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(``)))
+	}
+
+	if req.URL.String() == defaultProtocol+"www.ddpurse.com/openapi/mapi/feeQuote" {
 		resp.StatusCode = http.StatusOK
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
-    	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T22:09:04.433Z\",\"expiryTime\":\"2020-10-09T22:19:04.433Z\",\"minerId\":null,\"currentHighestBlockHash\":\"0000000000000000028285a9168c95457521a743765f499de389c094e883f42a\",\"currentHighestBlockHeight\":656171,\"minerReputation\":null,\"fees\":[{\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":350,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}},{\"feeType\":\"data\",\"miningFee\":{\"satoshis\":430,\"bytes\":1000},\"relayFee\":{\"satoshis\":175,\"bytes\":1000}}]}",
+    	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T22:09:04.433Z\",\"expiryTime\":\"2020-10-09T22:19:04.433Z\",\"minerId\":null,\"currentHighestBlockHash\":\"0000000000000000028285a9168c95457521a743765f499de389c094e883f42a\",\"currentHighestBlockHeight\":656171,\"minerReputation\":null,\"fees\":[{\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}},{\"feeType\":\"data\",\"miningFee\":{\"satoshis\":420,\"bytes\":1000},\"relayFee\":{\"satoshis\":150,\"bytes\":1000}}]}",
     	"signature": null,"publicKey": null,"encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+	}
+
+	// Default is valid
+	return resp, nil
+}
+
+// mockHTTPBestQuoteAllFailed for mocking requests
+type mockHTTPBestQuoteAllFailed struct{}
+
+// Do is a mock http request
+func (m *mockHTTPBestQuoteAllFailed) Do(req *http.Request) (*http.Response, error) {
+	resp := new(http.Response)
+	resp.StatusCode = http.StatusBadRequest
+
+	// No req found
+	if req == nil {
+		return resp, fmt.Errorf("missing request")
+	}
+
+	// Valid response
+	if req.URL.String() == defaultProtocol+"merchantapi.taal.com/mapi/feeQuote" {
+		resp.StatusCode = http.StatusBadRequest
+		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(``)))
+	}
+
+	if req.URL.String() == defaultProtocol+"merchantapi.matterpool.io/mapi/feeQuote" {
+		resp.StatusCode = http.StatusBadRequest
+		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(``)))
+	}
+
+	if req.URL.String() == defaultProtocol+"www.ddpurse.com/openapi/mapi/feeQuote" {
+		resp.StatusCode = http.StatusBadRequest
+		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(``)))
 	}
 
 	// Default is valid
@@ -169,6 +235,36 @@ func TestClient_BestQuote(t *testing.T) {
 	t.Run("bad rate", func(t *testing.T) {
 		client := newTestClient(&mockHTTPBadRate{})
 		response, err := client.BestQuote(FeeCategoryRelay, FeeTypeData)
+		assert.Error(t, err)
+		assert.Nil(t, response)
+	})
+
+	t.Run("best quote - two failed", func(t *testing.T) {
+
+		// Create a client
+		client := newTestClient(&mockHTTPBestQuoteTwoFailed{})
+
+		// Create a req
+		response, err := client.BestQuote(FeeCategoryMining, FeeTypeData)
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
+
+		// Check returned values
+		assert.Equal(t, testEncoding, response.Encoding)
+		assert.Equal(t, testMimeType, response.MimeType)
+
+		// Check that we got fees
+		assert.Equal(t, 2, len(response.Quote.Fees))
+		assert.Equal(t, MinerMempool, response.Miner.Name)
+	})
+
+	t.Run("best quote - all failed", func(t *testing.T) {
+
+		// Create a client
+		client := newTestClient(&mockHTTPBestQuoteAllFailed{})
+
+		// Create a req
+		response, err := client.BestQuote(FeeCategoryMining, FeeTypeData)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})

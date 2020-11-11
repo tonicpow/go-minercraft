@@ -38,29 +38,38 @@ func (c *Client) BestQuote(feeCategory, feeType string) (*FeeQuoteResponse, erro
 
 	// Loop the results of the channel
 	var testRate uint64
+	var quoteFound bool
+	var lastErr error
 	for result := range resultsChannel {
 
 		// Check for error?
 		if result.Response.Error != nil {
-			return nil, result.Response.Error
+			lastErr = result.Response.Error
+			continue
 		}
 
 		// Parse the response
-		quote, err := result.parseQuote()
-		if err != nil {
-			return nil, err
+		var quote FeeQuoteResponse
+		if quote, lastErr = result.parseQuote(); lastErr != nil {
+			continue
 		}
 
 		// Get a test rate
-		if testRate, err = quote.Quote.CalculateFee(feeCategory, feeType, 1000); err != nil {
-			return nil, err
+		if testRate, lastErr = quote.Quote.CalculateFee(feeCategory, feeType, 1000); lastErr != nil {
+			continue
 		}
 
-		// Never set (or better)
+		// (Never set) || (or better than previous rate)
+		quoteFound = true
 		if bestRate == 0 || testRate < bestRate {
 			bestRate = testRate
 			bestQuote = quote
 		}
+	}
+
+	// No quotes?
+	if !quoteFound && lastErr != nil {
+		return nil, lastErr
 	}
 
 	// Return the best quote found

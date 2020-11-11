@@ -143,7 +143,7 @@ func TestClient_FastestQuote(t *testing.T) {
 
 		// Check that we got fees
 		assert.Equal(t, 2, len(response.Quote.Fees))
-		assert.Equal(t, response.Miner.Name, MinerMempool)
+		assert.Equal(t, MinerMempool, response.Miner.Name)
 	})
 
 }
