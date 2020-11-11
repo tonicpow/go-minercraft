@@ -1,7 +1,7 @@
 github.com/DataDog/datadog-go v3.7.1+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
 github.com/afex/hystrix-go v0.0.0-20180209013831-27fae8d30f1a/go.mod h1:SkGFH1ia65gfNATL8TAiHDNxPzPdmEL5uirI2Uyuz6c=
-github.com/bitcoinschema/go-bitcoin v0.2.27 h1:ySg9azGbkFoDDGpXPe9N9RvCX3qRZZBslC0bAOmyuNs=
-github.com/bitcoinschema/go-bitcoin v0.2.27/go.mod h1:j7Fw/tNdIM6+IIWhUldgYRXTWPOROhs/rAspvluuaNA=
+github.com/bitcoinschema/go-bitcoin v0.2.28 h1:iSCNH2GIPiWqI+1N3oEFsF4ar9RQdW6Gids8sQOB604=
+github.com/bitcoinschema/go-bitcoin v0.2.28/go.mod h1:j7Fw/tNdIM6+IIWhUldgYRXTWPOROhs/rAspvluuaNA=
 github.com/bitcoinsv/bsvd v0.0.0-20190609155523-4c29707f7173 h1:2yTIV9u7H0BhRDGXH5xrAwAz7XibWJtX2dNezMeNsUo=
 github.com/bitcoinsv/bsvd v0.0.0-20190609155523-4c29707f7173/go.mod h1:BZ1UcC9+tmcDEcdVXgpt13hMczwJxWzpAn68wNs7zRA=
 github.com/bitcoinsv/bsvlog v0.0.0-20181216181007-cb81b076bf2e h1:6f+gRvaPE/4h0g39dqTNPr9/P4mikw0aB+dhiExaWN8=
