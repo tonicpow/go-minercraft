@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+
+	mapi "github.com/bitcoin-sv/merchantapi-reference/utils"
 )
 
 const (
@@ -91,7 +93,7 @@ type FeePayload struct {
 	CurrentHighestBlockHash   string      `json:"currentHighestBlockHash"`
 	CurrentHighestBlockHeight uint64      `json:"currentHighestBlockHeight"`
 	MinerReputation           interface{} `json:"minerReputation"` // Not sure what this value is
-	Fees                      []*feeType  `json:"fees"`
+	Fees                      []*mapi.Fee `json:"fees"`
 }
 
 // CalculateFee will return the fee for the given txBytes
@@ -121,9 +123,9 @@ func (f *FeePayload) CalculateFee(feeCategory, feeType string, txBytes uint64) (
 		// Multiply & Divide
 		var calcFee uint64
 		if strings.EqualFold(feeCategory, FeeCategoryMining) {
-			calcFee = (fee.MiningFee.Satoshis * txBytes) / fee.MiningFee.Bytes
+			calcFee = (uint64(fee.MiningFee.Satoshis) * txBytes) / uint64(fee.MiningFee.Bytes)
 		} else {
-			calcFee = (fee.RelayFee.Satoshis * txBytes) / fee.RelayFee.Bytes
+			calcFee = (uint64(fee.RelayFee.Satoshis) * txBytes) / uint64(fee.RelayFee.Bytes)
 		}
 
 		// Check for zero
@@ -137,34 +139,6 @@ func (f *FeePayload) CalculateFee(feeCategory, feeType string, txBytes uint64) (
 
 	// No fee type found in the slice of fees
 	return 1, fmt.Errorf("feeType %s is not found in fees", feeType)
-}
-
-/*
-Example FeePayload.Fees type:
-{
-  "feeType": "standard",
-  "miningFee": {
-	"satoshis": 500,
-	"bytes": 1000
-  },
-  "relayFee": {
-	"satoshis": 250,
-	"bytes": 1000
-  }
-}
-*/
-
-// feeType is the the corresponding type of fee (standard or data)
-type feeType struct {
-	FeeType   string     `json:"feeType"`
-	MiningFee *feeAmount `json:"miningFee"`
-	RelayFee  *feeAmount `json:"relayFee"`
-}
-
-// feeAmount is the actual fee for the given feeType
-type feeAmount struct {
-	Bytes    uint64 `json:"bytes"`
-	Satoshis uint64 `json:"satoshis"`
 }
 
 // FeeQuote will fire a Merchant API request to retrieve the fees from a given miner
