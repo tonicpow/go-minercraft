@@ -49,7 +49,8 @@ View documentation on hosting your own [mAPI server](https://github.com/bitcoin-
 - Custom Features:
   - [Client](client.go) is completely configurable
   - Using default [heimdall http client](https://github.com/gojektech/heimdall) with exponential backoff & more
-  - Use your own HTTP client
+  - Use your own [HTTP client](client.go)
+  - Uses common type: [`mAPI.Fee`](https://github.com/bitcoin-sv/merchantapi-reference/blob/35ba2d395acc632eed1bd528ab524aeafad8bd40/utils/types.go#L32) for easy integration across projects 
   - Current miner information located at `response.Miner.name` and [defaults](config.go)
   - Automatic Signature Validation `response.Validated=true/false`
   - `AddMiner()` for adding your own customer miner configuration
@@ -79,31 +80,31 @@ make help
 
 List of all current commands:
 ```text
-all                    Runs lint, test and vet
-clean                  Remove previous builds and any test cache data
-clean-mods             Remove all the Go mod cache
-coverage               Shows the test coverage
-godocs                 Sync the latest tag with GoDocs
-help                   Show this help message
-install                Install the application
-install-go             Install the application (Using Native Go)
-lint                   Run the golangci-lint application (install if not found)
-release                Full production release (creates release in Github)
-release                Runs common.release then runs godocs
-release-snap           Test the full release (build binaries)
-release-test           Full production test release (everything except deploy)
-replace-version        Replaces the version in HTML/JS (pre-deploy)
-run-examples           Runs the basic example
-tag                    Generate a new tag and push (tag version=0.0.0)
-tag-remove             Remove a tag if found (tag-remove version=0.0.0)
-tag-update             Update an existing tag to current commit (tag-update version=0.0.0)
-test                   Runs vet, lint and ALL tests
-test-short             Runs vet, lint and tests (excludes integration tests)
-test-travis            Runs all tests via Travis (also exports coverage)
-test-travis-short      Runs unit tests via Travis (also exports coverage)
-uninstall              Uninstall the application (and remove files)
-update-linter          Update the golangci-lint package (macOS only)
-vet                    Run the Go vet application
+all                      Runs multiple commands
+clean                    Remove previous builds and any test cache data
+clean-mods               Remove all the Go mod cache
+coverage                 Shows the test coverage
+godocs                   Sync the latest tag with GoDocs
+help                     Show this help message
+install                  Install the application
+install-go               Install the application (Using Native Go)
+lint                     Run the golangci-lint application (install if not found)
+release                  Full production release (creates release in Github)
+release                  Runs common.release then runs godocs
+release-snap             Test the full release (build binaries)
+release-test             Full production test release (everything except deploy)
+replace-version          Replaces the version in HTML/JS (pre-deploy)
+tag                      Generate a new tag and push (tag version=0.0.0)
+tag-remove               Remove a tag if found (tag-remove version=0.0.0)
+tag-update               Update an existing tag to current commit (tag-update version=0.0.0)
+test                     Runs vet, lint and ALL tests
+test-short               Runs vet, lint and tests (excludes integration tests)
+test-travis              Runs all tests via Travis (also exports coverage)
+test-travis-no-race      Runs all tests (no race) (also exports coverage)
+test-travis-short        Runs unit tests via Travis (also exports coverage)
+uninstall                Uninstall the application (and remove files)
+update-linter            Update the golangci-lint package (macOS only)
+vet                      Run the Go vet application
 ```
 </details>
 
