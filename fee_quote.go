@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	mapi "github.com/bitcoin-sv/merchantapi-reference/utils"
+	"github.com/libsv/go-bt"
 )
 
 const (
@@ -93,7 +93,7 @@ type FeePayload struct {
 	CurrentHighestBlockHash   string      `json:"currentHighestBlockHash"`
 	CurrentHighestBlockHeight uint64      `json:"currentHighestBlockHeight"`
 	MinerReputation           interface{} `json:"minerReputation"` // Not sure what this value is
-	Fees                      []*mapi.Fee `json:"fees"`
+	Fees                      []*bt.Fee   `json:"fees"`
 }
 
 // CalculateFee will return the fee for the given txBytes
