@@ -28,7 +28,8 @@ type httpPayload struct {
 }
 
 // httpRequest is a generic request wrapper that can be used without constraints
-func httpRequest(ctx context.Context, client *Client, payload *httpPayload) (response *RequestResponse) {
+func httpRequest(ctx context.Context, client *Client,
+	payload *httpPayload) (response *RequestResponse) {
 
 	// Set reader
 	var bodyReader io.Reader
@@ -48,7 +49,9 @@ func httpRequest(ctx context.Context, client *Client, payload *httpPayload) (res
 
 	// Start the request
 	var request *http.Request
-	if request, response.Error = http.NewRequestWithContext(ctx, payload.Method, payload.URL, bodyReader); response.Error != nil {
+	if request, response.Error = http.NewRequestWithContext(
+		ctx, payload.Method, payload.URL, bodyReader,
+	); response.Error != nil {
 		return
 	}
 
@@ -84,7 +87,10 @@ func httpRequest(ctx context.Context, client *Client, payload *httpPayload) (res
 
 	// Check status code
 	if http.StatusOK != resp.StatusCode {
-		response.Error = fmt.Errorf("status code: %d does not match %d", resp.StatusCode, http.StatusOK)
+		response.Error = fmt.Errorf(
+			"status code: %d does not match %d",
+			resp.StatusCode, http.StatusOK,
+		)
 		return
 	}
 
