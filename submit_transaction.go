@@ -137,7 +137,7 @@ func submitTransaction(ctx context.Context, client *Client, miner *Miner, tx *Tr
 	data, _ := json.Marshal(tx) // Ignoring error - if it fails, the submission would also fail
 	result.Response = httpRequest(ctx, client, &httpPayload{
 		Method: http.MethodPost,
-		URL:    defaultProtocol + miner.URL + routeSubmitTx,
+		URL:    miner.URL + routeSubmitTx,
 		Token:  miner.Token,
 		Data:   data,
 	})

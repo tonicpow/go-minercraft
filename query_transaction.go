@@ -123,7 +123,7 @@ func queryTransaction(ctx context.Context, client *Client, miner *Miner, txHash 
 	result = &internalResult{Miner: miner}
 	result.Response = httpRequest(ctx, client, &httpPayload{
 		Method: http.MethodGet,
-		URL:    defaultProtocol + miner.URL + routeQueryTx + txHash,
+		URL:    miner.URL + routeQueryTx + txHash,
 		Token:  miner.Token,
 	})
 	return
