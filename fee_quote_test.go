@@ -178,6 +178,12 @@ func (m *mockHTTPInvalidSignature) Do(req *http.Request) (*http.Response, error)
 // mockHTTPBetterRate for mocking requests
 type mockHTTPBetterRate struct{}
 
+const (
+	feeQuoteURLMatterPool = "https://merchantapi.matterpool.io/mapi/feeQuote"
+	feeQuoteURLMempool    = "https://www.ddpurse.com/openapi/mapi/feeQuote"
+	feeQuoteURLTaal       = "https://merchantapi.taal.com/mapi/feeQuote"
+)
+
 // Do is a mock http request
 func (m *mockHTTPBetterRate) Do(req *http.Request) (*http.Response, error) {
 	resp := new(http.Response)
@@ -189,7 +195,7 @@ func (m *mockHTTPBetterRate) Do(req *http.Request) (*http.Response, error) {
 	}
 
 	// Valid response
-	if req.URL.String() == defaultProtocol+"merchantapi.taal.com/mapi/feeQuote" {
+	if req.URL.String() == feeQuoteURLTaal {
 		resp.StatusCode = http.StatusOK
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
     	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T21:26:17.410Z\",\"expiryTime\":\"2020-10-09T21:36:17.410Z\",\"minerId\":\"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270\",\"currentHighestBlockHash\":\"0000000000000000035c5f8c0294802a01e500fa7b95337963bb3640da3bd565\",\"currentHighestBlockHeight\":656169,\"minerReputation\":null,\"fees\":[{\"id\":1,\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":475,\"bytes\":1000},\"relayFee\":{\"satoshis\":150,\"bytes\":1000}},{\"id\":2,\"feeType\":\"data\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}}]}",
@@ -197,7 +203,7 @@ func (m *mockHTTPBetterRate) Do(req *http.Request) (*http.Response, error) {
     	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
 	}
 
-	if req.URL.String() == defaultProtocol+"merchantapi.matterpool.io/mapi/feeQuote" {
+	if req.URL.String() == feeQuoteURLMatterPool {
 		resp.StatusCode = http.StatusOK
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
     	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T22:08:26.236Z\",\"expiryTime\":\"2020-10-09T22:18:26.236Z\",\"minerId\":\"0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087\",\"currentHighestBlockHash\":\"0000000000000000028285a9168c95457521a743765f499de389c094e883f42a\",\"currentHighestBlockHeight\":656171,\"minerReputation\":null,\"fees\":[{\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":405,\"bytes\":1000},\"relayFee\":{\"satoshis\":100,\"bytes\":1000}},{\"feeType\":\"data\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":100,\"bytes\":1000}}]}",
@@ -205,7 +211,7 @@ func (m *mockHTTPBetterRate) Do(req *http.Request) (*http.Response, error) {
     	"publicKey": "0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
 	}
 
-	if req.URL.String() == defaultProtocol+"www.ddpurse.com/openapi/mapi/feeQuote" {
+	if req.URL.String() == feeQuoteURLMempool {
 		resp.StatusCode = http.StatusOK
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
     	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T22:09:04.433Z\",\"expiryTime\":\"2020-10-09T22:19:04.433Z\",\"minerId\":null,\"currentHighestBlockHash\":\"0000000000000000028285a9168c95457521a743765f499de389c094e883f42a\",\"currentHighestBlockHeight\":656171,\"minerReputation\":null,\"fees\":[{\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":350,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}},{\"feeType\":\"data\",\"miningFee\":{\"satoshis\":430,\"bytes\":1000},\"relayFee\":{\"satoshis\":175,\"bytes\":1000}}]}",

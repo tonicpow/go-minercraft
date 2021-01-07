@@ -202,7 +202,7 @@ func getQuote(ctx context.Context, client *Client, miner *Miner) (result *intern
 	result = &internalResult{Miner: miner}
 	result.Response = httpRequest(ctx, client, &httpPayload{
 		Method: http.MethodGet,
-		URL:    defaultProtocol + miner.URL + routeFeeQuote,
+		URL:    miner.URL + routeFeeQuote,
 		Token:  miner.Token,
 	})
 	return
