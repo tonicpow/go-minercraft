@@ -50,10 +50,12 @@ View documentation on hosting your own [mAPI server](https://github.com/bitcoin-
   - [Client](client.go) is completely configurable
   - Using default [heimdall http client](https://github.com/gojektech/heimdall) with exponential backoff & more
   - Use your own [HTTP client](client.go)
+  - Use your own [miner configuration](client.go)
   - Uses common type: [`bt.Fee`](https://github.com/libsv/go-bt/blob/master/fees.go) for easy integration across projects 
   - Current miner information located at `response.Miner.name` and [defaults](config.go)
   - Automatic Signature Validation `response.Validated=true/false`
   - `AddMiner()` for adding your own customer miner configuration
+  - `RemoveMiner()` for removing any miner configuration
   - `FastestQuote()` asks all miners and returns the fastest quote response
   - `BestQuote()` gets all quotes from miners and return the best rate/quote
   - `CalculateFee()` returns the fee for a given transaction
