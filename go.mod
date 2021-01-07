@@ -10,5 +10,5 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/stretchr/testify v1.6.1
-	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
+	gopkg.in/yaml.v3 v3.0.0-20210106172901-c476de37821d // indirect
 )
