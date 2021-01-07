@@ -18,7 +18,7 @@ const (
 	testMinerID    = "1234567"
 	testMinerName  = "TestMiner"
 	testMinerToken = "0987654321"
-	testMinerURL   = defaultProtocol + "testminer.com"
+	testMinerURL   = "https://testminer.com"
 	testTx         = "7e0c4651fc256c0433bd704d7e13d24c8d10235f4b28ba192849c5d318de974b"
 )
 
@@ -46,7 +46,7 @@ func (m *mockHTTPDefaultClient) Do(req *http.Request) (*http.Response, error) {
 
 // newTestClient returns a client for mocking (using a custom HTTP interface)
 func newTestClient(httpClient httpInterface) *Client {
-	client, _ := NewClient(nil, nil)
+	client, _ := NewClient(nil, nil, nil)
 	client.httpClient = httpClient
 	return client
 }
@@ -56,7 +56,7 @@ func TestNewClient(t *testing.T) {
 	t.Parallel()
 
 	t.Run("valid new client", func(t *testing.T) {
-		client, err := NewClient(nil, nil)
+		client, err := NewClient(nil, nil, nil)
 		assert.NotNil(t, client)
 		assert.NoError(t, err)
 
@@ -65,13 +65,13 @@ func TestNewClient(t *testing.T) {
 	})
 
 	t.Run("custom http client", func(t *testing.T) {
-		client, err := NewClient(nil, http.DefaultClient)
+		client, err := NewClient(nil, http.DefaultClient, nil)
 		assert.NotNil(t, client)
 		assert.NoError(t, err)
 	})
 
 	t.Run("default miners", func(t *testing.T) {
-		client, err := NewClient(nil, http.DefaultClient)
+		client, err := NewClient(nil, nil, nil)
 		assert.NotNil(t, client)
 		assert.NoError(t, err)
 
@@ -87,11 +87,30 @@ func TestNewClient(t *testing.T) {
 		miner = client.MinerByName(MinerMatterpool)
 		assert.Equal(t, MinerMatterpool, miner.Name)
 	})
+
+	t.Run("custom miners", func(t *testing.T) {
+		miners := []*Miner{{
+			MinerID: testMinerID,
+			Name:    testMinerName,
+			Token:   testMinerToken,
+			URL:     testMinerURL,
+		}}
+
+		client, err := NewClient(nil, nil, miners)
+		assert.NotNil(t, client)
+		assert.NoError(t, err)
+
+		// Get test miner
+		miner := client.MinerByName(testMinerName)
+		assert.Equal(t, testMinerName, miner.Name)
+
+		assert.Equal(t, 1, len(client.Miners))
+	})
 }
 
 // ExampleNewClient example using NewClient()
 func ExampleNewClient() {
-	client, err := NewClient(nil, nil)
+	client, err := NewClient(nil, nil, nil)
 	if err != nil {
 		fmt.Printf("error occurred: %s", err.Error())
 		return
@@ -104,7 +123,7 @@ func ExampleNewClient() {
 // BenchmarkNewClient benchmarks the method NewClient()
 func BenchmarkNewClient(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		_, _ = NewClient(nil, nil)
+		_, _ = NewClient(nil, nil, nil)
 	}
 }
 
@@ -133,7 +152,7 @@ func TestDefaultClientOptions(t *testing.T) {
 	t.Run("no retry", func(t *testing.T) {
 		options := DefaultClientOptions()
 		options.RequestRetryCount = 0
-		client, err := NewClient(options, nil)
+		client, err := NewClient(options, nil, nil)
 		assert.NotNil(t, client)
 		assert.NoError(t, err)
 	})
@@ -143,7 +162,7 @@ func TestDefaultClientOptions(t *testing.T) {
 func ExampleDefaultClientOptions() {
 	options := DefaultClientOptions()
 	options.UserAgent = "Custom UserAgent v1.0"
-	client, err := NewClient(options, nil)
+	client, err := NewClient(options, nil, nil)
 	if err != nil {
 		fmt.Printf("error occurred: %s", err.Error())
 		return
@@ -179,21 +198,10 @@ func TestClient_AddMiner(t *testing.T) {
 					MinerID: testMinerID,
 					Name:    "Test",
 					Token:   testMinerToken,
-					URL:     "testminer.com",
+					URL:     "https://testminer.com",
 				},
 				"Test",
-				"testminer.com",
-			},
-			{
-				"valid miner - remove https from url",
-				Miner{
-					MinerID: testMinerID + "2",
-					Name:    "Test2",
-					Token:   testMinerToken,
-					URL:     testMinerURL,
-				},
-				"Test2",
-				"testminer.com",
+				"https://testminer.com",
 			},
 		}
 
@@ -255,6 +263,24 @@ func TestClient_AddMiner(t *testing.T) {
 					URL:     "",
 				},
 			},
+			{
+				"invalid miner url - http",
+				Miner{
+					MinerID: testMinerID,
+					Name:    "TestURL",
+					Token:   testMinerToken,
+					URL:     "www.domain.com",
+				},
+			},
+			{
+				"invalid miner url - trigger parse error",
+				Miner{
+					MinerID: testMinerID,
+					Name:    "TestURL",
+					Token:   testMinerToken,
+					URL:     "postgres://user:abc{DEf1=ghi@example.com:5432/db?sslmode=require",
+				},
+			},
 		}
 
 		// Run tests
@@ -275,7 +301,7 @@ func TestClient_AddMiner(t *testing.T) {
 
 // ExampleClient_AddMiner example using AddMiner()
 func ExampleClient_AddMiner() {
-	client, err := NewClient(nil, nil)
+	client, err := NewClient(nil, nil, nil)
 	if err != nil {
 		fmt.Printf("error occurred: %s", err.Error())
 		return
@@ -294,7 +320,7 @@ func ExampleClient_AddMiner() {
 
 // BenchmarkClient_AddMiner benchmarks the method AddMiner()
 func BenchmarkClient_AddMiner(b *testing.B) {
-	client, _ := NewClient(nil, nil)
+	client, _ := NewClient(nil, nil, nil)
 	for i := 0; i < b.N; i++ {
 		_ = client.AddMiner(Miner{Name: testMinerName, URL: testMinerURL})
 	}
@@ -337,7 +363,7 @@ func TestClient_MinerByName(t *testing.T) {
 
 // ExampleClient_MinerByName example using MinerByName()
 func ExampleClient_MinerByName() {
-	client, err := NewClient(nil, nil)
+	client, err := NewClient(nil, nil, nil)
 	if err != nil {
 		fmt.Printf("error occurred: %s", err.Error())
 		return
@@ -356,7 +382,7 @@ func ExampleClient_MinerByName() {
 
 // BenchmarkClient_MinerByName benchmarks the method MinerByName()
 func BenchmarkClient_MinerByName(b *testing.B) {
-	client, _ := NewClient(nil, nil)
+	client, _ := NewClient(nil, nil, nil)
 	_ = client.AddMiner(Miner{Name: testMinerName, URL: testMinerURL})
 	for i := 0; i < b.N; i++ {
 		_ = client.MinerByName(testMinerName)
@@ -402,7 +428,7 @@ func TestClient_MinerByID(t *testing.T) {
 
 // ExampleClient_MinerByID example using MinerByID()
 func ExampleClient_MinerByID() {
-	client, err := NewClient(nil, nil)
+	client, err := NewClient(nil, nil, nil)
 	if err != nil {
 		fmt.Printf("error occurred: %s", err.Error())
 		return
@@ -421,7 +447,7 @@ func ExampleClient_MinerByID() {
 
 // BenchmarkClient_MinerByID benchmarks the method MinerByID()
 func BenchmarkClient_MinerByID(b *testing.B) {
-	client, _ := NewClient(nil, nil)
+	client, _ := NewClient(nil, nil, nil)
 	_ = client.AddMiner(Miner{Name: testMinerName, MinerID: testMinerID, URL: testMinerURL})
 	for i := 0; i < b.N; i++ {
 		_ = client.MinerByID(testMinerID)
@@ -472,7 +498,7 @@ func TestClient_MinerUpdateToken(t *testing.T) {
 
 // ExampleClient_MinerUpdateToken example using MinerUpdateToken()
 func ExampleClient_MinerUpdateToken() {
-	client, err := NewClient(nil, nil)
+	client, err := NewClient(nil, nil, nil)
 	if err != nil {
 		fmt.Printf("error occurred: %s", err.Error())
 		return
@@ -488,8 +514,76 @@ func ExampleClient_MinerUpdateToken() {
 
 // BenchmarkClient_MinerUpdateToken benchmarks the method MinerUpdateToken()
 func BenchmarkClient_MinerUpdateToken(b *testing.B) {
-	client, _ := NewClient(nil, nil)
+	client, _ := NewClient(nil, nil, nil)
 	for i := 0; i < b.N; i++ {
 		_ = client.MinerByName(MinerTaal)
+	}
+}
+
+// TestClient_RemoveMiner will remove a miner by name or ID
+func TestClient_RemoveMiner(t *testing.T) {
+	t.Parallel()
+
+	t.Run("remove a valid miner", func(t *testing.T) {
+		client := newTestClient(&mockHTTPDefaultClient{})
+
+		// Remove miner
+		removed := client.RemoveMiner(client.MinerByName(MinerTaal))
+		assert.Equal(t, true, removed)
+
+		// Try to get the miner
+		miner := client.MinerByName(MinerTaal)
+		assert.Nil(t, miner)
+	})
+
+	t.Run("remove an invalid miner", func(t *testing.T) {
+		client := newTestClient(&mockHTTPDefaultClient{})
+
+		// Unknown miner
+		dummyMiner := &Miner{
+			MinerID: "dummy",
+			Name:    "dummy",
+			Token:   "dummy",
+			URL:     "https://dummy.com",
+		}
+
+		// Remove miner
+		removed := client.RemoveMiner(dummyMiner)
+		assert.Equal(t, false, removed)
+	})
+
+	t.Run("remove a nil miner", func(t *testing.T) {
+		client := newTestClient(&mockHTTPDefaultClient{})
+
+		// Remove miner
+		assert.Panics(t, func() {
+			removed := client.RemoveMiner(nil)
+			assert.Equal(t, false, removed)
+		})
+	})
+}
+
+// ExampleClient_MinerUpdateToken example using RemoveMiner()
+func ExampleClient_RemoveMiner() {
+	client, err := NewClient(nil, nil, nil)
+	if err != nil {
+		fmt.Printf("error occurred: %s", err.Error())
+		return
+	}
+
+	// Update existing miner token
+	client.RemoveMiner(client.MinerByName(MinerTaal))
+
+	// Show response
+	fmt.Printf("total miners: %d", len(client.Miners))
+	// Output:total miners: 2
+}
+
+// BenchmarkClient_RemoveMiner benchmarks the method RemoveMiner()
+func BenchmarkClient_RemoveMiner(b *testing.B) {
+	client, _ := NewClient(nil, nil, nil)
+	miner := client.MinerByName(MinerTaal)
+	for i := 0; i < b.N; i++ {
+		_ = client.RemoveMiner(miner)
 	}
 }

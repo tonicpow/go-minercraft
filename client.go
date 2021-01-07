@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -48,13 +49,34 @@ func (c *Client) AddMiner(miner Miner) error {
 		}
 	}
 
-	// Remove any protocol(s)
-	miner.URL = strings.Replace(miner.URL, defaultProtocol, "", -1)
-	miner.URL = strings.Replace(miner.URL, "http://", "", -1)
+	// Ensure that we have a protocol
+	if !strings.Contains(miner.URL, "http") {
+		return fmt.Errorf("miner %s is missing http from url", miner.Name)
+	}
+
+	// Test parsing the url
+	parsedURL, err := url.Parse(miner.URL)
+	if err != nil {
+		return err
+	}
+	miner.URL = parsedURL.String()
 
 	// Append the new miner
 	c.Miners = append(c.Miners, &miner)
 	return nil
+}
+
+// RemoveMiner will remove a miner from the list
+func (c *Client) RemoveMiner(miner *Miner) bool {
+	for i, m := range c.Miners {
+		if m.Name == miner.Name || m.MinerID == miner.MinerID {
+			c.Miners[i] = c.Miners[len(c.Miners)-1]
+			c.Miners = c.Miners[:len(c.Miners)-1]
+			return true
+		}
+	}
+	// Miner not found
+	return false
 }
 
 // MinerByName will return a miner given a name
@@ -122,13 +144,22 @@ func DefaultClientOptions() (clientOptions *ClientOptions) {
 }
 
 // NewClient creates a new client for requests
-func NewClient(clientOptions *ClientOptions, customHTTPClient *http.Client) (client *Client, err error) {
+//
+// clientOptions: inject custom client options on load
+// customHTTPClient: use your own custom HTTP client
+// customMiners: use your own custom list of miners
+func NewClient(clientOptions *ClientOptions, customHTTPClient *http.Client,
+	customMiners []*Miner) (client *Client, err error) {
 
 	// Create the new client
 	client = createClient(clientOptions, customHTTPClient)
 
-	// Load all known miners
-	err = json.Unmarshal([]byte(KnownMiners), &client.Miners)
+	// Load custom vs pre-defined
+	if len(customMiners) > 0 {
+		client.Miners = customMiners
+	} else {
+		err = json.Unmarshal([]byte(KnownMiners), &client.Miners)
+	}
 
 	return
 }
