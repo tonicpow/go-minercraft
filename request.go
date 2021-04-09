@@ -109,6 +109,7 @@ func httpRequest(ctx context.Context, client *Client,
 	}{}
 	if err := json.Unmarshal(response.BodyContents, &errBody); err != nil {
 		response.Error = fmt.Errorf("failed to unmarshal mapi error response: %w", err)
+		return
 	}
 	response.Error = fmt.Errorf(
 		"status code: %d does not match %d, error: %s",
