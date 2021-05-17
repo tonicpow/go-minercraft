@@ -68,16 +68,25 @@ Example SubmitTransactionResponse.Payload (unmarshalled):
 
 // SubmissionPayload is the unmarshalled version of the payload envelope
 type SubmissionPayload struct {
-	APIVersion                string `json:"apiVersion"`
-	Timestamp                 string `json:"timestamp"`
-	TxID                      string `json:"txid"`
-	ReturnResult              string `json:"returnResult"`
-	ResultDescription         string `json:"resultDescription"`
-	MinerID                   string `json:"minerId"`
-	CurrentHighestBlockHash   string `json:"currentHighestBlockHash"`
-	ConflictedWith            string `json:"conflictedWith"`
-	CurrentHighestBlockHeight int64  `json:"currentHighestBlockHeight"`
-	TxSecondMempoolExpiry     int64  `json:"txSecondMempoolExpiry"`
+	APIVersion                string            `json:"apiVersion"`
+	Timestamp                 string            `json:"timestamp"`
+	TxID                      string            `json:"txid"`
+	ReturnResult              string            `json:"returnResult"`
+	ResultDescription         string            `json:"resultDescription"`
+	MinerID                   string            `json:"minerId"`
+	CurrentHighestBlockHash   string            `json:"currentHighestBlockHash"`
+	ConflictedWith            []*ConflictedWith `json:"conflictedWith"`
+	CurrentHighestBlockHeight int64             `json:"currentHighestBlockHeight"`
+	TxSecondMempoolExpiry     int64             `json:"txSecondMempoolExpiry"`
+}
+
+// ConflictedWith contains the information about the transactions that conflict
+// with the transaction submitted to mAPI. A conflict could arise if multiple
+// transactions attempt to spend the same UTXO (double spend).
+type ConflictedWith struct {
+	TxID string `json:"txid"`
+	Size int    `json:"size"`
+	Hex  string `json:"hex"`
 }
 
 // SubmitTransaction will fire a Merchant API request to submit a given transaction
