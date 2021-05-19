@@ -8,6 +8,7 @@ import (
 )
 
 const (
+	// MerkleFormatTSC can be set when calling SubmitTransaction to request a MerkleProof in TSC format.
 	MerkleFormatTSC = "TSC"
 )
 
@@ -28,10 +29,10 @@ type Transaction struct {
 	RawTx              string `json:"rawtx"`
 	CallBackURL        string `json:"callBackUrl,omitempty"`
 	CallBackToken      string `json:"callBackToken,omitempty"`
-	MerkleProof        bool   `json:"merkleProof,omitempty"`
 	MerkleFormat       string `json:"merkleFormat,omitempty"`
-	DsCheck            bool   `json:"dsCheck,omitempty"`
 	CallBackEncryption string `json:"callBackEncryption,omitempty"`
+	MerkleProof        bool   `json:"merkleProof,omitempty"`
+	DsCheck            bool   `json:"dsCheck,omitempty"`
 }
 
 /*
