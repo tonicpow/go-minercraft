@@ -7,6 +7,10 @@ import (
 	"net/http"
 )
 
+const (
+	MerkleFormatTSC = "TSC"
+)
+
 /*
 Example Transaction Submission (submitted in the body of the request)
 {
@@ -24,8 +28,9 @@ type Transaction struct {
 	RawTx              string `json:"rawtx"`
 	CallBackURL        string `json:"callBackUrl,omitempty"`
 	CallBackToken      string `json:"callBackToken,omitempty"`
-	MerkleProof        string `json:"merkleProof,omitempty"`
-	DsCheck            string `json:"dsCheck,omitempty"`
+	MerkleProof        bool   `json:"merkleProof,omitempty"`
+	MerkleFormat       string `json:"merkleFormat,omitempty"`
+	DsCheck            bool   `json:"dsCheck,omitempty"`
 	CallBackEncryption string `json:"callBackEncryption,omitempty"`
 }
 
