@@ -24,7 +24,7 @@ Example Transaction Submission (submitted in the body of the request)
 }
 */
 
-// Transaction is the body contents in the submit transaction request
+// Transaction is the body contents in the "submit transaction" request
 type Transaction struct {
 	RawTx              string `json:"rawtx"`
 	CallBackURL        string `json:"callBackUrl,omitempty"`

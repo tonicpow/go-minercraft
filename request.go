@@ -96,14 +96,14 @@ func httpRequest(ctx context.Context, client *Client,
 	}
 	// unexpected status, write an error.
 	if response.BodyContents == nil {
-		// no body so just echo status code.
+		// There's no "body" present, so just echo status code.
 		response.Error = fmt.Errorf(
 			"status code: %d does not match %d",
 			resp.StatusCode, http.StatusOK,
 		)
 		return
 	}
-	// have a body so map to an error type and add to the error message.
+	// Have a "body" so map to an error type and add to the error message.
 	errBody := struct {
 		Error string `json:"error"`
 	}{}
