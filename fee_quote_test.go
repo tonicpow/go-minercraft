@@ -476,3 +476,71 @@ func BenchmarkFeePayload_CalculateFee(b *testing.B) {
 		_, _ = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 1000)
 	}
 }
+
+// TestFeePayload_GetFee tests the method GetFee()
+func TestFeePayload_GetFee(t *testing.T) {
+	t.Parallel()
+
+	t.Run("get valid fees", func(t *testing.T) {
+
+		// Create a client
+		client := newTestClient(&mockHTTPValidFeeQuote{})
+
+		// Create a req
+		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
+
+		// Standard
+		fee := response.Quote.GetFee(FeeTypeStandard)
+		assert.NotNil(t, fee)
+		assert.Equal(t, "standard", fee.FeeType)
+
+		// Data
+		fee = response.Quote.GetFee(FeeTypeData)
+		assert.NotNil(t, fee)
+		assert.Equal(t, "data", fee.FeeType)
+	})
+
+	t.Run("missing fee type", func(t *testing.T) {
+		client := newTestClient(&mockHTTPMissingFeeType{})
+		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
+
+		// Standard
+		fee := response.Quote.GetFee("")
+		assert.Nil(t, fee)
+	})
+}
+
+// ExampleFeePayload_GetFee example using GetFee()
+func ExampleFeePayload_GetFee() {
+	// Create a client (using a test client vs NewClient())
+	client := newTestClient(&mockHTTPValidBestQuote{})
+
+	// Create a req
+	response, err := client.BestQuote(FeeCategoryMining, FeeTypeData)
+	if err != nil {
+		fmt.Printf("error occurred: %s", err.Error())
+		return
+	}
+
+	// Get the fee
+	fee := response.Quote.GetFee(FeeTypeStandard)
+
+	fmt.Printf(
+		"got best quote and fee for %d byte tx is %d sats",
+		fee.MiningFee.Bytes, fee.MiningFee.Satoshis,
+	)
+	// Output:got best quote and fee for 1000 byte tx is 500 sats
+}
+
+// BenchmarkFeePayload_GetFee benchmarks the method GetFee()
+func BenchmarkFeePayload_GetFee(b *testing.B) {
+	client := newTestClient(&mockHTTPValidBestQuote{})
+	response, _ := client.BestQuote(FeeCategoryMining, FeeTypeData)
+	for i := 0; i < b.N; i++ {
+		_ = response.Quote.GetFee(FeeTypeStandard)
+	}
+}
