@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/goleak"
 )
 
 // mockHTTPValidBestQuote for mocking requests
@@ -160,9 +161,10 @@ func (m *mockHTTPBestQuoteAllFailed) Do(req *http.Request) (*http.Response, erro
 
 // TestClient_BestQuote tests the method BestQuote()
 func TestClient_BestQuote(t *testing.T) {
-	t.Parallel()
 
 	t.Run("get a valid best quote", func(t *testing.T) {
+
+		defer goleak.VerifyNone(t)
 
 		// Create a client
 		client := newTestClient(&mockHTTPValidBestQuote{})
@@ -181,6 +183,8 @@ func TestClient_BestQuote(t *testing.T) {
 	})
 
 	t.Run("http error", func(t *testing.T) {
+		defer goleak.VerifyNone(t)
+
 		client := newTestClient(&mockHTTPError{})
 		response, err := client.BestQuote(FeeCategoryMining, FeeTypeData)
 		assert.Error(t, err)
@@ -188,6 +192,8 @@ func TestClient_BestQuote(t *testing.T) {
 	})
 
 	t.Run("bad request", func(t *testing.T) {
+		defer goleak.VerifyNone(t)
+
 		client := newTestClient(&mockHTTPBadRequest{})
 		response, err := client.BestQuote(FeeCategoryMining, FeeTypeData)
 		assert.Error(t, err)
@@ -195,6 +201,8 @@ func TestClient_BestQuote(t *testing.T) {
 	})
 
 	t.Run("invalid JSON", func(t *testing.T) {
+		defer goleak.VerifyNone(t)
+
 		client := newTestClient(&mockHTTPInvalidJSON{})
 		response, err := client.BestQuote(FeeCategoryMining, FeeTypeData)
 		assert.Error(t, err)
@@ -202,6 +210,8 @@ func TestClient_BestQuote(t *testing.T) {
 	})
 
 	t.Run("invalid category", func(t *testing.T) {
+		defer goleak.VerifyNone(t)
+
 		client := newTestClient(&mockHTTPValidBestQuote{})
 		response, err := client.BestQuote("invalid", FeeTypeData)
 		assert.Error(t, err)
@@ -214,6 +224,8 @@ func TestClient_BestQuote(t *testing.T) {
 	})
 
 	t.Run("better rate", func(t *testing.T) {
+		defer goleak.VerifyNone(t)
+
 		client := newTestClient(&mockHTTPBetterRate{})
 		response, err := client.BestQuote(FeeCategoryRelay, FeeTypeData)
 		assert.NoError(t, err)
@@ -233,6 +245,8 @@ func TestClient_BestQuote(t *testing.T) {
 	})
 
 	t.Run("bad rate", func(t *testing.T) {
+		defer goleak.VerifyNone(t)
+
 		client := newTestClient(&mockHTTPBadRate{})
 		response, err := client.BestQuote(FeeCategoryRelay, FeeTypeData)
 		assert.Error(t, err)
@@ -240,6 +254,7 @@ func TestClient_BestQuote(t *testing.T) {
 	})
 
 	t.Run("best quote - two failed", func(t *testing.T) {
+		defer goleak.VerifyNone(t)
 
 		// Create a client
 		client := newTestClient(&mockHTTPBestQuoteTwoFailed{})
@@ -259,6 +274,8 @@ func TestClient_BestQuote(t *testing.T) {
 	})
 
 	t.Run("best quote - all failed", func(t *testing.T) {
+
+		defer goleak.VerifyNone(t)
 
 		// Create a client
 		client := newTestClient(&mockHTTPBestQuoteAllFailed{})
