@@ -103,7 +103,7 @@ Example callback from Merchant API:
 // Callback is the body contents posted to the provided callback url from Merchant API
 type Callback struct {
 	CallbackPayload string `json:"callbackPayload"`
-	ApiVersion      string `json:"apiVersion"`
+	APIVersion      string `json:"apiVersion"`
 	Timestamp       string `json:"timestamp"`
 	MinerID         string `json:"minerId"`
 	BlockHash       string `json:"blockHash"`
