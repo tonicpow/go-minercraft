@@ -19,7 +19,7 @@ type Miner struct {
 // This type wraps the go-bk JSONEnvelope which performs validation of the
 // signatures (if we have any) and will return true / false if valid.
 //
-// We wrap this so we can append some additional miner info and a validated
+// We wrap this, so we can append some additional miner info and a validated
 // helper property to indicate if the envelope is or isn't valid.
 // Consumers can also independently validate the envelope.
 type JSONEnvelope struct {
@@ -30,18 +30,16 @@ type JSONEnvelope struct {
 
 // process will take the raw payload bytes, unmarshall into a JSONEnvelope
 // and validate the signature vs payload.
-func (p *JSONEnvelope) process(miner *Miner, bodyContents []byte) error {
+func (p *JSONEnvelope) process(miner *Miner, bodyContents []byte) (err error) {
 	// Set the miner on the response
 	p.Miner = miner
+
 	// Unmarshal the response
-	if err := json.Unmarshal(bodyContents, &p); err != nil {
-		return err
+	if err = json.Unmarshal(bodyContents, &p); err != nil {
+		return
 	}
+
 	// verify JSONEnvelope
-	val, err := p.IsValid()
-	if err != nil {
-		return err
-	}
-	p.Validated = val
-	return nil
+	p.Validated, err = p.IsValid()
+	return
 }
