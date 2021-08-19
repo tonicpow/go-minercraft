@@ -85,8 +85,8 @@ func TestClient_SubmitTransaction(t *testing.T) {
 
 		// Check returned values
 		assert.Equal(t, true, response.Validated)
-		assert.Equal(t, submitTestSignature, response.Signature)
-		assert.Equal(t, submitTestPublicKey, response.PublicKey)
+		assert.Equal(t, submitTestSignature, *response.Signature)
+		assert.Equal(t, submitTestPublicKey, *response.PublicKey)
 		assert.Equal(t, testEncoding, response.Encoding)
 		assert.Equal(t, testMimeType, response.MimeType)
 	})
