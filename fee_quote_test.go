@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/goleak"
 )
 
 const feeTestSignature = "3045022100eed49f6bf75d8f975f581271e3df658fbe8ec67e6301ea8fc25a72d18c92e30e022056af253f0d24db6a8fde4e2c1ee95e7a5ecf2c7cdc93246f8328c9e0ca582fc4"
@@ -250,9 +251,11 @@ func (m *mockHTTPMissingFeeType) Do(req *http.Request) (*http.Response, error) {
 
 // TestClient_FeeQuote tests the method FeeQuote()
 func TestClient_FeeQuote(t *testing.T) {
-	t.Parallel()
 
 	t.Run("get a valid fee quote", func(t *testing.T) {
+
+		defer goleak.VerifyNone(t)
+
 		// Create a client
 		client := newTestClient(&mockHTTPValidFeeQuote{})
 
@@ -270,6 +273,8 @@ func TestClient_FeeQuote(t *testing.T) {
 	})
 
 	t.Run("valid parse values", func(t *testing.T) {
+
+		defer goleak.VerifyNone(t)
 
 		// Create a client
 		client := newTestClient(&mockHTTPValidFeeQuote{})
@@ -292,6 +297,8 @@ func TestClient_FeeQuote(t *testing.T) {
 
 	t.Run("get actual rates", func(t *testing.T) {
 
+		defer goleak.VerifyNone(t)
+
 		// Create a client
 		client := newTestClient(&mockHTTPValidFeeQuote{})
 
@@ -313,6 +320,7 @@ func TestClient_FeeQuote(t *testing.T) {
 	})
 
 	t.Run("invalid miner", func(t *testing.T) {
+		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPValidFeeQuote{})
 		response, err := client.FeeQuote(nil)
 		assert.Error(t, err)
@@ -320,6 +328,7 @@ func TestClient_FeeQuote(t *testing.T) {
 	})
 
 	t.Run("http error", func(t *testing.T) {
+		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPError{})
 		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
 		assert.Error(t, err)
@@ -327,6 +336,7 @@ func TestClient_FeeQuote(t *testing.T) {
 	})
 
 	t.Run("bad request", func(t *testing.T) {
+		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPBadRequest{})
 		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
 		assert.Error(t, err)
@@ -334,6 +344,7 @@ func TestClient_FeeQuote(t *testing.T) {
 	})
 
 	t.Run("invalid JSON", func(t *testing.T) {
+		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPInvalidJSON{})
 		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
 		assert.Error(t, err)
@@ -341,6 +352,7 @@ func TestClient_FeeQuote(t *testing.T) {
 	})
 
 	t.Run("invalid signature", func(t *testing.T) {
+		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPInvalidSignature{})
 		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
 		assert.Error(t, err)
@@ -348,6 +360,7 @@ func TestClient_FeeQuote(t *testing.T) {
 	})
 
 	t.Run("missing fees", func(t *testing.T) {
+		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPMissingFees{})
 		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
 		assert.Error(t, err)

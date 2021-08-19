@@ -1,18 +1,10 @@
 # github.com/bitcoinschema/go-bitcoin v0.3.17
 ## explicit
-github.com/bitcoinschema/go-bitcoin
 # github.com/bitcoinsv/bsvd v0.0.0-20190609155523-4c29707f7173
 github.com/bitcoinsv/bsvd/bsvec
-github.com/bitcoinsv/bsvd/chaincfg
 github.com/bitcoinsv/bsvd/chaincfg/chainhash
-github.com/bitcoinsv/bsvd/txscript
-github.com/bitcoinsv/bsvd/wire
-# github.com/bitcoinsv/bsvlog v0.0.0-20181216181007-cb81b076bf2e
-github.com/bitcoinsv/bsvlog
 # github.com/bitcoinsv/bsvutil v0.0.0-20181216182056-1d77cf353ea9
-github.com/bitcoinsv/bsvutil
 github.com/bitcoinsv/bsvutil/base58
-github.com/bitcoinsv/bsvutil/hdkeychain
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
 # github.com/gojektech/heimdall/v6 v6.1.0
@@ -44,9 +36,20 @@ github.com/stretchr/objx
 ## explicit
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/mock
+# go.uber.org/goleak v1.1.10
+## explicit
+go.uber.org/goleak
+go.uber.org/goleak/internal/stack
 # golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
 ## explicit
 golang.org/x/crypto/ripemd160
+# golang.org/x/lint v0.0.0-20200302205851-738671d3881b
+golang.org/x/lint
+golang.org/x/lint/golint
+# golang.org/x/tools v0.0.0-20200530233709-52effbd89c51
+golang.org/x/tools/go/ast/astutil
+golang.org/x/tools/go/gcexportdata
+golang.org/x/tools/go/internal/gcimporter
 # gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 ## explicit
 gopkg.in/yaml.v3

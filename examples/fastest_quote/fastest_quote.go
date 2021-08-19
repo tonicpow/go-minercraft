@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"log"
+	"time"
 
 	"github.com/tonicpow/go-minercraft"
 )
@@ -16,9 +18,9 @@ func main() {
 
 	log.Printf("querying %d miners for the fastest response...", len(client.Miners))
 
-	// Fetch fastest quote from all miners
+	// Fetch the fastest quote from all miners
 	var response *minercraft.FeeQuoteResponse
-	response, err = client.FastestQuote()
+	response, err = client.FastestQuote(context.Background(), 10*time.Second)
 	if err != nil {
 		log.Fatalf("error occurred: %s", err.Error())
 	}
