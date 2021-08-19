@@ -2,6 +2,7 @@ package minercraft
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -75,7 +76,7 @@ func TestClient_QueryTransaction(t *testing.T) {
 		client := newTestClient(&mockHTTPValidQuery{})
 
 		// Create a req
-		response, err := client.QueryTransaction(client.MinerByName(MinerMatterpool), testTx)
+		response, err := client.QueryTransaction(context.Background(), client.MinerByName(MinerMatterpool), testTx)
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 
@@ -89,7 +90,7 @@ func TestClient_QueryTransaction(t *testing.T) {
 
 	t.Run("validate parsed values", func(t *testing.T) {
 		client := newTestClient(&mockHTTPValidQuery{})
-		response, err := client.QueryTransaction(client.MinerByName(MinerMatterpool), testTx)
+		response, err := client.QueryTransaction(context.Background(), client.MinerByName(MinerMatterpool), testTx)
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 
@@ -105,42 +106,42 @@ func TestClient_QueryTransaction(t *testing.T) {
 
 	t.Run("invalid miner", func(t *testing.T) {
 		client := newTestClient(&mockHTTPValidFeeQuote{})
-		response, err := client.QueryTransaction(nil, testTx)
+		response, err := client.QueryTransaction(context.Background(), nil, testTx)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
 
 	t.Run("http error", func(t *testing.T) {
 		client := newTestClient(&mockHTTPError{})
-		response, err := client.QueryTransaction(client.MinerByName(MinerMatterpool), testTx)
+		response, err := client.QueryTransaction(context.Background(), client.MinerByName(MinerMatterpool), testTx)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
 
 	t.Run("bad request", func(t *testing.T) {
 		client := newTestClient(&mockHTTPBadRequest{})
-		response, err := client.QueryTransaction(client.MinerByName(MinerMatterpool), testTx)
+		response, err := client.QueryTransaction(context.Background(), client.MinerByName(MinerMatterpool), testTx)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
 
 	t.Run("invalid JSON", func(t *testing.T) {
 		client := newTestClient(&mockHTTPInvalidJSON{})
-		response, err := client.QueryTransaction(client.MinerByName(MinerMatterpool), testTx)
+		response, err := client.QueryTransaction(context.Background(), client.MinerByName(MinerMatterpool), testTx)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
 
 	t.Run("invalid signature", func(t *testing.T) {
 		client := newTestClient(&mockHTTPInvalidSignature{})
-		response, err := client.QueryTransaction(client.MinerByName(MinerMatterpool), testTx)
+		response, err := client.QueryTransaction(context.Background(), client.MinerByName(MinerMatterpool), testTx)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
 
 	t.Run("bad query", func(t *testing.T) {
 		client := newTestClient(&mockHTTPBadQuery{})
-		response, err := client.QueryTransaction(client.MinerByName(MinerMatterpool), testTx)
+		response, err := client.QueryTransaction(context.Background(), client.MinerByName(MinerMatterpool), testTx)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
@@ -152,7 +153,7 @@ func ExampleClient_QueryTransaction() {
 	client := newTestClient(&mockHTTPValidQuery{})
 
 	// Create a req
-	response, err := client.QueryTransaction(client.MinerByName(MinerTaal), testTx)
+	response, err := client.QueryTransaction(context.Background(), client.MinerByName(MinerTaal), testTx)
 	if err != nil {
 		fmt.Printf("error occurred: %s", err.Error())
 		return
@@ -167,6 +168,6 @@ func BenchmarkClient_QueryTransaction(b *testing.B) {
 	client := newTestClient(&mockHTTPValidQuery{})
 	miner := client.MinerByName(MinerTaal)
 	for i := 0; i < b.N; i++ {
-		_, _ = client.QueryTransaction(miner, testTx)
+		_, _ = client.QueryTransaction(context.Background(), miner, testTx)
 	}
 }

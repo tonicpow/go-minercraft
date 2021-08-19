@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 
 	"github.com/tonicpow/go-minercraft"
@@ -18,7 +19,7 @@ func main() {
 
 	// Fetch quotes from all miners
 	var response *minercraft.FeeQuoteResponse
-	response, err = client.BestQuote(minercraft.FeeCategoryMining, minercraft.FeeTypeData)
+	response, err = client.BestQuote(context.Background(), minercraft.FeeCategoryMining, minercraft.FeeTypeData)
 	if err != nil {
 		log.Fatalf("error occurred: %s", err.Error())
 	}

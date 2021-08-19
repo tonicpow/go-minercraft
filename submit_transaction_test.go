@@ -2,6 +2,7 @@ package minercraft
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -81,7 +82,7 @@ func TestClient_SubmitTransaction(t *testing.T) {
 		client := newTestClient(&mockHTTPValidSubmission{})
 
 		// Create a req
-		response, err := client.SubmitTransaction(client.MinerByName(MinerMatterpool), tx)
+		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerMatterpool), tx)
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 
@@ -98,7 +99,7 @@ func TestClient_SubmitTransaction(t *testing.T) {
 		defer goleak.VerifyNone(t)
 
 		client := newTestClient(&mockHTTPValidSubmission{})
-		response, err := client.SubmitTransaction(client.MinerByName(MinerMatterpool), tx)
+		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerMatterpool), tx)
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 
@@ -114,7 +115,7 @@ func TestClient_SubmitTransaction(t *testing.T) {
 	t.Run("invalid miner", func(t *testing.T) {
 		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPValidSubmission{})
-		response, err := client.SubmitTransaction(nil, tx)
+		response, err := client.SubmitTransaction(context.Background(), nil, tx)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
@@ -122,7 +123,7 @@ func TestClient_SubmitTransaction(t *testing.T) {
 	t.Run("http error", func(t *testing.T) {
 		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPError{})
-		response, err := client.SubmitTransaction(client.MinerByName(MinerMatterpool), tx)
+		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerMatterpool), tx)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
@@ -130,7 +131,7 @@ func TestClient_SubmitTransaction(t *testing.T) {
 	t.Run("bad request", func(t *testing.T) {
 		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPBadRequest{})
-		response, err := client.SubmitTransaction(client.MinerByName(MinerMatterpool), tx)
+		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerMatterpool), tx)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
@@ -138,7 +139,7 @@ func TestClient_SubmitTransaction(t *testing.T) {
 	t.Run("invalid JSON", func(t *testing.T) {
 		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPInvalidJSON{})
-		response, err := client.SubmitTransaction(client.MinerByName(MinerMatterpool), tx)
+		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerMatterpool), tx)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
@@ -146,7 +147,7 @@ func TestClient_SubmitTransaction(t *testing.T) {
 	t.Run("invalid signature", func(t *testing.T) {
 		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPInvalidSignature{})
-		response, err := client.SubmitTransaction(client.MinerByName(MinerMatterpool), tx)
+		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerMatterpool), tx)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
@@ -154,7 +155,7 @@ func TestClient_SubmitTransaction(t *testing.T) {
 	t.Run("bad submission", func(t *testing.T) {
 		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPBadSubmission{})
-		response, err := client.SubmitTransaction(client.MinerByName(MinerMatterpool), tx)
+		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerMatterpool), tx)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
@@ -168,7 +169,7 @@ func ExampleClient_SubmitTransaction() {
 	tx := &Transaction{RawTx: submitTestExampleTx}
 
 	// Create a req
-	response, err := client.SubmitTransaction(client.MinerByName(MinerTaal), tx)
+	response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerTaal), tx)
 	if err != nil {
 		fmt.Printf("error occurred: %s", err.Error())
 		return
@@ -184,6 +185,6 @@ func BenchmarkClient_SubmitTransaction(b *testing.B) {
 	miner := client.MinerByName(MinerTaal)
 	tx := &Transaction{RawTx: submitTestExampleTx}
 	for i := 0; i < b.N; i++ {
-		_, _ = client.SubmitTransaction(miner, tx)
+		_, _ = client.SubmitTransaction(context.Background(), miner, tx)
 	}
 }

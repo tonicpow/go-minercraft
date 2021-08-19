@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 
 	"github.com/tonicpow/go-minercraft"
@@ -19,7 +20,7 @@ func main() {
 
 	// Query the transaction status
 	var response *minercraft.QueryTransactionResponse
-	if response, err = client.QueryTransaction(miner, "950a10beb1650e91621f748c408f7024f2082408a93c11cecc1ab4b5f440ac12"); err != nil {
+	if response, err = client.QueryTransaction(context.Background(), miner, "950a10beb1650e91621f748c408f7024f2082408a93c11cecc1ab4b5f440ac12"); err != nil {
 		log.Fatalf("error occurred: %s", err.Error())
 	}
 
