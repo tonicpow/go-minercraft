@@ -2,6 +2,7 @@ package minercraft
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -170,7 +171,7 @@ func TestClient_BestQuote(t *testing.T) {
 		client := newTestClient(&mockHTTPValidBestQuote{})
 
 		// Create a req
-		response, err := client.BestQuote(FeeCategoryMining, FeeTypeData)
+		response, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 
@@ -186,7 +187,7 @@ func TestClient_BestQuote(t *testing.T) {
 		defer goleak.VerifyNone(t)
 
 		client := newTestClient(&mockHTTPError{})
-		response, err := client.BestQuote(FeeCategoryMining, FeeTypeData)
+		response, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
@@ -195,7 +196,7 @@ func TestClient_BestQuote(t *testing.T) {
 		defer goleak.VerifyNone(t)
 
 		client := newTestClient(&mockHTTPBadRequest{})
-		response, err := client.BestQuote(FeeCategoryMining, FeeTypeData)
+		response, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
@@ -204,7 +205,7 @@ func TestClient_BestQuote(t *testing.T) {
 		defer goleak.VerifyNone(t)
 
 		client := newTestClient(&mockHTTPInvalidJSON{})
-		response, err := client.BestQuote(FeeCategoryMining, FeeTypeData)
+		response, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
@@ -213,12 +214,12 @@ func TestClient_BestQuote(t *testing.T) {
 		defer goleak.VerifyNone(t)
 
 		client := newTestClient(&mockHTTPValidBestQuote{})
-		response, err := client.BestQuote("invalid", FeeTypeData)
+		response, err := client.BestQuote(context.Background(), "invalid", FeeTypeData)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 
 		// Create a req
-		response, err = client.BestQuote(FeeCategoryMining, "invalid")
+		response, err = client.BestQuote(context.Background(), FeeCategoryMining, "invalid")
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
@@ -227,7 +228,7 @@ func TestClient_BestQuote(t *testing.T) {
 		defer goleak.VerifyNone(t)
 
 		client := newTestClient(&mockHTTPBetterRate{})
-		response, err := client.BestQuote(FeeCategoryRelay, FeeTypeData)
+		response, err := client.BestQuote(context.Background(), FeeCategoryRelay, FeeTypeData)
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 
@@ -248,7 +249,7 @@ func TestClient_BestQuote(t *testing.T) {
 		defer goleak.VerifyNone(t)
 
 		client := newTestClient(&mockHTTPBadRate{})
-		response, err := client.BestQuote(FeeCategoryRelay, FeeTypeData)
+		response, err := client.BestQuote(context.Background(), FeeCategoryRelay, FeeTypeData)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
@@ -260,7 +261,7 @@ func TestClient_BestQuote(t *testing.T) {
 		client := newTestClient(&mockHTTPBestQuoteTwoFailed{})
 
 		// Create a req
-		response, err := client.BestQuote(FeeCategoryMining, FeeTypeData)
+		response, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 
@@ -281,7 +282,7 @@ func TestClient_BestQuote(t *testing.T) {
 		client := newTestClient(&mockHTTPBestQuoteAllFailed{})
 
 		// Create a req
-		response, err := client.BestQuote(FeeCategoryMining, FeeTypeData)
+		response, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
@@ -293,7 +294,7 @@ func ExampleClient_BestQuote() {
 	client := newTestClient(&mockHTTPValidBestQuote{})
 
 	// Create a req
-	_, err := client.BestQuote(FeeCategoryMining, FeeTypeData)
+	_, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
 	if err != nil {
 		fmt.Printf("error occurred: %s", err.Error())
 		return
@@ -308,6 +309,6 @@ func ExampleClient_BestQuote() {
 func BenchmarkClient_BestQuote(b *testing.B) {
 	client := newTestClient(&mockHTTPValidBestQuote{})
 	for i := 0; i < b.N; i++ {
-		_, _ = client.BestQuote(FeeCategoryMining, FeeTypeData)
+		_, _ = client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
 	}
 }

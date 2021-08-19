@@ -2,6 +2,7 @@ package minercraft
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -260,7 +261,7 @@ func TestClient_FeeQuote(t *testing.T) {
 		client := newTestClient(&mockHTTPValidFeeQuote{})
 
 		// Create a req
-		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 
@@ -280,7 +281,7 @@ func TestClient_FeeQuote(t *testing.T) {
 		client := newTestClient(&mockHTTPValidFeeQuote{})
 
 		// Create a req
-		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 
@@ -303,7 +304,7 @@ func TestClient_FeeQuote(t *testing.T) {
 		client := newTestClient(&mockHTTPValidFeeQuote{})
 
 		// Create a req
-		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 
@@ -322,7 +323,7 @@ func TestClient_FeeQuote(t *testing.T) {
 	t.Run("invalid miner", func(t *testing.T) {
 		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPValidFeeQuote{})
-		response, err := client.FeeQuote(nil)
+		response, err := client.FeeQuote(context.Background(), nil)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
@@ -330,7 +331,7 @@ func TestClient_FeeQuote(t *testing.T) {
 	t.Run("http error", func(t *testing.T) {
 		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPError{})
-		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
@@ -338,7 +339,7 @@ func TestClient_FeeQuote(t *testing.T) {
 	t.Run("bad request", func(t *testing.T) {
 		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPBadRequest{})
-		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
@@ -346,7 +347,7 @@ func TestClient_FeeQuote(t *testing.T) {
 	t.Run("invalid JSON", func(t *testing.T) {
 		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPInvalidJSON{})
-		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
@@ -354,7 +355,7 @@ func TestClient_FeeQuote(t *testing.T) {
 	t.Run("invalid signature", func(t *testing.T) {
 		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPInvalidSignature{})
-		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
@@ -362,7 +363,7 @@ func TestClient_FeeQuote(t *testing.T) {
 	t.Run("missing fees", func(t *testing.T) {
 		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPMissingFees{})
-		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
@@ -374,7 +375,7 @@ func ExampleClient_FeeQuote() {
 	client := newTestClient(&mockHTTPValidFeeQuote{})
 
 	// Create a req
-	response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+	response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
 	if err != nil {
 		fmt.Printf("error occurred: %s", err.Error())
 		return
@@ -388,7 +389,7 @@ func ExampleClient_FeeQuote() {
 func BenchmarkClient_FeeQuote(b *testing.B) {
 	client := newTestClient(&mockHTTPValidFeeQuote{})
 	for i := 0; i < b.N; i++ {
-		_, _ = client.FeeQuote(client.MinerByName(MinerTaal))
+		_, _ = client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
 	}
 }
 
@@ -402,7 +403,7 @@ func TestFeePayload_CalculateFee(t *testing.T) {
 		client := newTestClient(&mockHTTPValidFeeQuote{})
 
 		// Create a req
-		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 
@@ -430,7 +431,7 @@ func TestFeePayload_CalculateFee(t *testing.T) {
 
 	t.Run("calculate zero fee", func(t *testing.T) {
 		client := newTestClient(&mockHTTPValidFeeQuote{})
-		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 
@@ -443,7 +444,7 @@ func TestFeePayload_CalculateFee(t *testing.T) {
 
 	t.Run("missing fee type", func(t *testing.T) {
 		client := newTestClient(&mockHTTPMissingFeeType{})
-		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 
@@ -462,7 +463,7 @@ func ExampleFeePayload_CalculateFee() {
 	client := newTestClient(&mockHTTPValidBestQuote{})
 
 	// Create a req
-	response, err := client.BestQuote(FeeCategoryMining, FeeTypeData)
+	response, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
 	if err != nil {
 		fmt.Printf("error occurred: %s", err.Error())
 		return
@@ -484,7 +485,7 @@ func ExampleFeePayload_CalculateFee() {
 // BenchmarkFeePayload_CalculateFee benchmarks the method CalculateFee()
 func BenchmarkFeePayload_CalculateFee(b *testing.B) {
 	client := newTestClient(&mockHTTPValidBestQuote{})
-	response, _ := client.BestQuote(FeeCategoryMining, FeeTypeData)
+	response, _ := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
 	for i := 0; i < b.N; i++ {
 		_, _ = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 1000)
 	}
@@ -500,7 +501,7 @@ func TestFeePayload_GetFee(t *testing.T) {
 		client := newTestClient(&mockHTTPValidFeeQuote{})
 
 		// Create a req
-		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 
@@ -517,7 +518,7 @@ func TestFeePayload_GetFee(t *testing.T) {
 
 	t.Run("missing fee type", func(t *testing.T) {
 		client := newTestClient(&mockHTTPMissingFeeType{})
-		response, err := client.FeeQuote(client.MinerByName(MinerTaal))
+		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 
@@ -533,7 +534,7 @@ func ExampleFeePayload_GetFee() {
 	client := newTestClient(&mockHTTPValidBestQuote{})
 
 	// Create a req
-	response, err := client.BestQuote(FeeCategoryMining, FeeTypeData)
+	response, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
 	if err != nil {
 		fmt.Printf("error occurred: %s", err.Error())
 		return
@@ -552,7 +553,7 @@ func ExampleFeePayload_GetFee() {
 // BenchmarkFeePayload_GetFee benchmarks the method GetFee()
 func BenchmarkFeePayload_GetFee(b *testing.B) {
 	client := newTestClient(&mockHTTPValidBestQuote{})
-	response, _ := client.BestQuote(FeeCategoryMining, FeeTypeData)
+	response, _ := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
 	for i := 0; i < b.N; i++ {
 		_ = response.Quote.GetFee(FeeTypeStandard)
 	}

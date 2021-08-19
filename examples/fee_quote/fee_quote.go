@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 
 	"github.com/tonicpow/go-minercraft"
@@ -19,7 +20,7 @@ func main() {
 
 	// Get a fee quote from a miner
 	var response *minercraft.FeeQuoteResponse
-	if response, err = client.FeeQuote(miner); err != nil {
+	if response, err = client.FeeQuote(context.Background(), miner); err != nil {
 		log.Fatalf("error occurred: %s", err.Error())
 	}
 
