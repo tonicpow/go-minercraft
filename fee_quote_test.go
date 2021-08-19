@@ -267,8 +267,8 @@ func TestClient_FeeQuote(t *testing.T) {
 
 		// Check returned values
 		assert.Equal(t, true, response.Validated)
-		assert.Equal(t, feeTestSignature, response.Signature)
-		assert.Equal(t, feeTestPublicKey, response.PublicKey)
+		assert.Equal(t, feeTestSignature, *response.Signature)
+		assert.Equal(t, feeTestPublicKey, *response.PublicKey)
 		assert.Equal(t, testEncoding, response.Encoding)
 		assert.Equal(t, testMimeType, response.MimeType)
 	})

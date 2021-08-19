@@ -82,8 +82,8 @@ func TestClient_QueryTransaction(t *testing.T) {
 
 		// Check returned values
 		assert.Equal(t, true, response.Validated)
-		assert.Equal(t, queryTestSignature, response.Signature)
-		assert.Equal(t, queryTestPublicKey, response.PublicKey)
+		assert.Equal(t, queryTestSignature, *response.Signature)
+		assert.Equal(t, queryTestPublicKey, *response.PublicKey)
 		assert.Equal(t, testEncoding, response.Encoding)
 		assert.Equal(t, testMimeType, response.MimeType)
 	})
