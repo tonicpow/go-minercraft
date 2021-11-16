@@ -49,6 +49,13 @@ func (m *mockHTTPValidBestQuote) Do(req *http.Request) (*http.Response, error) {
     	"signature": null,"publicKey": null,"encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
 	}
 
+	if req.URL.String() == feeQuoteURLGorillaPool {
+		resp.StatusCode = http.StatusOK
+		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
+    	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T22:09:04.433Z\",\"expiryTime\":\"2020-10-09T22:19:04.433Z\",\"minerId\":null,\"currentHighestBlockHash\":\"0000000000000000101c34c7cabadbff321f125fac9ba3c2b1294c4d81085f4a\",\"currentHighestBlockHeight\":713780,\"minerReputation\":null,\"fees\":[{\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}},{\"feeType\":\"data\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}}]}",
+    	"signature": null,"publicKey": null,"encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+	}
+
 	// Default is valid
 	return resp, nil
 }
@@ -88,6 +95,11 @@ func (m *mockHTTPBadRate) Do(req *http.Request) (*http.Response, error) {
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(``)))
 	}
 
+	if req.URL.String() == feeQuoteURLGorillaPool {
+		resp.StatusCode = http.StatusBadRequest
+		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(``)))
+	}
+
 	// Default is valid
 	return resp, nil
 }
@@ -112,6 +124,11 @@ func (m *mockHTTPBestQuoteTwoFailed) Do(req *http.Request) (*http.Response, erro
 	}
 
 	if req.URL.String() == feeQuoteURLMatterPool {
+		resp.StatusCode = http.StatusBadRequest
+		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(``)))
+	}
+
+	if req.URL.String() == feeQuoteURLGorillaPool {
 		resp.StatusCode = http.StatusBadRequest
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(``)))
 	}
@@ -152,6 +169,11 @@ func (m *mockHTTPBestQuoteAllFailed) Do(req *http.Request) (*http.Response, erro
 	}
 
 	if req.URL.String() == feeQuoteURLMempool {
+		resp.StatusCode = http.StatusBadRequest
+		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(``)))
+	}
+
+	if req.URL.String() == feeQuoteURLGorillaPool {
 		resp.StatusCode = http.StatusBadRequest
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(``)))
 	}

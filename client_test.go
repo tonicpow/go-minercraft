@@ -61,7 +61,7 @@ func TestNewClient(t *testing.T) {
 		assert.NoError(t, err)
 
 		// Test default miners
-		assert.Equal(t, 3, len(client.Miners))
+		assert.Equal(t, 4, len(client.Miners))
 	})
 
 	t.Run("custom http client", func(t *testing.T) {
@@ -86,6 +86,10 @@ func TestNewClient(t *testing.T) {
 		// Get Matterpool
 		miner = client.MinerByName(MinerMatterpool)
 		assert.Equal(t, MinerMatterpool, miner.Name)
+
+		// Get GorillaPool
+		miner = client.MinerByName(MinerGorillaPool)
+		assert.Equal(t, MinerGorillaPool, miner.Name)
 	})
 
 	t.Run("custom miners", func(t *testing.T) {
@@ -117,7 +121,7 @@ func ExampleNewClient() {
 	}
 
 	fmt.Printf("created new client with %d default miners", len(client.Miners))
-	// Output:created new client with 3 default miners
+	// Output:created new client with 4 default miners
 }
 
 // BenchmarkNewClient benchmarks the method NewClient()
@@ -576,7 +580,7 @@ func ExampleClient_RemoveMiner() {
 
 	// Show response
 	fmt.Printf("total miners: %d", len(client.Miners))
-	// Output:total miners: 2
+	// Output:total miners: 3
 }
 
 // BenchmarkClient_RemoveMiner benchmarks the method RemoveMiner()

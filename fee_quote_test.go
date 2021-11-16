@@ -181,9 +181,10 @@ func (m *mockHTTPInvalidSignature) Do(req *http.Request) (*http.Response, error)
 type mockHTTPBetterRate struct{}
 
 const (
-	feeQuoteURLMatterPool = "https://merchantapi.matterpool.io/mapi/feeQuote"
-	feeQuoteURLMempool    = "https://www.ddpurse.com/openapi/mapi/feeQuote"
-	feeQuoteURLTaal       = "https://merchantapi.taal.com/mapi/feeQuote"
+	feeQuoteURLMatterPool  = "https://merchantapi.matterpool.io/mapi/feeQuote"
+	feeQuoteURLMempool     = "https://www.ddpurse.com/openapi/mapi/feeQuote"
+	feeQuoteURLTaal        = "https://merchantapi.taal.com/mapi/feeQuote"
+	feeQuoteURLGorillaPool = "https://merchantapi.gorillapool.io/mapi/feeQuote"
 )
 
 // Do is a mock http request
@@ -217,6 +218,13 @@ func (m *mockHTTPBetterRate) Do(req *http.Request) (*http.Response, error) {
 		resp.StatusCode = http.StatusOK
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
     	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T22:09:04.433Z\",\"expiryTime\":\"2020-10-09T22:19:04.433Z\",\"minerId\":null,\"currentHighestBlockHash\":\"0000000000000000028285a9168c95457521a743765f499de389c094e883f42a\",\"currentHighestBlockHeight\":656171,\"minerReputation\":null,\"fees\":[{\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":350,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}},{\"feeType\":\"data\",\"miningFee\":{\"satoshis\":430,\"bytes\":1000},\"relayFee\":{\"satoshis\":175,\"bytes\":1000}}]}",
+    	"signature": null,"publicKey": null,"encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+	}
+
+	if req.URL.String() == feeQuoteURLGorillaPool {
+		resp.StatusCode = http.StatusOK
+		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
+    	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T22:09:04.433Z\",\"expiryTime\":\"2020-10-09T22:19:04.433Z\",\"minerId\":null,\"currentHighestBlockHash\":\"0000000000000000101c34c7cabadbff321f125fac9ba3c2b1294c4d81085f4a\",\"currentHighestBlockHeight\":713780,\"minerReputation\":null,\"fees\":[{\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}},{\"feeType\":\"data\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}}]}",
     	"signature": null,"publicKey": null,"encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
 	}
 
