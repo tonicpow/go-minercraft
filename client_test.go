@@ -142,7 +142,7 @@ func TestDefaultClientOptions(t *testing.T) {
 		assert.Equal(t, 20*time.Second, options.DialerKeepAlive)
 		assert.Equal(t, 5*time.Second, options.DialerTimeout)
 		assert.Equal(t, 2, options.RequestRetryCount)
-		assert.Equal(t, 10*time.Second, options.RequestTimeout)
+		assert.Equal(t, 30*time.Second, options.RequestTimeout)
 		assert.Equal(t, 3*time.Second, options.TransportExpectContinueTimeout)
 		assert.Equal(t, 20*time.Second, options.TransportIdleTimeout)
 		assert.Equal(t, 10, options.TransportMaxIdleConnections)
