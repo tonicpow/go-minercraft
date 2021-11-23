@@ -42,6 +42,7 @@ type (
 		Failurecount              int       `json:"failureCount"`
 	}
 
+	// Tx is the transaction format in the mapi txs response.
 	Tx struct {
 		Txid              string           `json:"txid"`
 		Returnresult      string           `json:"returnResult"`
