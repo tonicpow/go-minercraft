@@ -168,6 +168,7 @@ pull_request_rules:
         - author!=galt-tr
         - author!=theflyingcodr
         - author!=Tigh-Gherr
+        - author!=roppa
     actions:
       comment:
         message: |
