@@ -24,7 +24,7 @@ const (
 	// routeSubmitTx is the route for submit a transaction
 	routeSubmitTx = "/mapi/tx"
 
-	// routeSubmitTx is the route for submit batched transactions
+	// routeSubmitTxs is the route for submit batched transactions
 	routeSubmitTxs = "/mapi/txs"
 )
 
