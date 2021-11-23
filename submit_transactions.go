@@ -14,43 +14,46 @@ type (
 
 	// RawSubmitTransactionsResponse is the response returned from mapi where payload is a string.
 	RawSubmitTransactionsResponse struct {
-		TxsPayload string `json:"payload"`
-		Signature  string `json:"signature"`
-		Publickey  string `json:"publicKey"`
-		Encoding   string `json:"encoding"`
-		Mimetype   string `json:"mimetype"`
+		Encoding  string `json:"encoding"`
+		MimeType  string `json:"mimetype"`
+		Payload   string `json:"payload"`
+		PublicKey string `json:"publicKey"`
+		Signature string `json:"signature"`
 	}
 
 	// SubmitTransactionsResponse is the formatted response which converts payload string to payloads.
 	SubmitTransactionsResponse struct {
-		TxsPayload TxsPayload `json:"payload"`
-		Signature  string     `json:"signature"`
-		Publickey  string     `json:"publicKey"`
-		Encoding   string     `json:"encoding"`
-		Mimetype   string     `json:"mimetype"`
+		Encoding  string     `json:"encoding"`
+		MimeType  string     `json:"mimetype"`
+		Payload   TxsPayload `json:"payload"`
+		PublicKey string     `json:"publicKey"`
+		Signature string     `json:"signature"`
 	}
 
 	// TxsPayload is the structure of the json payload string in the MapiResponse.
 	TxsPayload struct {
-		Apiversion                string    `json:"apiVersion"`
+		APIVersion                string    `json:"apiVersion"`
+		CurrentHighestBlockHash   string    `json:"currentHighestBlockHash"`
+		CurrentHighestBlockHeight int       `json:"currentHighestBlockHeight"`
+		FailureCount              int       `json:"failureCount"`
+		MinerID                   string    `json:"minerId"`
 		Timestamp                 time.Time `json:"timestamp"`
-		Minerid                   string    `json:"minerId"`
-		Currenthighestblockhash   string    `json:"currentHighestBlockHash"`
-		Currenthighestblockheight int       `json:"currentHighestBlockHeight"`
-		Txsecondmempoolexpiry     int       `json:"txSecondMempoolExpiry"`
 		Txs                       []Tx      `json:"txs"`
-		Failurecount              int       `json:"failureCount"`
+		TxSecondMempoolExpiry     int       `json:"txSecondMempoolExpiry"`
 	}
 
 	// Tx is the transaction format in the mapi txs response.
 	Tx struct {
-		Txid              string           `json:"txid"`
-		Returnresult      string           `json:"returnResult"`
-		Resultdescription string           `json:"resultDescription"`
-		Conflictedwith    []ConflictedWith `json:"conflictedWith,omitempty"`
+		ConflictedWith    []ConflictedWith `json:"conflictedWith,omitempty"`
+		ResultDescription string           `json:"resultDescription"`
+		ReturnResult      string           `json:"returnResult"`
+		TxID              string           `json:"txid"`
 	}
 )
 
+// SubmitTransactions is used for submitting batched transactions
+//
+// Reference: https://github.com/bitcoin-sv-specs/brfc-merchantapi#4-submit-multiple-transactions
 func (c *Client) SubmitTransactions(ctx context.Context, miner *Miner, txs *[]Transaction) (*SubmitTransactionsResponse, error) {
 	if miner == nil {
 		return nil, errors.New("miner was nil")
@@ -77,19 +80,22 @@ func (c *Client) SubmitTransactions(ctx context.Context, miner *Miner, txs *[]Tr
 	}
 
 	var raw *RawSubmitTransactionsResponse
-	err = json.Unmarshal(response.BodyContents, &raw)
-	if err != nil {
+	if err = json.Unmarshal(
+		response.BodyContents, &raw,
+	); err != nil {
 		return nil, err
 	}
 
 	result := &SubmitTransactionsResponse{
 		Signature: raw.Signature,
-		Publickey: raw.Publickey,
+		PublicKey: raw.PublicKey,
 		Encoding:  raw.Encoding,
-		Mimetype:  raw.Mimetype,
+		MimeType:  raw.MimeType,
 	}
-	err = json.Unmarshal([]byte(raw.TxsPayload), &result.TxsPayload)
-	if err != nil {
+
+	if err = json.Unmarshal(
+		[]byte(raw.Payload), &result.Payload,
+	); err != nil {
 		return nil, err
 	}
 
