@@ -33,7 +33,7 @@ const response = `{
 
 func TestClient_SubmitTransactions(t *testing.T) {
 	tests := map[string]struct {
-		txs        *[]Transaction
+		txs        []Transaction
 		miner      string
 		mockHTTPFn func(*http.Request) (*http.Response, error)
 		code       int
@@ -47,11 +47,11 @@ func TestClient_SubmitTransactions(t *testing.T) {
 		"empty txs should return error": {
 			miner: MinerMatterpool,
 			err:   errors.New("no transactions"),
-			txs:   &[]Transaction{},
+			txs:   []Transaction{},
 		},
 		"one valid and one invalid tx should return specific response": {
 			miner: MinerMatterpool,
-			txs:   &[]Transaction{{RawTx: rawTx}},
+			txs:   []Transaction{{RawTx: rawTx}},
 			exp: &SubmitTransactionsResponse{
 				Payload: TxsPayload{
 					APIVersion:                "1.3.0",
