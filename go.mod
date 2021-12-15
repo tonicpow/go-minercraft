@@ -5,7 +5,7 @@ go 1.15
 require (
 	github.com/gojektech/heimdall/v6 v6.1.0
 	github.com/gojektech/valkyrie v0.0.0-20190210220504-8f62c1e7ba45 // indirect
-	github.com/libsv/go-bk v0.1.5
+	github.com/libsv/go-bk v0.1.6
 	github.com/libsv/go-bt v1.0.4
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/stretchr/objx v0.3.0 // indirect
