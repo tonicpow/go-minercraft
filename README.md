@@ -46,7 +46,7 @@ View documentation on hosting your own [mAPI server](https://github.com/bitcoin-
 
 ### Features
 - Merchant API Support:
-  - [ ] [Policy Quote](https://github.com/bitcoin-sv-specs/brfc-merchantapi#1-get-policy-quote)
+  - [x] [Policy Quote](https://github.com/bitcoin-sv-specs/brfc-merchantapi#1-get-policy-quote)
   - [x] [Fee Quote](https://github.com/bitcoin-sv-specs/brfc-merchantapi#2-get-fee-quote)
   - [x] [Query Transaction Status](https://github.com/bitcoin-sv-specs/brfc-merchantapi#4-query-transaction-status)
   - [x] [Submit Transaction](https://github.com/bitcoin-sv-specs/brfc-merchantapi#3-submit-transaction)

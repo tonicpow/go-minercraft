@@ -32,7 +32,7 @@ func (m *mockHTTPValidQuery) Do(req *http.Request) (*http.Response, error) {
 	if strings.Contains(req.URL.String(), "/mapi/tx/"+testTx) {
 		resp.StatusCode = http.StatusOK
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
-    	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-10T13:07:26.014Z\",\"returnResult\":\"success\",\"resultDescription\":\"\",\"blockHash\":\"0000000000000000050a09fe90b0e8542bba9e712edb8cc9349e61888fe45ac5\",\"blockHeight\":612530,\"confirmations\":43733,\"minerId\":\"0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087\",\"txSecondMempoolExpiry\":0}",
+    	"payload": "{\"apiVersion\":\"0.1.0\",\"timestamp\":\"2020-10-10T13:07:26.014Z\",\"returnResult\":\"success\",\"resultDescription\":\"\",\"blockHash\":\"0000000000000000050a09fe90b0e8542bba9e712edb8cc9349e61888fe45ac5\",\"blockHeight\":612530,\"confirmations\":43733,\"minerId\":\"0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087\",\"txSecondMempoolExpiry\":0}",
     	"signature": "3044022066a8a39ff5f5eae818636aa03fdfc386ea4f33f41993cf41d4fb6d4745ae032102206a8895a6f742d809647ad1a1df12230e9b480275853ed28bc178f4b48afd802a",
     	"publicKey": "0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
 	}
@@ -98,7 +98,7 @@ func TestClient_QueryTransaction(t *testing.T) {
 		assert.Equal(t, MinerMatterpool, response.Miner.Name)
 		assert.Equal(t, queryTestPublicKey, response.Miner.MinerID)
 		assert.Equal(t, "2020-10-10T13:07:26.014Z", response.Query.Timestamp)
-		assert.Equal(t, testAPIVersion, response.Query.APIVersion)
+		assert.Equal(t, "0.1.0", response.Query.APIVersion)
 		assert.Equal(t, "0000000000000000050a09fe90b0e8542bba9e712edb8cc9349e61888fe45ac5", response.Query.BlockHash)
 		assert.Equal(t, int64(612530), response.Query.BlockHeight)
 		assert.Equal(t, QueryTransactionSuccess, response.Query.ReturnResult)
