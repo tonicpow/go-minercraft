@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	testAPIVersion = "0.1.0"
+	testAPIVersion = "1.4.0" // Old version was 0.1.0
 	testEncoding   = "UTF-8"
 	testMimeType   = "application/json"
 	testMinerID    = "1234567"
