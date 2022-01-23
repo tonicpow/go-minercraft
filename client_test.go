@@ -45,7 +45,7 @@ func (m *mockHTTPDefaultClient) Do(req *http.Request) (*http.Response, error) {
 }
 
 // newTestClient returns a client for mocking (using a custom HTTP interface)
-func newTestClient(httpClient HTTPInterface) *Client {
+func newTestClient(httpClient HTTPInterface) ClientInterface {
 	client, _ := NewClient(nil, httpClient, nil)
 	// client.httpClient = httpClient
 	return client
@@ -61,7 +61,7 @@ func TestNewClient(t *testing.T) {
 		assert.NoError(t, err)
 
 		// Test default miners
-		assert.Equal(t, 4, len(client.Miners))
+		assert.Equal(t, 4, len(client.Miners()))
 	})
 
 	t.Run("custom http client", func(t *testing.T) {
@@ -108,7 +108,7 @@ func TestNewClient(t *testing.T) {
 		miner := client.MinerByName(testMinerName)
 		assert.Equal(t, testMinerName, miner.Name)
 
-		assert.Equal(t, 1, len(client.Miners))
+		assert.Equal(t, 1, len(client.Miners()))
 	})
 }
 
@@ -120,7 +120,7 @@ func ExampleNewClient() {
 		return
 	}
 
-	fmt.Printf("created new client with %d default miners", len(client.Miners))
+	fmt.Printf("created new client with %d default miners", len(client.Miners()))
 	// Output:created new client with 4 default miners
 }
 
@@ -172,7 +172,7 @@ func ExampleDefaultClientOptions() {
 		return
 	}
 
-	fmt.Printf("created new client with user agent: %s", client.Options.UserAgent)
+	fmt.Printf("created new client with user agent: %s", client.UserAgent())
 	// Output:created new client with user agent: Custom UserAgent v1.0
 }
 
@@ -579,7 +579,7 @@ func ExampleClient_RemoveMiner() {
 	client.RemoveMiner(client.MinerByName(MinerTaal))
 
 	// Show response
-	fmt.Printf("total miners: %d", len(client.Miners))
+	fmt.Printf("total miners: %d", len(client.Miners()))
 	// Output:total miners: 3
 }
 

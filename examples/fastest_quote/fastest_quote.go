@@ -16,7 +16,7 @@ func main() {
 		log.Fatalf("error occurred: %s", err.Error())
 	}
 
-	log.Printf("querying %d miners for the fastest response...", len(client.Miners))
+	log.Printf("querying %d miners for the fastest response...", len(client.Miners()))
 
 	// Fetch the fastest quote from all miners
 	var response *minercraft.FeeQuoteResponse

@@ -24,7 +24,7 @@ func main() {
 	}
 
 	// Show all miners loaded
-	for _, miner := range client.Miners {
+	for _, miner := range client.Miners() {
 		log.Printf("miner: %s (%s)", miner.Name, miner.URL)
 	}
 }
