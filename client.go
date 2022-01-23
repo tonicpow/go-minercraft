@@ -14,14 +14,14 @@ import (
 	"github.com/gojektech/heimdall/v6/httpclient"
 )
 
-// httpInterface is used for the http client (mocking heimdall)
-type httpInterface interface {
+// HTTPInterface is used for the http client (mocking heimdall)
+type HTTPInterface interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
 // Client is the parent struct that contains the miner clients and list of miners to use
 type Client struct {
-	httpClient httpInterface  // Interface for all HTTP requests
+	httpClient HTTPInterface  // Interface for all HTTP requests
 	Miners     []*Miner       // List of loaded miners
 	Options    *ClientOptions // Client options config
 }
@@ -148,7 +148,7 @@ func DefaultClientOptions() (clientOptions *ClientOptions) {
 // clientOptions: inject custom client options on load
 // customHTTPClient: use your own custom HTTP client
 // customMiners: use your own custom list of miners
-func NewClient(clientOptions *ClientOptions, customHTTPClient *http.Client,
+func NewClient(clientOptions *ClientOptions, customHTTPClient HTTPInterface,
 	customMiners []*Miner) (client *Client, err error) {
 
 	// Create the new client
@@ -165,7 +165,7 @@ func NewClient(clientOptions *ClientOptions, customHTTPClient *http.Client,
 }
 
 // createClient will make a new http client based on the options provided
-func createClient(options *ClientOptions, customHTTPClient *http.Client) (c *Client) {
+func createClient(options *ClientOptions, customHTTPClient HTTPInterface) (c *Client) {
 
 	// Create a client
 	c = new(Client)

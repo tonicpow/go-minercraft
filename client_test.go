@@ -45,9 +45,9 @@ func (m *mockHTTPDefaultClient) Do(req *http.Request) (*http.Response, error) {
 }
 
 // newTestClient returns a client for mocking (using a custom HTTP interface)
-func newTestClient(httpClient httpInterface) *Client {
-	client, _ := NewClient(nil, nil, nil)
-	client.httpClient = httpClient
+func newTestClient(httpClient HTTPInterface) *Client {
+	client, _ := NewClient(nil, httpClient, nil)
+	// client.httpClient = httpClient
 	return client
 }
 
