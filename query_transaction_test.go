@@ -96,7 +96,7 @@ func TestClient_QueryTransaction(t *testing.T) {
 
 		// Test parsed values
 		assert.Equal(t, MinerMatterpool, response.Miner.Name)
-		assert.Equal(t, queryTestPublicKey, response.Miner.MinerID)
+		assert.Equal(t, "0253a9b2d017254b91704ba52aad0df5ca32b4fb5cb6b267ada6aefa2bc5833a93", response.Miner.MinerID)
 		assert.Equal(t, "2020-10-10T13:07:26.014Z", response.Query.Timestamp)
 		assert.Equal(t, "0.1.0", response.Query.APIVersion)
 		assert.Equal(t, "0000000000000000050a09fe90b0e8542bba9e712edb8cc9349e61888fe45ac5", response.Query.BlockHash)
