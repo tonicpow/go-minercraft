@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -589,5 +590,33 @@ func BenchmarkClient_RemoveMiner(b *testing.B) {
 	miner := client.MinerByName(MinerTaal)
 	for i := 0; i < b.N; i++ {
 		_ = client.RemoveMiner(miner)
+	}
+}
+
+// TestDefaultMiners will test the method DefaultMiners()
+func TestDefaultMiners(t *testing.T) {
+	t.Run("default json", func(t *testing.T) {
+		miners, err := DefaultMiners()
+		require.NoError(t, err)
+		require.NotNil(t, miners)
+		assert.Equal(t, 4, len(miners))
+		assert.Equal(t, MinerTaal, miners[0].Name)
+		assert.Equal(t, MinerMempool, miners[1].Name)
+		assert.Equal(t, MinerGorillaPool, miners[3].Name)
+		assert.Equal(t, MinerMatterpool, miners[2].Name)
+	})
+}
+
+// ExampleDefaultMiners example using DefaultMiners()
+func ExampleDefaultMiners() {
+	miners, _ := DefaultMiners()
+	fmt.Printf("total miners: %d", len(miners))
+	// Output:total miners: 4
+}
+
+// BenchmarkDefaultMiners benchmarks the method DefaultMiners()
+func BenchmarkDefaultMiners(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_, _ = DefaultMiners()
 	}
 }

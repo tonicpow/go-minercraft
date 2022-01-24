@@ -183,7 +183,7 @@ func createClient(options *ClientOptions, customHTTPClient HTTPInterface, custom
 	if len(customMiners) > 0 {
 		c.miners = customMiners
 	} else {
-		if err = json.Unmarshal([]byte(KnownMiners), &c.miners); err != nil {
+		if c.miners, err = DefaultMiners(); err != nil {
 			return nil, err
 		}
 	}
@@ -238,5 +238,11 @@ func createClient(options *ClientOptions, customHTTPClient HTTPInterface, custom
 		}),
 	)
 
+	return
+}
+
+// DefaultMiners will parse the config JSON and return a list of miners
+func DefaultMiners() (miners []*Miner, err error) {
+	err = json.Unmarshal([]byte(KnownMiners), &miners)
 	return
 }
