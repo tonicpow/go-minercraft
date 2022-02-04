@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.uber.org/goleak"
 )
 
@@ -194,8 +195,8 @@ func TestClient_BestQuote(t *testing.T) {
 
 		// Create a req
 		response, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
-		assert.NoError(t, err)
-		assert.NotNil(t, response)
+		require.NoError(t, err)
+		require.NotNil(t, response)
 
 		// Check returned values
 		assert.Equal(t, testEncoding, response.Encoding)
@@ -210,8 +211,8 @@ func TestClient_BestQuote(t *testing.T) {
 
 		client := newTestClient(&mockHTTPError{})
 		response, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
-		assert.Error(t, err)
-		assert.Nil(t, response)
+		require.Error(t, err)
+		require.Nil(t, response)
 	})
 
 	t.Run("bad request", func(t *testing.T) {
@@ -219,8 +220,8 @@ func TestClient_BestQuote(t *testing.T) {
 
 		client := newTestClient(&mockHTTPBadRequest{})
 		response, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
-		assert.Error(t, err)
-		assert.Nil(t, response)
+		require.Error(t, err)
+		require.Nil(t, response)
 	})
 
 	t.Run("invalid JSON", func(t *testing.T) {
@@ -228,8 +229,8 @@ func TestClient_BestQuote(t *testing.T) {
 
 		client := newTestClient(&mockHTTPInvalidJSON{})
 		response, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
-		assert.Error(t, err)
-		assert.Nil(t, response)
+		require.Error(t, err)
+		require.Nil(t, response)
 	})
 
 	t.Run("invalid category", func(t *testing.T) {
@@ -237,13 +238,13 @@ func TestClient_BestQuote(t *testing.T) {
 
 		client := newTestClient(&mockHTTPValidBestQuote{})
 		response, err := client.BestQuote(context.Background(), "invalid", FeeTypeData)
-		assert.Error(t, err)
-		assert.Nil(t, response)
+		require.Error(t, err)
+		require.Nil(t, response)
 
 		// Create a req
 		response, err = client.BestQuote(context.Background(), FeeCategoryMining, "invalid")
-		assert.Error(t, err)
-		assert.Nil(t, response)
+		require.Error(t, err)
+		require.Nil(t, response)
 	})
 
 	t.Run("better rate", func(t *testing.T) {
@@ -251,19 +252,19 @@ func TestClient_BestQuote(t *testing.T) {
 
 		client := newTestClient(&mockHTTPBetterRate{})
 		response, err := client.BestQuote(context.Background(), FeeCategoryRelay, FeeTypeData)
-		assert.NoError(t, err)
-		assert.NotNil(t, response)
+		require.NoError(t, err)
+		require.NotNil(t, response)
 
 		// Check that we got fees
 		assert.Equal(t, 2, len(response.Quote.Fees))
 
 		var fee uint64
 		fee, err = response.Quote.CalculateFee(FeeCategoryRelay, FeeTypeData, 1000)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, uint64(100), fee)
 
 		fee, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 1000)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, uint64(500), fee)
 	})
 
@@ -272,8 +273,8 @@ func TestClient_BestQuote(t *testing.T) {
 
 		client := newTestClient(&mockHTTPBadRate{})
 		response, err := client.BestQuote(context.Background(), FeeCategoryRelay, FeeTypeData)
-		assert.Error(t, err)
-		assert.Nil(t, response)
+		require.Error(t, err)
+		require.Nil(t, response)
 	})
 
 	t.Run("best quote - two failed", func(t *testing.T) {
@@ -284,8 +285,8 @@ func TestClient_BestQuote(t *testing.T) {
 
 		// Create a req
 		response, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
-		assert.NoError(t, err)
-		assert.NotNil(t, response)
+		require.NoError(t, err)
+		require.NotNil(t, response)
 
 		// Check returned values
 		assert.Equal(t, testEncoding, response.Encoding)

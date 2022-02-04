@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/libsv/go-bt/v2"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/goleak"
 )
@@ -535,12 +536,12 @@ func TestFeePayload_GetFee(t *testing.T) {
 		// Standard
 		fee := response.Quote.GetFee(FeeTypeStandard)
 		assert.NotNil(t, fee)
-		assert.Equal(t, "standard", fee.FeeType)
+		assert.Equal(t, bt.FeeTypeStandard, fee.FeeType)
 
 		// Data
 		fee = response.Quote.GetFee(FeeTypeData)
 		assert.NotNil(t, fee)
-		assert.Equal(t, "data", fee.FeeType)
+		assert.Equal(t, bt.FeeTypeData, fee.FeeType)
 	})
 
 	t.Run("missing fee type", func(t *testing.T) {

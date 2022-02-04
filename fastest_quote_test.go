@@ -199,6 +199,26 @@ func TestClient_FastestQuote(t *testing.T) {
 		// log.Println(response.Quote.Fees[0].MiningFee)
 	})
 
+	t.Run("valid quote - no timeout", func(t *testing.T) {
+
+		defer goleak.VerifyNone(t)
+
+		// Create a client
+		client := newTestClient(&mockHTTPValidFastestQuoteSlow{})
+
+		// Create a req
+		response, err := client.FastestQuote(context.Background(), 0)
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
+
+		// Check returned values
+		assert.Equal(t, testEncoding, response.Encoding)
+		assert.Equal(t, testMimeType, response.MimeType)
+
+		// Check that we got fees
+		assert.Equal(t, 2, len(response.Quote.Fees))
+	})
+
 	t.Run("http error", func(t *testing.T) {
 
 		defer goleak.VerifyNone(t)

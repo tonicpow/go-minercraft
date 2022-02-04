@@ -53,9 +53,9 @@ func (c *Client) fetchFastestQuote(ctx context.Context, timeout time.Duration) *
 	var wg sync.WaitGroup
 	for _, miner := range c.miners {
 		wg.Add(1)
-		go func(ctx context.Context, wg *sync.WaitGroup, client *Client, miner *Miner) {
+		go func(ctx2 context.Context, wg *sync.WaitGroup, client *Client, miner *Miner) {
 			defer wg.Done()
-			res := getQuote(ctx, client, miner, routeFeeQuote)
+			res := getQuote(ctx2, client, miner, routeFeeQuote)
 			if res.Response.Error == nil {
 				resultsChannel <- res
 			}
