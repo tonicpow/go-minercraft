@@ -79,6 +79,9 @@ func TestClient_PolicyQuote(t *testing.T) {
 		assert.Equal(t, uint32(99999), response.Quote.Policies.MaxTxSizePolicy)
 		assert.Equal(t, uint64(10000000), response.Quote.Policies.MaxStackMemoryUsagePolicy)
 		assert.Equal(t, flags, response.Quote.Policies.SkipScriptFlags)
+
+		assert.Equal(t, 500, response.Quote.FeePayload.GetFee(FeeTypeStandard).MiningFee.Satoshis)
+		assert.Equal(t, 1000, response.Quote.FeePayload.GetFee(FeeTypeStandard).MiningFee.Bytes)
 	})
 
 	t.Run("invalid miner", func(t *testing.T) {
