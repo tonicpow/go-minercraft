@@ -299,6 +299,8 @@ func TestClient_FeeQuote(t *testing.T) {
 		assert.Equal(t, feeTestPublicKey, *response.PublicKey)
 		assert.Equal(t, testEncoding, response.Encoding)
 		assert.Equal(t, testMimeType, response.MimeType)
+		assert.Equal(t, 500, response.Quote.GetFee(FeeTypeStandard).MiningFee.Satoshis)
+		assert.Equal(t, 1000, response.Quote.GetFee(FeeTypeStandard).MiningFee.Bytes)
 	})
 
 	t.Run("valid parse values", func(t *testing.T) {
