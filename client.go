@@ -81,9 +81,14 @@ func (c *Client) RemoveMiner(miner *Miner) bool {
 
 // MinerByName will return a miner given a name
 func (c *Client) MinerByName(name string) *Miner {
-	for index, miner := range c.miners {
-		if strings.EqualFold(name, miner.Name) {
-			return c.miners[index]
+	return MinerByName(c.miners, name)
+}
+
+// MinerByName will return a miner from a given set of miners
+func MinerByName(miners []*Miner, minerName string) *Miner {
+	for index, miner := range miners {
+		if strings.EqualFold(minerName, miner.Name) {
+			return miners[index]
 		}
 	}
 	return nil
@@ -91,9 +96,14 @@ func (c *Client) MinerByName(name string) *Miner {
 
 // MinerByID will return a miner given a miner id
 func (c *Client) MinerByID(minerID string) *Miner {
-	for index, miner := range c.miners {
+	return MinerByID(c.miners, minerID)
+}
+
+// MinerByID will return a miner from a given set of miners
+func MinerByID(miners []*Miner, minerID string) *Miner {
+	for index, miner := range miners {
 		if strings.EqualFold(minerID, miner.MinerID) {
-			return c.miners[index]
+			return miners[index]
 		}
 	}
 	return nil
