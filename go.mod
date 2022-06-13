@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/gojektech/heimdall/v6 v6.1.0
 	github.com/libsv/go-bk v0.1.6
-	github.com/libsv/go-bt/v2 v2.1.0-beta.3
+	github.com/libsv/go-bt/v2 v2.1.0-beta.4
 	github.com/stretchr/testify v1.7.2
 	go.uber.org/goleak v1.1.12
 )
