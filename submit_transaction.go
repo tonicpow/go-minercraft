@@ -139,7 +139,7 @@ func (c *Client) SubmitTransaction(ctx context.Context, miner *Miner, tx *Transa
 
 	// Make the HTTP request
 	result, err := submitTransaction(ctx, c, miner, tx)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	if result.Response.Error != nil {
@@ -180,7 +180,7 @@ func (i *internalResult) parseSubmission() (response SubmitTransactionResponse, 
 func submitTransaction(ctx context.Context, client *Client, miner *Miner, tx *Transaction) (*internalResult, error) {
 	result := &internalResult{Miner: miner}
 	data, err := json.Marshal(tx)
-	if err != nil{
+	if err != nil {
 		return nil, fmt.Errorf("failed to marshall JSON when submitting transaction %w", err)
 	}
 	result.Response = httpRequest(ctx, client, &httpPayload{
