@@ -85,6 +85,8 @@ type SubmissionPayload struct {
 	Timestamp                 string            `json:"timestamp"`
 	TxID                      string            `json:"txid"`
 	TxSecondMempoolExpiry     int64             `json:"txSecondMempoolExpiry"`
+	// FailureRetryable if true indicates the tx can be resubmitted to mAPI.
+	FailureRetryable bool `json:"failureRetryable"`
 }
 
 /*

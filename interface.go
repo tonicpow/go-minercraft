@@ -25,7 +25,7 @@ type MinerService interface {
 
 // TransactionService is the MinerCraft transaction related methods
 type TransactionService interface {
-	QueryTransaction(ctx context.Context, miner *Miner, txID string) (*QueryTransactionResponse, error)
+	QueryTransaction(ctx context.Context, miner *Miner, txID string, opts ...QueryTransactionOptFunc) (*QueryTransactionResponse, error)
 	SubmitTransaction(ctx context.Context, miner *Miner, tx *Transaction) (*SubmitTransactionResponse, error)
 	SubmitTransactions(ctx context.Context, miner *Miner, txs []Transaction) (*SubmitTransactionsResponse, error)
 }

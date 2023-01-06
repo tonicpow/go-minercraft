@@ -4,11 +4,34 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
+	"strings"
 )
+
+// Retryable can be implemented to identify a struct as retryable, in this case an error can be deemed retryable.
+type Retryable interface {
+	// IsRetryable if a method has this method then it's a retryable error.
+	IsRetryable()
+}
+
+// IsRetryable can be passed an error to check if it is retryable
+func IsRetryable(err error) bool {
+	var e Retryable
+	return errors.As(err, &e)
+}
+
+// ErrRetryable indicates a retryable error.
+//
+// To check an error is a retryable error do:
+//
+//	errors.Is(err, minercraft.Retryable)
+type ErrRetryable struct{ error }
+
+// IsRetryable returns true denoting this is retryable.
+func (e ErrRetryable) IsRetryable() {}
 
 // ErrorResponse is the response returned from mAPI on error.
 type ErrorResponse struct {
@@ -17,6 +40,28 @@ type ErrorResponse struct {
 	Status  int    `json:"status"`
 	Detail  string `json:"detail"`
 	TraceID string `json:"traceId"`
+	// Errors will return a list of formatting errors in the case of a bad request
+	// being sent to mAPI.
+	Errors map[string][]string `json:"errors"`
+}
+
+// Error defines the ErrorResponse as an error, an error can be converted
+// to it using the below:
+//
+//	 var errResp ErrorResponse
+//	 if errors.As(testErr, &errResp) {
+//		 // handle error
+//		 fmt.Println(errResp.Title)
+//	 }
+func (e ErrorResponse) Error() string {
+	sb := strings.Builder{}
+	for field, warnings := range e.Errors {
+		sb.WriteString("[" + field + ": ")
+		sb.WriteString(strings.Join(warnings, ", "))
+		sb.WriteString("]")
+	}
+	return fmt.Sprintf("title: %s \n detail: %s \n traceID: %s \n validation errors: %s",
+		e.Title, e.Detail, e.TraceID, sb.String())
 }
 
 // RequestResponse is the response from a request
@@ -37,7 +82,19 @@ type httpPayload struct {
 	Data   []byte `json:"data"`
 }
 
-// httpRequest is a generic request wrapper that can be used without constraints
+// httpRequest is a generic request wrapper that can be used without constraints.
+//
+// If response.Error isn't nil it can be checked for being retryable by calling errors.Is(err, minercraft.Retryable),
+// this means the request returned an intermittent / transient error and can be retried depending on client
+// requirements.
+//
+// It can also be converted to the ErrorResponse type to get the error detail as shown:
+//
+//		var errResp ErrorResponse
+//		if errors.As(testErr, &errResp) {
+//	    // handle error
+//	    fmt.Println(errResp.Title)
+//	 }
 func httpRequest(ctx context.Context, client *Client,
 	payload *httpPayload) (response *RequestResponse) {
 
@@ -97,19 +154,25 @@ func httpRequest(ctx context.Context, client *Client,
 
 	if resp.Body != nil {
 		// Read the body
-		response.BodyContents, response.Error = ioutil.ReadAll(resp.Body)
+		response.BodyContents, response.Error = io.ReadAll(resp.Body)
 	}
 	// Check status code
 	if http.StatusOK == resp.StatusCode {
 		return
 	}
+
+	// indicates that resubmitting this request could be successful when mAPI
+	// is available again.
+	retryable := response.StatusCode >= 500 && response.StatusCode <= 599
 	// unexpected status, write an error.
 	if response.BodyContents == nil {
 		// There's no "body" present, so just echo status code.
-		response.Error = fmt.Errorf(
-			"status code: %d does not match %d",
-			resp.StatusCode, http.StatusOK,
-		)
+		statusErr := fmt.Errorf("status code: %d does not match %d", resp.StatusCode, http.StatusOK)
+		if !retryable {
+			response.Error = statusErr
+			return
+		}
+		response.Error = ErrRetryable{error: statusErr}
 		return
 	}
 	// Have a "body" so map to an error type and add to the error message.
@@ -118,10 +181,10 @@ func httpRequest(ctx context.Context, client *Client,
 		response.Error = fmt.Errorf("failed to unmarshal mapi error response: %w", err)
 		return
 	}
-	response.Error = fmt.Errorf(
-		"status code: %d does not match %d \n, "+
-			"title: %s \n detail: %s \n traceID: %s",
-		resp.StatusCode, http.StatusOK, errBody.Title, errBody.Detail, errBody.TraceID,
-	)
+	if retryable {
+		response.Error = ErrRetryable{error: errBody}
+		return
+	}
+	response.Error = errBody
 	return
 }
