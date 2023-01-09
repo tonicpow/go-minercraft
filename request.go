@@ -41,7 +41,7 @@ func (e ErrRetryable) IsRetryable() {}
 func (e ErrRetryable) Is(err error) bool { return errors.Is(e.err, err) }
 
 // As will return true if the error can be cast to the target.
-func (e ErrRetryable) As(target any) bool { return errors.As(e.err, target) }
+func (e ErrRetryable) As(target interface{}) bool { return errors.As(e.err, target) }
 
 // ErrorResponse is the response returned from mAPI on error.
 type ErrorResponse struct {
