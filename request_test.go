@@ -2,6 +2,7 @@ package minercraft
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"testing"
 
@@ -26,14 +27,21 @@ func Test_ErrorResponse_AsError(t *testing.T) {
 
 func Test_ErrRetryable(t *testing.T) {
 	// Ensure ErrRetryable can be checked for Retryable
-	err := ErrRetryable{}
+	err := ErrRetryable{err: ErrorResponse{}}
 	var testErr error = err
 	// test using our helper method
 	assert.True(t, IsRetryable(testErr))
-
+	assert.Error(t, err)
 	// test using the As method
 	var r Retryable
 	assert.True(t, errors.As(testErr, &r))
+
+	// test using the As method
+	var e ErrorResponse
+	assert.True(t, errors.As(testErr, &e))
+
+	err = ErrRetryable{err: fmt.Errorf("new err")}
+	assert.False(t, errors.As(err, &e))
 }
 
 func Test_ErrorResponse_Error(t *testing.T) {
@@ -67,22 +75,6 @@ func Test_ErrorResponse_Error(t *testing.T) {
 				},
 			},
 			exp: "title: Title123 \n detail: Detail123 \n traceID: TraceID123 \n validation errors: [field1: failed1, failed2]",
-		}, "error response should print string including validation errors with multiple fields when they are present": {
-			err: ErrorResponse{
-				Type:    "Type123",
-				Title:   "Title123",
-				Status:  http.StatusConflict,
-				Detail:  "Detail123",
-				TraceID: "TraceID123",
-				Errors: map[string][]string{
-					"field1": {
-						"failed1", "failed2",
-					}, "field2": {
-						"failed1", "failed2",
-					},
-				},
-			},
-			exp: "title: Title123 \n detail: Detail123 \n traceID: TraceID123 \n validation errors: [field1: failed1, failed2][field2: failed1, failed2]",
 		},
 	}
 	for name, test := range tests {

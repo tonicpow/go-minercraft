@@ -28,10 +28,20 @@ func IsRetryable(err error) bool {
 // To check an error is a retryable error do:
 //
 //	errors.Is(err, minercraft.Retryable)
-type ErrRetryable struct{ error }
+type ErrRetryable struct{ err error }
+
+func (e ErrRetryable) Error() string {
+	return e.err.Error()
+}
 
 // IsRetryable returns true denoting this is retryable.
 func (e ErrRetryable) IsRetryable() {}
+
+// Is allows the underlying error to be checked that it is a certain error type.
+func (e ErrRetryable) Is(err error) bool { return errors.Is(e.err, err) }
+
+// As will return true if the error can be cast to the target.
+func (e ErrRetryable) As(target any) bool { return errors.As(e.err, target) }
 
 // ErrorResponse is the response returned from mAPI on error.
 type ErrorResponse struct {
@@ -172,7 +182,7 @@ func httpRequest(ctx context.Context, client *Client,
 			response.Error = statusErr
 			return
 		}
-		response.Error = ErrRetryable{error: statusErr}
+		response.Error = ErrRetryable{err: statusErr}
 		return
 	}
 	// Have a "body" so map to an error type and add to the error message.
@@ -182,7 +192,7 @@ func httpRequest(ctx context.Context, client *Client,
 		return
 	}
 	if retryable {
-		response.Error = ErrRetryable{error: errBody}
+		response.Error = ErrRetryable{err: errBody}
 		return
 	}
 	response.Error = errBody
