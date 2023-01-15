@@ -182,8 +182,7 @@ pull_request_rules:
         - author!=roppa
     actions:
       comment:
-        message: |
-          Welcome to our open-source project! 💘
+        message: "Welcome to our open-source project @{{author}}! 💘"
 
   # ===============================================================================
   # STALE BRANCHES
