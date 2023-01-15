@@ -7,6 +7,7 @@
 [![codecov](https://codecov.io/gh/tonicpow/go-minercraft/branch/master/graph/badge.svg?v=1)](https://codecov.io/gh/tonicpow/go-minercraft)
 [![Go](https://img.shields.io/github/go-mod/go-version/tonicpow/go-minercraft?v=1)](https://golang.org/)
 [![mAPI](https://img.shields.io/badge/mAPI-1.4.0-blue.svg)](https://github.com/bitcoin-sv-specs/brfc-merchantapi)
+[![mAPI](https://img.shields.io/badge/mAPI-1.5.0-blue.svg)](https://github.com/bitcoin-sv-specs/brfc-merchantapi)
 <br>
 [![Mergify Status](https://img.shields.io/endpoint.svg?url=https://api.mergify.com/v1/badges/tonicpow/go-minercraft&style=flat&v=1)](https://mergify.io)
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod&v=1)](https://gitpod.io/#https://github.com/tonicpow/go-minercraft)

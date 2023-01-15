@@ -5,6 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"net/url"
+	"strings"
+
+	"github.com/libsv/go-bc"
 )
 
 // QueryTransactionSuccess is on success
@@ -70,16 +74,62 @@ Success - added to block
 
 // QueryPayload is the unmarshalled version of the payload envelope
 type QueryPayload struct {
-	APIVersion            string `json:"apiVersion"`
-	Timestamp             string `json:"timestamp"`
-	TxID                  string `json:"txid"`
-	ReturnResult          string `json:"returnResult"`
-	ResultDescription     string `json:"resultDescription"`
-	BlockHash             string `json:"blockHash"`
-	BlockHeight           int64  `json:"blockHeight"`
-	MinerID               string `json:"minerId"`
-	Confirmations         int64  `json:"confirmations"`
-	TxSecondMempoolExpiry int64  `json:"txSecondMempoolExpiry"`
+	APIVersion            string          `json:"apiVersion"`
+	Timestamp             string          `json:"timestamp"`
+	TxID                  string          `json:"txid"`
+	ReturnResult          string          `json:"returnResult"`
+	ResultDescription     string          `json:"resultDescription"`
+	BlockHash             string          `json:"blockHash"`
+	BlockHeight           int64           `json:"blockHeight"`
+	MinerID               string          `json:"minerId"`
+	Confirmations         int64           `json:"confirmations"`
+	TxSecondMempoolExpiry int64           `json:"txSecondMempoolExpiry"`
+	MerkleProof           *bc.MerkleProof `json:"merkleProof"`
+}
+
+// QueryTransactionOptFunc defines an optional argument that can be passed to the QueryTransaction method.
+type QueryTransactionOptFunc func(o *queryTransactionOpts)
+
+type queryTransactionOpts struct {
+	includeProof bool
+	merkleFormat string
+}
+
+func defaultQueryOpts() *queryTransactionOpts {
+	return &queryTransactionOpts{
+		includeProof: false,
+		merkleFormat: MerkleFormatTSC,
+	}
+}
+
+// WithQueryMerkleProof will request that a merkle proof is returned in the query response.
+func WithQueryMerkleProof() QueryTransactionOptFunc {
+	return func(o *queryTransactionOpts) {
+		o.includeProof = true
+	}
+}
+
+// WithoutQueryMerkleProof is the default option and doesn't need to be passed however can be
+// added for code clarity.
+func WithoutQueryMerkleProof() QueryTransactionOptFunc {
+	return func(o *queryTransactionOpts) {
+		o.includeProof = false
+	}
+}
+
+// WithQueryMerkleFormat can be used to overwrite the default format of TSC with another value.
+func WithQueryMerkleFormat(s string) QueryTransactionOptFunc {
+	return func(o *queryTransactionOpts) {
+		o.merkleFormat = s
+	}
+}
+
+// WithQueryTSCMerkleFormat is the default option and doesn't need to be passed however can be
+// added for code clarity.
+func WithQueryTSCMerkleFormat() QueryTransactionOptFunc {
+	return func(o *queryTransactionOpts) {
+		o.merkleFormat = MerkleFormatTSC
+	}
 }
 
 // QueryTransaction will fire a Merchant API request to check the status of a transaction
@@ -89,8 +139,17 @@ type QueryPayload struct {
 // The purpose of the envelope is to ensure strict consistency in the message content for
 // the purpose of signing responses.
 //
+// You can provide optional arguments using the WithQuery... option functions, an example is shown:
+//
+//	QueryTransaction(ctx, miner, abc123, WithQueryMerkleProof(), WithQueryTSCMerkleFormat())
+//
+// This is backwards compatible with the previous non-optional version of this function and be called with 0 options:
+//
+//	QueryTransaction(ctx, miner, abc123)
+//
+// In this case the defaults are used which is to not request a proof.
 // Specs: https://github.com/bitcoin-sv-specs/brfc-merchantapi#4-query-transaction-status
-func (c *Client) QueryTransaction(ctx context.Context, miner *Miner, txID string) (*QueryTransactionResponse, error) {
+func (c *Client) QueryTransaction(ctx context.Context, miner *Miner, txID string, opts ...QueryTransactionOptFunc) (*QueryTransactionResponse, error) {
 
 	// Make sure we have a valid miner
 	if miner == nil {
@@ -98,7 +157,7 @@ func (c *Client) QueryTransaction(ctx context.Context, miner *Miner, txID string
 	}
 
 	// Make the HTTP request
-	result := queryTransaction(ctx, c, miner, txID)
+	result := queryTransaction(ctx, c, miner, txID, opts...)
 	if result.Response.Error != nil {
 		return nil, result.Response.Error
 	}
@@ -119,11 +178,28 @@ func (c *Client) QueryTransaction(ctx context.Context, miner *Miner, txID string
 }
 
 // queryTransaction will fire the HTTP request to retrieve the tx status
-func queryTransaction(ctx context.Context, client *Client, miner *Miner, txHash string) (result *internalResult) {
+func queryTransaction(ctx context.Context, client *Client, miner *Miner, txHash string, opts ...QueryTransactionOptFunc) (result *internalResult) {
+	defaultOpts := defaultQueryOpts()
+
+	// overwrite defaults with any provided options
+	for _, o := range opts {
+		o(defaultOpts)
+	}
+	sb := strings.Builder{}
+	sb.WriteString(miner.URL + routeQueryTx + txHash)
+	if defaultOpts.includeProof {
+		sb.WriteString("?merkleProof=true&merkleFormat=" + defaultOpts.merkleFormat)
+	}
 	result = &internalResult{Miner: miner}
+	queryURL, err := url.Parse(sb.String())
+	if err != nil {
+		result.Response = &RequestResponse{Error: err}
+		return
+	}
+
 	result.Response = httpRequest(ctx, client, &httpPayload{
 		Method: http.MethodGet,
-		URL:    miner.URL + routeQueryTx + txHash,
+		URL:    queryURL.String(),
 		Token:  miner.Token,
 	})
 	return

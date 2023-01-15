@@ -65,22 +65,30 @@ Example PolicyQuoteResponse.Payload (unmarshalled):
             "ipAddress": "123.456.789.123"
         }
     ],
-    "policies": {
-        "skipscriptflags": [ "MINIMALDATA", "DERSIG", "NULLDUMMY", "DISCOURAGE_UPGRADABLE_NOPS", "CLEANSTACK" ],
-        "maxtxsizepolicy": 99999,
-        "datacarriersize": 100000,
-        "maxscriptsizepolicy": 100000,
-        "maxscriptnumlengthpolicy": 100000,
-        "maxstackmemoryusagepolicy": 10000000,
-        "limitancestorcount": 1000,
-        "limitcpfpgroupmemberscount": 10,
-        "acceptnonstdoutputs": true,
-        "datacarrier": true,
-        "dustrelayfee": 150,
-        "maxstdtxvalidationduration": 99,
-        "maxnonstdtxvalidationduration": 100,
-        "dustlimitfactor": 10
-    }
+	  "policies": {
+		"skipscriptflags": [
+		  "MINIMALDATA",
+		  "DERSIG",
+		  "NULLDUMMY",
+		  "DISCOURAGE_UPGRADABLE_NOPS",
+		  "CLEANSTACK"
+		],
+		"maxtxsizepolicy": 99999,
+		"datacarriersize": 100000,
+		"maxscriptsizepolicy": 100000,
+		"maxscriptnumlengthpolicy": 100000,
+		"maxstackmemoryusagepolicy": 10000000,
+		"limitancestorcount": 1000,
+		"limitcpfpgroupmemberscount": 10,
+		"acceptnonstdoutputs": true,
+		"datacarrier": true,
+		"maxstdtxvalidationduration": 99,
+		"maxnonstdtxvalidationduration": 100,
+		"minconsolidationfactor": 10,
+		"maxconsolidationinputscriptsize": 100,
+		"minconfconsolidationinput": 10,
+		"acceptnonstdconsolidationinput": false
+	  }
 }
 */
 
@@ -105,20 +113,22 @@ const (
 
 // Policy is the struct of a policy (from policy quote response)
 type Policy struct {
-	AcceptNonStdOutputs           bool         `json:"acceptnonstdoutputs"`
-	DataCarrier                   bool         `json:"datacarrier"`
-	DataCarrierSize               uint32       `json:"datacarriersize"`
-	DustLimitFactor               uint32       `json:"dustlimitfactor"`
-	DustRelayFee                  uint32       `json:"dustrelayfee"`
-	LimitAncestorCount            uint32       `json:"limitancestorcount"`
-	LimitCpfpGroupMembersCount    uint32       `json:"limitcpfpgroupmemberscount"`
-	MaxNonStdTxValidationDuration uint32       `json:"maxnonstdtxvalidationduration"`
-	MaxScriptNumLengthPolicy      uint32       `json:"maxscriptnumlengthpolicy"`
-	MaxScriptSizePolicy           uint32       `json:"maxscriptsizepolicy"`
-	MaxStackMemoryUsagePolicy     uint64       `json:"maxstackmemoryusagepolicy"`
-	MaxStdTxValidationDuration    uint32       `json:"maxstdtxvalidationduration"`
-	MaxTxSizePolicy               uint32       `json:"maxtxsizepolicy"`
-	SkipScriptFlags               []ScriptFlag `json:"skipscriptflags"`
+	AcceptNonStdOutputs             bool         `json:"acceptnonstdoutputs"`
+	DataCarrier                     bool         `json:"datacarrier"`
+	DataCarrierSize                 uint32       `json:"datacarriersize"`
+	LimitAncestorCount              uint32       `json:"limitancestorcount"`
+	LimitCpfpGroupMembersCount      uint32       `json:"limitcpfpgroupmemberscount"`
+	MaxNonStdTxValidationDuration   uint32       `json:"maxnonstdtxvalidationduration"`
+	MaxScriptNumLengthPolicy        uint32       `json:"maxscriptnumlengthpolicy"`
+	MaxScriptSizePolicy             uint32       `json:"maxscriptsizepolicy"`
+	MaxStackMemoryUsagePolicy       uint64       `json:"maxstackmemoryusagepolicy"`
+	MaxStdTxValidationDuration      uint32       `json:"maxstdtxvalidationduration"`
+	MaxTxSizePolicy                 uint32       `json:"maxtxsizepolicy"`
+	SkipScriptFlags                 []ScriptFlag `json:"skipscriptflags"`
+	MaxConsolidationFactor          uint32       `json:"minconsolidationfactor"`
+	MaxConsolidationInputScriptSize uint32       `json:"maxconsolidationinputscriptsize"`
+	MinConfConsolidationInput       uint32       `json:"minconfconsolidationinput"`
+	AcceptNonStdConsolidationInput  bool         `json:"acceptnonstdconsolidationinput"`
 }
 
 // PolicyCallback is the callback address

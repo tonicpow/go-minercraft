@@ -56,7 +56,6 @@ Example FeeQuoteResponse.Payload (unmarshalled):
   "minerId": "0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087",
   "currentHighestBlockHash": "000000000000000000edb30c3bbbc8e6a07e522e85522e6a213f7e933e6e2d8d",
   "currentHighestBlockHeight": 655874,
-  "minerReputation": null,
   "fees": [
     {
       "feeType": "standard",
@@ -95,7 +94,8 @@ type (
 	// rawFeePayload is the unmarshalled version of the payload envelope
 	rawFeePayload struct {
 		feePayloadFields
-		Fees []*feeObj `json:"fees"`
+		Callbacks []*PolicyCallback `json:"callbacks"` // IP addresses of double-spend notification servers such as mAPI reference implementation
+		Fees      []*feeObj         `json:"fees"`
 	}
 
 	// feePayloadFields are the same fields in both payloads

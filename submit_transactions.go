@@ -48,6 +48,8 @@ type (
 		ResultDescription string           `json:"resultDescription"`
 		ReturnResult      string           `json:"returnResult"`
 		TxID              string           `json:"txid"`
+		// FailureRetryable if true indicates the tx can be resubmitted to mAPI.
+		FailureRetryable bool `json:"failureRetryable"`
 	}
 )
 
