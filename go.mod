@@ -6,7 +6,7 @@ require (
 	github.com/gojektech/heimdall/v6 v6.1.0
 	github.com/libsv/go-bc v0.1.11
 	github.com/libsv/go-bk v0.1.6
-	github.com/libsv/go-bt/v2 v2.2.0
+	github.com/libsv/go-bt/v2 v2.2.1
 	github.com/stretchr/testify v1.8.2
 	go.uber.org/goleak v1.2.1
 )
