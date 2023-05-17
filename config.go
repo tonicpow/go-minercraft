@@ -15,8 +15,8 @@ const (
 )
 
 const (
-	// mAPI stands for Merchant API
-	mAPI APIType = "mAPI"
+	// MAPI stands for Merchant API
+	MAPI APIType = "mAPI"
 	// Arc stands for Arc API
 	Arc APIType = "Arc"
 )
@@ -52,35 +52,52 @@ const (
 	mAPIRouteSubmitTxs = "/mapi/txs"
 )
 
+// Arc routes
+const (
+	// arcRoutePolicyQuote is the route for getting a policy quote
+	arcRoutePolicyQuote = "/v1/policy"
+	// arcRouteQueryTx is the route for querying a transaction
+	arcRouteQueryTx = "/v1/tx/"
+	// arcRouteSubmitTx is the route for submit a transaction
+	arcRouteSubmitTx = "/v1/tx"
+	// arcRouteSubmitTxs is the route for submit batched transactions
+	arcRouteSubmitTxs = "/v1/txs"
+)
+
+// Routes is a list of known actions with it's routes for the different APIs
 var Routes = []APIRoute{
 	{
 		Name: PolicyQuote,
 		Routes: []APISpecificRoute{
-			{Route: mAPIRoutePolicyQuote, APIType: mAPI},
+			{Route: mAPIRoutePolicyQuote, APIType: MAPI},
+			{Route: arcRoutePolicyQuote, APIType: Arc},
 		},
 	},
 	{
 		Name: FeeQuote,
 		Routes: []APISpecificRoute{
-			{Route: mAPIRouteFeeQuote, APIType: mAPI},
+			{Route: mAPIRouteFeeQuote, APIType: MAPI},
 		},
 	},
 	{
 		Name: QueryTx,
 		Routes: []APISpecificRoute{
-			{Route: mAPIRouteQueryTx, APIType: mAPI},
+			{Route: mAPIRouteQueryTx, APIType: MAPI},
+			{Route: arcRouteQueryTx, APIType: Arc},
 		},
 	},
 	{
 		Name: SubmitTx,
 		Routes: []APISpecificRoute{
-			{Route: mAPIRouteSubmitTx, APIType: mAPI},
+			{Route: mAPIRouteSubmitTx, APIType: MAPI},
+			{Route: arcRouteSubmitTx, APIType: Arc},
 		},
 	},
 	{
 		Name: SubmitTxs,
 		Routes: []APISpecificRoute{
-			{Route: mAPIRouteSubmitTxs, APIType: mAPI},
+			{Route: mAPIRouteSubmitTxs, APIType: MAPI},
+			{Route: arcRouteSubmitTxs, APIType: Arc},
 		},
 	},
 }
@@ -115,7 +132,7 @@ const KnownMiners = `
          },
          {
             "token":"",
-            "url":"https://tapi.taal.com/arc/v1",
+            "url":"https://tapi.taal.com/arc",
             "type":"Arc"
          }
       ]
@@ -153,7 +170,7 @@ const KnownMiners = `
          },
          {
             "token":"",
-            "url":"https://arc.gorillapool.io/v1",
+            "url":"https://arc.gorillapool.io",
             "type":"Arc"
          }
       ]
