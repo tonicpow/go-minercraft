@@ -25,7 +25,7 @@ func (c *Client) BestQuote(ctx context.Context, feeCategory, feeType string) (*F
 		go func(ctx context.Context, wg *sync.WaitGroup, client *Client,
 			miner *Miner, resultsChannel chan *internalResult) {
 			defer wg.Done()
-			resultsChannel <- getQuote(ctx, client, miner, routeFeeQuote)
+			resultsChannel <- getQuote(ctx, client, miner, mAPIRouteFeeQuote)
 		}(ctx, &wg, c, miner, resultsChannel)
 	}
 

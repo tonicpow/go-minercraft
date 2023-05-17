@@ -200,7 +200,7 @@ func (c *Client) FeeQuote(ctx context.Context, miner *Miner) (*FeeQuoteResponse,
 	}
 
 	// Make the HTTP request
-	result := getQuote(ctx, c, miner, routeFeeQuote)
+	result := getQuote(ctx, c, miner, mAPIRouteFeeQuote)
 	if result.Response.Error != nil {
 		return nil, result.Response.Error
 	}

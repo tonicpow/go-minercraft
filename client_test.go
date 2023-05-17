@@ -88,8 +88,8 @@ func TestNewClient(t *testing.T) {
 		assert.Equal(t, MinerMatterpool, miner.Name)
 
 		// Get GorillaPool
-		miner = client.MinerByName(MinerGorillaPoolmAPI)
-		assert.Equal(t, MinerGorillaPoolmAPI, miner.Name)
+		miner = client.MinerByName(MinerGorillaPool)
+		assert.Equal(t, MinerGorillaPool, miner.Name)
 	})
 
 	t.Run("custom miners", func(t *testing.T) {

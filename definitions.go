@@ -13,6 +13,11 @@ type Miner struct {
 	APIs    []API  `json:"apis,omitempty"`
 }
 
+// APIType is the type of available APIs
+type APIType string
+
+type APIActionName string
+
 // API is a configuration per miner, including connection url, auth token, etc
 type API struct {
 	Type  APIType `json:"type,omitempty"`
@@ -20,15 +25,17 @@ type API struct {
 	URL   string  `json:"url,omitempty"`
 }
 
-// APIType is the type of API
-type APIType string
+// APIRoute contains the routes for a specific API related to a specific action
+type APIRoute struct {
+	Name   APIActionName      `json:"name,omitempty"`
+	Routes []APISpecificRoute `json:"routes,omitempty"`
+}
 
-const (
-	// mAPI stands for Merchant API
-	mAPI APIType = "mAPI"
-	// Arc stands for Arc API
-	Arc APIType = "Arc"
-)
+// APISpecificRoute contains route definition for a specific API type
+type APISpecificRoute struct {
+	Route   string  `json:"route,omitempty"`
+	APIType APIType `json:"apitype,omitempty"`
+}
 
 // JSONEnvelope is a standard response from the Merchant API requests
 //

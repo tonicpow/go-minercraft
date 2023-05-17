@@ -15,21 +15,75 @@ const (
 )
 
 const (
-	// routePolicyQuote is the route for getting a policy quote
-	routePolicyQuote = "/mapi/policyQuote"
-
-	// routeFeeQuote is the route for getting a fee quote
-	routeFeeQuote = "/mapi/feeQuote"
-
-	// routeQueryTx is the route for querying a transaction
-	routeQueryTx = "/mapi/tx/"
-
-	// routeSubmitTx is the route for submit a transaction
-	routeSubmitTx = "/mapi/tx"
-
-	// routeSubmitTxs is the route for submit batched transactions
-	routeSubmitTxs = "/mapi/txs"
+	// mAPI stands for Merchant API
+	mAPI APIType = "mAPI"
+	// Arc stands for Arc API
+	Arc APIType = "Arc"
 )
+
+const (
+	// PolicyQuote is the name of the PolicyQuote API action
+	PolicyQuote APIActionName = "PolicyQuote"
+	// FeeQuote is the name of the FeeQuote API action
+	FeeQuote APIActionName = "FeeQuote"
+	// QueryTx is the name of the Query Transaction API action
+	QueryTx APIActionName = "QueryTx"
+	// SubmitTx is the name of the Submit Transaction API action
+	SubmitTx APIActionName = "SubmitTx"
+	// SubmitTxs is the name of the Submit multiple Transactions API action
+	SubmitTxs APIActionName = "SubmitTxs"
+)
+
+// mAPI routes
+const (
+	// mAPIRoutePolicyQuote is the route for getting a policy quote
+	mAPIRoutePolicyQuote = "/mapi/policyQuote"
+
+	// mAPIRouteFeeQuote is the route for getting a fee quote
+	mAPIRouteFeeQuote = "/mapi/feeQuote"
+
+	// mAPIRouteQueryTx is the route for querying a transaction
+	mAPIRouteQueryTx = "/mapi/tx/"
+
+	// mAPIRouteSubmitTx is the route for submit a transaction
+	mAPIRouteSubmitTx = "/mapi/tx"
+
+	// mAPIRouteSubmitTxs is the route for submit batched transactions
+	mAPIRouteSubmitTxs = "/mapi/txs"
+)
+
+var Routes = []APIRoute{
+	{
+		Name: PolicyQuote,
+		Routes: []APISpecificRoute{
+			{Route: mAPIRoutePolicyQuote, APIType: mAPI},
+		},
+	},
+	{
+		Name: FeeQuote,
+		Routes: []APISpecificRoute{
+			{Route: mAPIRouteFeeQuote, APIType: mAPI},
+		},
+	},
+	{
+		Name: QueryTx,
+		Routes: []APISpecificRoute{
+			{Route: mAPIRouteQueryTx, APIType: mAPI},
+		},
+	},
+	{
+		Name: SubmitTx,
+		Routes: []APISpecificRoute{
+			{Route: mAPIRouteSubmitTx, APIType: mAPI},
+		},
+	},
+	{
+		Name: SubmitTxs,
+		Routes: []APISpecificRoute{
+			{Route: mAPIRouteSubmitTxs, APIType: mAPI},
+		},
+	},
+}
 
 const (
 	// MinerTaal is the name of the known miner for "Taal"
@@ -42,9 +96,7 @@ const (
 	MinerMatterpool = "Matterpool"
 
 	// MinerGorillaPool is the name of the known miner for "GorillaPool"
-	MinerGorillaPoolmAPI = "GorillaPool_mAPI"
-
-	MinerGorillaPoolArc = "GorillaPool_arc"
+	MinerGorillaPool = "GorillaPool"
 )
 
 // KnownMiners is a pre-filled list of known miners
@@ -52,35 +104,59 @@ const (
 // update your custom token with client.MinerUpdateToken("name", "token")
 const KnownMiners = `
 [
-  {
-   "name": "Taal",
-   "miner_id": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270",
-   "token": "",
-   "url": "https://merchantapi.taal.com"
-  },
-  {
-   "name": "Mempool",
-   "miner_id": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270",
-   "token": "561b756d12572020ea9a104c3441b71790acbbce95a6ddbf7e0630971af9424b",
-   "url": "https://www.ddpurse.com/openapi"
-  },
-  {
-   "name": "Matterpool",
-   "miner_id": "0253a9b2d017254b91704ba52aad0df5ca32b4fb5cb6b267ada6aefa2bc5833a93",
-   "token": "",
-   "url": "https://merchantapi.matterpool.io"
-  },
-  {
-   "name": "GorillaPool_mAPI",
-   "miner_id": "03ad780153c47df915b3d2e23af727c68facaca4facd5f155bf5018b979b9aeb83",
-   "token": "",
-   "url": "https://merchantapi.gorillapool.io"
-  },
-  {
-	"name": "GorillaPool_arc",
-	"miner_id": "03ad780153c47df915b3d2e23af727c68facaca4facd5f155bf5018b979b9aeb83",
-	"token": "",
-	"url": "https://arc.gorillapool.io/v1/"
-  }
+   {
+      "name":"Taal",
+      "miner_id":"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270",
+      "apis":[
+         {
+            "token":"",
+            "url":"https://merchantapi.taal.com",
+            "type":"mAPI"
+         },
+         {
+            "token":"",
+            "url":"https://tapi.taal.com/arc/v1",
+            "type":"Arc"
+         }
+      ]
+   },
+   {
+      "name":"Mempool",
+      "miner_id":"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270",
+      "apis":[
+         {
+            "token":"561b756d12572020ea9a104c3441b71790acbbce95a6ddbf7e0630971af9424b",
+            "url":"https://www.ddpurse.com/openapi",
+            "type":"mAPI"
+         }
+      ]
+   },
+   {
+      "name":"Matterpool",
+      "miner_id":"0253a9b2d017254b91704ba52aad0df5ca32b4fb5cb6b267ada6aefa2bc5833a93",
+      "apis":[
+         {
+            "token":"",
+            "url":"https://merchantapi.matterpool.io",
+            "type":"mAPI"
+         }
+      ]
+   },
+   {
+      "name":"GorillaPool",
+      "miner_id":"03ad780153c47df915b3d2e23af727c68facaca4facd5f155bf5018b979b9aeb83",
+      "apis":[
+         {
+            "token":"",
+            "url":"https://merchantapi.gorillapool.io",
+            "type":"mAPI"
+         },
+         {
+            "token":"",
+            "url":"https://arc.gorillapool.io/v1",
+            "type":"Arc"
+         }
+      ]
+   }
 ]
 `

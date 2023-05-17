@@ -153,7 +153,7 @@ func (c *Client) PolicyQuote(ctx context.Context, miner *Miner) (*PolicyQuoteRes
 	}
 
 	// Make the HTTP request
-	result := getQuote(ctx, c, miner, routePolicyQuote)
+	result := getQuote(ctx, c, miner, mAPIRoutePolicyQuote)
 	if result.Response.Error != nil {
 		return nil, result.Response.Error
 	}
