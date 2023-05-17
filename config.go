@@ -117,63 +117,81 @@ const (
 )
 
 // KnownMiners is a pre-filled list of known miners
-// Any pre-filled tokens are for free use only
-// update your custom token with client.MinerUpdateToken("name", "token")
 const KnownMiners = `
 [
    {
       "name":"Taal",
-      "miner_id":"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270",
-      "apis":[
-         {
-            "token":"",
-            "url":"https://merchantapi.taal.com",
-            "type":"mAPI"
-         },
-         {
-            "token":"",
-            "url":"https://tapi.taal.com/arc",
-            "type":"Arc"
-         }
-      ]
+      "miner_id":"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270"
    },
    {
       "name":"Mempool",
-      "miner_id":"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270",
-      "apis":[
-         {
-            "token":"561b756d12572020ea9a104c3441b71790acbbce95a6ddbf7e0630971af9424b",
-            "url":"https://www.ddpurse.com/openapi",
-            "type":"mAPI"
-         }
-      ]
+      "miner_id":"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270"
    },
    {
       "name":"Matterpool",
-      "miner_id":"0253a9b2d017254b91704ba52aad0df5ca32b4fb5cb6b267ada6aefa2bc5833a93",
-      "apis":[
-         {
-            "token":"",
-            "url":"https://merchantapi.matterpool.io",
-            "type":"mAPI"
-         }
-      ]
+      "miner_id":"0253a9b2d017254b91704ba52aad0df5ca32b4fb5cb6b267ada6aefa2bc5833a93"
    },
    {
       "name":"GorillaPool",
-      "miner_id":"03ad780153c47df915b3d2e23af727c68facaca4facd5f155bf5018b979b9aeb83",
-      "apis":[
-         {
-            "token":"",
-            "url":"https://merchantapi.gorillapool.io",
-            "type":"mAPI"
-         },
-         {
-            "token":"",
-            "url":"https://arc.gorillapool.io",
-            "type":"Arc"
-         }
-      ]
+      "miner_id":"03ad780153c47df915b3d2e23af727c68facaca4facd5f155bf5018b979b9aeb83"
    }
+]
+`
+
+// Any pre-filled tokens are for free use only
+// update your custom token with client.MinerUpdateToken("name", "token")
+// TODO: Update client.MinerUpdateToken method and related
+const KnownMinersAPIs = `
+[
+	{
+		"miner_id":"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270",
+		"apis":[
+		   {
+			  "token":"",
+			  "url":"https://merchantapi.taal.com",
+			  "type":"mAPI"
+		   },
+		   {
+			  "token":"",
+			  "url":"https://tapi.taal.com/arc",
+			  "type":"Arc"
+		   }
+		],
+	},
+	{
+		"miner_id":"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270",
+		"apis":[
+		   {
+			  "token":"561b756d12572020ea9a104c3441b71790acbbce95a6ddbf7e0630971af9424b",
+			  "url":"https://www.ddpurse.com/openapi",
+			  "type":"mAPI"
+		   }
+		]
+	},
+	{
+		"miner_id":"0253a9b2d017254b91704ba52aad0df5ca32b4fb5cb6b267ada6aefa2bc5833a93",
+		"apis":[
+		   {
+			  "token":"",
+			  "url":"https://merchantapi.matterpool.io",
+			  "type":"mAPI"
+		   }
+		]
+	},
+	{
+		"miner_id":"03ad780153c47df915b3d2e23af727c68facaca4facd5f155bf5018b979b9aeb83",
+      	"apis":[
+         	{
+            	"token":"",
+            	"url":"https://merchantapi.gorillapool.io",
+            	"type":"mAPI"
+         	},
+         	{
+            	"token":"",
+            	"url":"https://arc.gorillapool.io",
+            	"type":"Arc"
+         	}
+      	]
+	}
 ]
 `

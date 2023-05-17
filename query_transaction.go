@@ -186,7 +186,7 @@ func queryTransaction(ctx context.Context, client *Client, miner *Miner, txHash 
 		o(defaultOpts)
 	}
 	sb := strings.Builder{}
-	// TODO: Align with new structure
+
 	// sb.WriteString(miner.URL + routeQueryTx + txHash)
 	if defaultOpts.includeProof {
 		sb.WriteString("?merkleProof=true&merkleFormat=" + defaultOpts.merkleFormat)

@@ -10,6 +10,10 @@ import (
 type Miner struct {
 	MinerID string `json:"miner_id,omitempty"`
 	Name    string `json:"name,omitempty"`
+}
+
+type MinerAPIs struct {
+	MinerID string `json:"miner_id,omitempty"`
 	APIs    []API  `json:"apis,omitempty"`
 }
 

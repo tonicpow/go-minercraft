@@ -18,6 +18,7 @@ type HTTPInterface interface {
 
 // Client is the parent struct that contains the miner clients and list of miners to use
 type Client struct {
+	apiType    APIType        // The API type to use
 	httpClient HTTPInterface  // Interface for all HTTP requests
 	miners     []*Miner       // List of loaded miners
 	Options    *ClientOptions // Client options config
@@ -167,14 +168,14 @@ func DefaultClientOptions() (clientOptions *ClientOptions) {
 // customHTTPClient: use your own custom HTTP client
 // customMiners: use your own custom list of miners
 func NewClient(clientOptions *ClientOptions, customHTTPClient HTTPInterface,
-	customMiners []*Miner) (client ClientInterface, err error) {
+	apiType APIType, customMiners []*Miner) (client ClientInterface, err error) {
 
 	// Create the new client
-	return createClient(clientOptions, customHTTPClient, customMiners)
+	return createClient(clientOptions, apiType, customHTTPClient, customMiners)
 }
 
 // createClient will make a new http client based on the options provided
-func createClient(options *ClientOptions, customHTTPClient HTTPInterface, customMiners []*Miner) (c *Client, err error) {
+func createClient(options *ClientOptions, apiType APIType, customHTTPClient HTTPInterface, customMiners []*Miner) (c *Client, err error) {
 
 	// Create a client
 	c = new(Client)

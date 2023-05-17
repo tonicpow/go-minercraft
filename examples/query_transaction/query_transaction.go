@@ -10,13 +10,13 @@ import (
 func main() {
 
 	// Create a new client
-	client, err := minercraft.NewClient(nil, nil, nil)
+	client, err := minercraft.NewClient(nil, nil, "", nil)
 	if err != nil {
 		log.Fatalf("error occurred: %s", err.Error())
 	}
 
 	// Select the miner
-	miner := client.MinerByName(minercraft.MinerGorillaPoolArc)
+	miner := client.MinerByName(minercraft.MinerGorillaPool)
 
 	// Query the transaction status
 	var response *minercraft.QueryTransactionResponse
