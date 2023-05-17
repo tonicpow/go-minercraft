@@ -42,7 +42,9 @@ const (
 	MinerMatterpool = "Matterpool"
 
 	// MinerGorillaPool is the name of the known miner for "GorillaPool"
-	MinerGorillaPool = "GorillaPool"
+	MinerGorillaPoolmAPI = "GorillaPool_mAPI"
+
+	MinerGorillaPoolArc = "GorillaPool_arc"
 )
 
 // KnownMiners is a pre-filled list of known miners
@@ -69,10 +71,16 @@ const KnownMiners = `
    "url": "https://merchantapi.matterpool.io"
   },
   {
-   "name": "GorillaPool",
+   "name": "GorillaPool_mAPI",
    "miner_id": "03ad780153c47df915b3d2e23af727c68facaca4facd5f155bf5018b979b9aeb83",
    "token": "",
    "url": "https://merchantapi.gorillapool.io"
+  },
+  {
+	"name": "GorillaPool_arc",
+	"miner_id": "03ad780153c47df915b3d2e23af727c68facaca4facd5f155bf5018b979b9aeb83",
+	"token": "",
+	"url": "https://arc.gorillapool.io/v1/"
   }
 ]
 `

@@ -10,9 +10,25 @@ import (
 type Miner struct {
 	MinerID string `json:"miner_id,omitempty"`
 	Name    string `json:"name,omitempty"`
-	Token   string `json:"token,omitempty"`
-	URL     string `json:"url"`
+	APIs    []API  `json:"apis,omitempty"`
 }
+
+// API is a configuration per miner, including connection url, auth token, etc
+type API struct {
+	Type  APIType `json:"type,omitempty"`
+	Token string  `json:"token,omitempty"`
+	URL   string  `json:"url,omitempty"`
+}
+
+// APIType is the type of API
+type APIType string
+
+const (
+	// mAPI stands for Merchant API
+	mAPI APIType = "mAPI"
+	// Arc stands for Arc API
+	Arc APIType = "Arc"
+)
 
 // JSONEnvelope is a standard response from the Merchant API requests
 //

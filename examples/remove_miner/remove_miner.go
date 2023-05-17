@@ -18,7 +18,8 @@ func main() {
 	client.RemoveMiner(client.MinerByName(minercraft.MinerTaal))
 
 	// Show all miners loaded
-	for _, miner := range client.Miners() {
-		log.Printf("miner: %s (%s)", miner.Name, miner.URL)
-	}
+	// TODO: Align with new structure
+	// for _, miner := range client.Miners() {
+	// 	log.Printf("miner: %s (%s)", miner.Name, miner.URL)
+	// }
 }

@@ -2,11 +2,8 @@ package minercraft
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
 	"net"
 	"net/http"
-	"net/url"
 	"strings"
 	"time"
 
@@ -28,41 +25,41 @@ type Client struct {
 
 // AddMiner will add a new miner to the list of miners
 func (c *Client) AddMiner(miner Miner) error {
-
+	// TODO: Align with new structure
 	// Make sure we have the basic requirements
-	if len(miner.Name) == 0 {
-		return errors.New("missing miner name")
-	} else if len(miner.URL) == 0 {
-		return errors.New("missing miner url")
-	}
+	// if len(miner.Name) == 0 {
+	// 	return errors.New("missing miner name")
+	// } else if len(miner.URL) == 0 {
+	// 	return errors.New("missing miner url")
+	// }
 
-	// Check if a miner with that name already exists
-	existingMiner := c.MinerByName(miner.Name)
-	if existingMiner != nil {
-		return fmt.Errorf("miner %s already exists", miner.Name)
-	}
+	// // Check if a miner with that name already exists
+	// existingMiner := c.MinerByName(miner.Name)
+	// if existingMiner != nil {
+	// 	return fmt.Errorf("miner %s already exists", miner.Name)
+	// }
 
-	// Check if a miner with the minerID already exists
-	if len(miner.MinerID) > 0 {
-		if existingMiner = c.MinerByID(miner.MinerID); existingMiner != nil {
-			return fmt.Errorf("miner %s already exists", miner.MinerID)
-		}
-	}
+	// // Check if a miner with the minerID already exists
+	// if len(miner.MinerID) > 0 {
+	// 	if existingMiner = c.MinerByID(miner.MinerID); existingMiner != nil {
+	// 		return fmt.Errorf("miner %s already exists", miner.MinerID)
+	// 	}
+	// }
 
-	// Ensure that we have a protocol
-	if !strings.Contains(miner.URL, "http") {
-		return fmt.Errorf("miner %s is missing http from url", miner.Name)
-	}
+	// // Ensure that we have a protocol
+	// if !strings.Contains(miner.URL, "http") {
+	// 	return fmt.Errorf("miner %s is missing http from url", miner.Name)
+	// }
 
-	// Test parsing the url
-	parsedURL, err := url.Parse(miner.URL)
-	if err != nil {
-		return err
-	}
-	miner.URL = parsedURL.String()
+	// // Test parsing the url
+	// parsedURL, err := url.Parse(miner.URL)
+	// if err != nil {
+	// 	return err
+	// }
+	// // miner.URL = parsedURL.String()
 
-	// Append the new miner
-	c.miners = append(c.miners, &miner)
+	// // Append the new miner
+	// c.miners = append(c.miners, &miner)
 	return nil
 }
 
@@ -112,7 +109,8 @@ func MinerByID(miners []*Miner, minerID string) *Miner {
 // MinerUpdateToken will find a miner by name and update the token
 func (c *Client) MinerUpdateToken(name, token string) {
 	if miner := c.MinerByName(name); miner != nil {
-		miner.Token = token
+		// TODO: Align with new structure
+		// miner.Token = token
 	}
 }
 
@@ -190,6 +188,7 @@ func createClient(options *ClientOptions, customHTTPClient HTTPInterface, custom
 	c.Options = options
 
 	// Load custom vs pre-defined
+	// TODO: Maybe try to pass mode here in createClient
 	if len(customMiners) > 0 {
 		c.miners = customMiners
 	} else {

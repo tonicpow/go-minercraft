@@ -16,7 +16,7 @@ func main() {
 	}
 
 	// Select the miner
-	miner := client.MinerByName(minercraft.MinerTaal)
+	miner := client.MinerByName(minercraft.MinerGorillaPoolArc)
 
 	// Query the transaction status
 	var response *minercraft.QueryTransactionResponse

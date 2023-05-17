@@ -72,9 +72,10 @@ func (c *Client) SubmitTransactions(ctx context.Context, miner *Miner, txs []Tra
 
 	response := httpRequest(ctx, c, &httpPayload{
 		Method: http.MethodPost,
-		URL:    miner.URL + routeSubmitTxs,
-		Token:  miner.Token,
-		Data:   data,
+		// TODO: Align with new structure
+		// URL:    miner.URL + routeSubmitTxs,
+		// Token:  miner.Token,
+		Data: data,
 	})
 
 	if response.Error != nil {

@@ -17,13 +17,15 @@ func main() {
 	// Add a custom miner!
 	if err = client.AddMiner(minercraft.Miner{
 		Name: "Custom",
-		URL:  "https://mapi.customminer.com",
+		// TODO: Align with new structure
+		// URL:  "https://mapi.customminer.com",
 	}); err != nil {
 		log.Fatalf("error occurred: %s", err.Error())
 	}
 
 	// Show all miners loaded
-	for _, miner := range client.Miners() {
-		log.Printf("miner: %s (%s)", miner.Name, miner.URL)
-	}
+	// TODO: Align with new structure
+	// for _, miner := range client.Miners() {
+	// 	log.Printf("miner: %s (%s)", miner.Name, miner.URL)
+	// }
 }

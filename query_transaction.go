@@ -186,7 +186,8 @@ func queryTransaction(ctx context.Context, client *Client, miner *Miner, txHash 
 		o(defaultOpts)
 	}
 	sb := strings.Builder{}
-	sb.WriteString(miner.URL + routeQueryTx + txHash)
+	// TODO: Align with new structure
+	// sb.WriteString(miner.URL + routeQueryTx + txHash)
 	if defaultOpts.includeProof {
 		sb.WriteString("?merkleProof=true&merkleFormat=" + defaultOpts.merkleFormat)
 	}
@@ -200,7 +201,8 @@ func queryTransaction(ctx context.Context, client *Client, miner *Miner, txHash 
 	result.Response = httpRequest(ctx, client, &httpPayload{
 		Method: http.MethodGet,
 		URL:    queryURL.String(),
-		Token:  miner.Token,
+		// TODO: Align with new structure
+		// Token:  miner.Token,
 	})
 	return
 }

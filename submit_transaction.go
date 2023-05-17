@@ -187,9 +187,10 @@ func submitTransaction(ctx context.Context, client *Client, miner *Miner, tx *Tr
 	}
 	result.Response = httpRequest(ctx, client, &httpPayload{
 		Method: http.MethodPost,
-		URL:    miner.URL + routeSubmitTx,
-		Token:  miner.Token,
-		Data:   data,
+		// TODO: Align with new structure
+		// URL:    miner.URL + routeSubmitTx,
+		// Token:  miner.Token,
+		Data: data,
 	})
 	return result, nil
 }
