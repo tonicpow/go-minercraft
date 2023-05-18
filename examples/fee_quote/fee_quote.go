@@ -10,7 +10,7 @@ import (
 func main() {
 
 	// Create a new client
-	client, err := minercraft.NewClient(nil, nil, "", nil)
+	client, err := minercraft.NewClient(nil, nil, "", nil, nil)
 	if err != nil {
 		log.Fatalf("error occurred: %s", err.Error())
 	}

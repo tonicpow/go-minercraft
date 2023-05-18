@@ -187,7 +187,19 @@ func queryTransaction(ctx context.Context, client *Client, miner *Miner, txHash 
 	}
 	sb := strings.Builder{}
 
-	// sb.WriteString(miner.URL + routeQueryTx + txHash)
+	api, err := MinerAPIByMinerID(client.minerAPIs, miner.MinerID, client.apiType)
+	if err != nil {
+		result.Response = &RequestResponse{Error: err}
+		return
+	}
+
+	route, err := ActionRouteByAPIType(QueryTx, client.apiType)
+	if err != nil {
+		result.Response = &RequestResponse{Error: err}
+		return
+	}
+
+	sb.WriteString(api.URL + route + txHash)
 	if defaultOpts.includeProof {
 		sb.WriteString("?merkleProof=true&merkleFormat=" + defaultOpts.merkleFormat)
 	}
@@ -201,8 +213,7 @@ func queryTransaction(ctx context.Context, client *Client, miner *Miner, txHash 
 	result.Response = httpRequest(ctx, client, &httpPayload{
 		Method: http.MethodGet,
 		URL:    queryURL.String(),
-		// TODO: Align with new structure
-		// Token:  miner.Token,
+		Token:  api.Token,
 	})
 	return
 }

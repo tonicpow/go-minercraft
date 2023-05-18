@@ -21,6 +21,7 @@ type Client struct {
 	apiType    APIType        // The API type to use
 	httpClient HTTPInterface  // Interface for all HTTP requests
 	miners     []*Miner       // List of loaded miners
+	minerAPIs  []*MinerAPIs   // List of loaded miners APIs
 	Options    *ClientOptions // Client options config
 }
 
@@ -107,6 +108,32 @@ func MinerByID(miners []*Miner, minerID string) *Miner {
 	return nil
 }
 
+func MinerAPIByMinerID(minerAPIs []*MinerAPIs, minerID string, apiType APIType) (*API, error) {
+	for _, minerAPI := range minerAPIs {
+		if minerAPI.MinerID == minerID {
+			for _, api := range minerAPI.APIs {
+				if api.Type == apiType {
+					return &api, nil
+				}
+			}
+		}
+	}
+	return nil, &APINotFoundError{MinerID: minerID, APIType: apiType}
+}
+
+func ActionRouteByAPIType(actionName APIActionName, apiType APIType) (string, error) {
+	for _, apiRoute := range Routes {
+		if apiRoute.Name == actionName {
+			for _, route := range apiRoute.Routes {
+				if route.APIType == apiType {
+					return route.Route, nil
+				}
+			}
+		}
+	}
+	return "", &ActionRouteNotFoundError{ActionName: actionName, APIType: apiType}
+}
+
 // MinerUpdateToken will find a miner by name and update the token
 func (c *Client) MinerUpdateToken(name, token string) {
 	if miner := c.MinerByName(name); miner != nil {
@@ -168,17 +195,26 @@ func DefaultClientOptions() (clientOptions *ClientOptions) {
 // customHTTPClient: use your own custom HTTP client
 // customMiners: use your own custom list of miners
 func NewClient(clientOptions *ClientOptions, customHTTPClient HTTPInterface,
-	apiType APIType, customMiners []*Miner) (client ClientInterface, err error) {
+	apiType APIType, customMiners []*Miner, customMinersAPIDef []*MinerAPIs) (client ClientInterface, err error) {
 
 	// Create the new client
-	return createClient(clientOptions, apiType, customHTTPClient, customMiners)
+	return createClient(clientOptions, apiType, customHTTPClient, customMiners, customMinersAPIDef)
 }
 
 // createClient will make a new http client based on the options provided
-func createClient(options *ClientOptions, apiType APIType, customHTTPClient HTTPInterface, customMiners []*Miner) (c *Client, err error) {
+func createClient(options *ClientOptions, apiType APIType, customHTTPClient HTTPInterface,
+	customMiners []*Miner, customMinersAPIDef []*MinerAPIs) (c *Client, err error) {
 
 	// Create a client
 	c = new(Client)
+
+	// For now set MerchantAPI as the default if not set
+	if apiType == "" {
+		apiType = MAPI
+	}
+
+	// Set the client API type
+	c.apiType = apiType
 
 	// Set options (either default or user modified)
 	if options == nil {
@@ -189,11 +225,11 @@ func createClient(options *ClientOptions, apiType APIType, customHTTPClient HTTP
 	c.Options = options
 
 	// Load custom vs pre-defined
-	// TODO: Maybe try to pass mode here in createClient
-	if len(customMiners) > 0 {
+	if len(customMiners) > 0 && len(customMinersAPIDef) > 0 {
 		c.miners = customMiners
+		c.minerAPIs = customMinersAPIDef
 	} else {
-		if c.miners, err = DefaultMiners(); err != nil {
+		if c.miners, c.minerAPIs, err = DefaultMiners(); err != nil {
 			return nil, err
 		}
 	}
@@ -252,7 +288,8 @@ func createClient(options *ClientOptions, apiType APIType, customHTTPClient HTTP
 }
 
 // DefaultMiners will parse the config JSON and return a list of miners
-func DefaultMiners() (miners []*Miner, err error) {
+func DefaultMiners() (miners []*Miner, minerAPIs []*MinerAPIs, err error) {
 	err = json.Unmarshal([]byte(KnownMiners), &miners)
+	err = json.Unmarshal([]byte(KnownMinersAPIs), &minerAPIs)
 	return
 }
