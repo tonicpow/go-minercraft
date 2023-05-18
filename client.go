@@ -229,7 +229,13 @@ func createClient(options *ClientOptions, apiType APIType, customHTTPClient HTTP
 		c.miners = customMiners
 		c.minerAPIs = customMinersAPIDef
 	} else {
-		if c.miners, c.minerAPIs, err = DefaultMiners(); err != nil {
+		c.miners, err = DefaultMiners()
+		if err != nil {
+			return nil, err
+		}
+
+		c.minerAPIs, err = DefaultMinersAPIs()
+		if err != nil {
 			return nil, err
 		}
 	}
@@ -288,8 +294,13 @@ func createClient(options *ClientOptions, apiType APIType, customHTTPClient HTTP
 }
 
 // DefaultMiners will parse the config JSON and return a list of miners
-func DefaultMiners() (miners []*Miner, minerAPIs []*MinerAPIs, err error) {
+func DefaultMiners() (miners []*Miner, err error) {
 	err = json.Unmarshal([]byte(KnownMiners), &miners)
+	return
+}
+
+// DefaultMinersAPIs will parse the config JSON and return a list of miner APIs
+func DefaultMinersAPIs() (minerAPIs []*MinerAPIs, err error) {
 	err = json.Unmarshal([]byte(KnownMinersAPIs), &minerAPIs)
 	return
 }

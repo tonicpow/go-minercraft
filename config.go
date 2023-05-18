@@ -156,7 +156,7 @@ const KnownMinersAPIs = `
 			  "url":"https://tapi.taal.com/arc",
 			  "type":"Arc"
 		   }
-		],
+		]
 	},
 	{
 		"miner_id":"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270",

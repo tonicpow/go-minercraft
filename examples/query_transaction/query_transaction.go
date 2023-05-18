@@ -10,7 +10,7 @@ import (
 func main() {
 
 	// Create a new client
-	client, err := minercraft.NewClient(nil, nil, "", nil, nil)
+	client, err := minercraft.NewClient(nil, nil, minercraft.Arc, nil, nil)
 	if err != nil {
 		log.Fatalf("error occurred: %s", err.Error())
 	}
@@ -20,7 +20,7 @@ func main() {
 
 	// Query the transaction status
 	var response *minercraft.QueryTransactionResponse
-	if response, err = client.QueryTransaction(context.Background(), miner, "950a10beb1650e91621f748c408f7024f2082408a93c11cecc1ab4b5f440ac12"); err != nil {
+	if response, err = client.QueryTransaction(context.Background(), miner, "9c5f5244ee45e8c3213521c1d1d5df265d6c74fb108961a876917073d65fef14"); err != nil {
 		log.Fatalf("error occurred: %s", err.Error())
 	}
 
