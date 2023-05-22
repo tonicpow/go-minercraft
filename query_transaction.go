@@ -37,7 +37,7 @@ Example query tx response from Merchant API:
 // Specs: https://github.com/bitcoin-sv-specs/brfc-merchantapi#4-query-transaction-status
 type QueryTransactionResponse struct {
 	JSONEnvelope
-	Query *QueryPayload `json:"query"` // Custom field for unmarshalled payload data
+	Query *QueryTxResponse `json:"query"` // Custom field for unmarshalled payload data
 }
 
 /*
@@ -72,8 +72,8 @@ Success - added to block
 }
 */
 
-// QueryPayload is the unmarshalled version of the payload envelope
-type QueryPayload struct {
+// QueryTxResponse is the unmarshalled version of the payload envelope
+type QueryTxResponse struct {
 	APIVersion            string          `json:"apiVersion"`
 	Timestamp             string          `json:"timestamp"`
 	TxID                  string          `json:"txid"`
