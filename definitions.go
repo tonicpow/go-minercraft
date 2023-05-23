@@ -50,8 +50,9 @@ type APISpecificRoute struct {
 // helper property to indicate if the envelope is or isn't valid.
 // Consumers can also independently validate the envelope.
 type JSONEnvelope struct {
-	Miner     *Miner `json:"miner"`     // Custom field for our internal Miner configuration
-	Validated bool   `json:"validated"` // Custom field if the signature has been validated
+	Miner     *Miner  `json:"miner"`     // Custom field for our internal Miner configuration
+	Validated bool    `json:"validated"` // Custom field if the signature has been validated
+	ApiType   APIType `json:"apiType"`   // Custom field for the API type
 	envelope.JSONEnvelope
 }
 

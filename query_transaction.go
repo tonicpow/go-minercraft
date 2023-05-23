@@ -9,6 +9,8 @@ import (
 	"strings"
 
 	"github.com/libsv/go-bc"
+	"github.com/tonicpow/go-minercraft/apis/arc"
+	"github.com/tonicpow/go-minercraft/apis/mapi"
 )
 
 // QueryTransactionSuccess is on success
@@ -19,6 +21,18 @@ const QueryTransactionFailure = "failure"
 
 // QueryTransactionInMempoolFailure in mempool but not in a block yet
 const QueryTransactionInMempoolFailure = "Transaction in mempool but not yet in block"
+
+type QueryTxModelAdapter interface {
+	GetQueryTxResponse() *QueryTxResponse
+}
+
+type QueryTxMapiAdapter struct {
+	*mapi.QueryTxModel
+}
+
+type QueryTxArcAdapter struct {
+	*arc.QueryTxModel
+}
 
 /*
 Example query tx response from Merchant API:
@@ -74,17 +88,21 @@ Success - added to block
 
 // QueryTxResponse is the unmarshalled version of the payload envelope
 type QueryTxResponse struct {
-	APIVersion            string          `json:"apiVersion"`
-	Timestamp             string          `json:"timestamp"`
-	TxID                  string          `json:"txid"`
-	ReturnResult          string          `json:"returnResult"`
-	ResultDescription     string          `json:"resultDescription"`
-	BlockHash             string          `json:"blockHash"`
-	BlockHeight           int64           `json:"blockHeight"`
-	MinerID               string          `json:"minerId"`
-	Confirmations         int64           `json:"confirmations"`
-	TxSecondMempoolExpiry int64           `json:"txSecondMempoolExpiry"`
-	MerkleProof           *bc.MerkleProof `json:"merkleProof"`
+	// Pola wspólne dla obu typów API
+	BlockHash   string `json:"blockHash,omitempty"`
+	BlockHeight int64  `json:"blockHeight,omitempty"`
+	Timestamp   string `json:"timestamp,omitempty"`
+	TxID        string `json:"txid,omitempty"`
+	// ArcAPI specific fields
+	TxStatus arc.TxStatus `json:"txStatus,omitempty"`
+	// mAPI specific fields
+	APIVersion            string          `json:"apiVersion,omitempty"`
+	ReturnResult          string          `json:"returnResult,omitempty"`
+	ResultDescription     string          `json:"resultDescription,omitempty"`
+	MinerID               string          `json:"minerId,omitempty"`
+	Confirmations         int64           `json:"confirmations,omitempty"`
+	TxSecondMempoolExpiry int64           `json:"txSecondMempoolExpiry,omitempty"`
+	MerkleProof           *bc.MerkleProof `json:"merkleProof,omitempty"`
 }
 
 // QueryTransactionOptFunc defines an optional argument that can be passed to the QueryTransaction method.
@@ -162,19 +180,45 @@ func (c *Client) QueryTransaction(ctx context.Context, miner *Miner, txID string
 		return nil, result.Response.Error
 	}
 
-	// Parse the response
-	response, err := result.parseQuery()
-	if err != nil {
-		return nil, err
+	queryResponse := &QueryTransactionResponse{
+		JSONEnvelope: JSONEnvelope{
+			ApiType: c.apiType,
+			Miner:   result.Miner,
+		},
 	}
 
+	var modelAdapter QueryTxModelAdapter
+
+	switch c.apiType {
+	case MAPI:
+		model := &mapi.QueryTxModel{}
+		err := json.Unmarshal(result.Response.BodyContents, model)
+		if err != nil {
+			return nil, err
+		}
+		modelAdapter = &QueryTxMapiAdapter{QueryTxModel: model}
+
+	case Arc:
+		model := &arc.QueryTxModel{}
+		err := json.Unmarshal(result.Response.BodyContents, model)
+		if err != nil {
+			return nil, err
+		}
+		modelAdapter = &QueryTxArcAdapter{QueryTxModel: model}
+
+	default:
+		return nil, errors.New("unsupported api type")
+	}
+
+	queryResponse.Query = modelAdapter.GetQueryTxResponse()
+
 	// Valid?
-	if response.Query == nil || len(response.Query.ReturnResult) == 0 {
+	if queryResponse.Query == nil || len(queryResponse.Query.ReturnResult) == 0 {
 		return nil, errors.New("failed getting query response from: " + miner.Name)
 	}
 
 	// Return the fully parsed response
-	return &response, nil
+	return queryResponse, nil
 }
 
 // queryTransaction will fire the HTTP request to retrieve the tx status
@@ -218,17 +262,36 @@ func queryTransaction(ctx context.Context, client *Client, miner *Miner, txHash 
 	return
 }
 
-// parseQuery will convert the HTTP response into a struct and also unmarshal the payload JSON data
-func (i *internalResult) parseQuery() (response QueryTransactionResponse, err error) {
-
-	// Process the initial response payload
-	if err = response.process(i.Miner, i.Response.BodyContents); err != nil {
-		return
+func (m *QueryTxMapiAdapter) GetQueryTxResponse() *QueryTxResponse {
+	response := &QueryTxResponse{
+		TxID:        m.TxID,
+		BlockHash:   m.BlockHash,
+		Timestamp:   m.Timestamp,
+		BlockHeight: m.BlockHeight,
 	}
 
-	// If we have a valid payload
-	if len(response.Payload) > 0 {
-		err = json.Unmarshal([]byte(response.Payload), &response.Query)
+	// Fields specific to mAPI
+	response.APIVersion = m.APIVersion
+	response.ReturnResult = m.ReturnResult
+	response.ResultDescription = m.ResultDescription
+	response.MinerID = m.MinerID
+	response.Confirmations = m.Confirmations
+	response.TxSecondMempoolExpiry = m.TxSecondMempoolExpiry
+	response.MerkleProof = m.MerkleProof
+
+	return response
+}
+
+func (m *QueryTxArcAdapter) GetQueryTxResponse() *QueryTxResponse {
+	response := &QueryTxResponse{
+		TxID:        m.TxID,
+		BlockHash:   m.BlockHash,
+		Timestamp:   m.Timestamp.String(),
+		BlockHeight: m.BlockHeight,
 	}
-	return
+
+	// Fields specific to ArcAPI
+	response.TxStatus = m.TxStatus
+
+	return response
 }

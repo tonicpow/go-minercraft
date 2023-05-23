@@ -2,7 +2,7 @@ package mapi
 
 import "github.com/libsv/go-bc"
 
-type QueryTxMapiPayload struct {
+type QueryTxModel struct {
 	APIVersion            string          `json:"apiVersion"`
 	Timestamp             string          `json:"timestamp"`
 	TxID                  string          `json:"txid"`
