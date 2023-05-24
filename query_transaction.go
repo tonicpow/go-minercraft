@@ -219,9 +219,16 @@ func (c *Client) QueryTransaction(ctx context.Context, miner *Miner, txID string
 	queryResponse.Query = modelAdapter.GetQueryTxResponse()
 
 	// Valid?
-	if queryResponse.Query == nil || len(queryResponse.Query.ReturnResult) == 0 {
+	if queryResponse.Query == nil {
 		return nil, errors.New("failed getting query response from: " + miner.Name)
 	}
+
+	isValid, err := queryResponse.IsValid()
+	if err != nil {
+		return nil, err
+	}
+
+	queryResponse.Validated = isValid
 
 	// Return the fully parsed response
 	return queryResponse, nil

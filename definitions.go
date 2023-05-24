@@ -67,7 +67,5 @@ func (p *JSONEnvelope) process(miner *Miner, bodyContents []byte) (err error) {
 		return
 	}
 
-	// verify JSONEnvelope
-	p.Validated, err = p.IsValid()
 	return
 }
