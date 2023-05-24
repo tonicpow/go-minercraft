@@ -192,10 +192,16 @@ func (c *Client) QueryTransaction(ctx context.Context, miner *Miner, txID string
 	switch c.apiType {
 	case MAPI:
 		model := &mapi.QueryTxModel{}
-		err := json.Unmarshal(result.Response.BodyContents, model)
+		err := queryResponse.process(result.Miner, result.Response.BodyContents)
+		if err != nil || len(queryResponse.Payload) <= 0 {
+			return nil, err
+		}
+
+		err = json.Unmarshal([]byte(queryResponse.Payload), model)
 		if err != nil {
 			return nil, err
 		}
+
 		modelAdapter = &QueryTxMapiAdapter{QueryTxModel: model}
 
 	case Arc:
