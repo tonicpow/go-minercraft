@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/tonicpow/go-minercraft"
+	"github.com/tonicpow/go-minercraft/apis/mapi"
 )
 
 func main() {
@@ -29,7 +30,7 @@ func main() {
 
 	// Get the fee for a specific tx size (for mining and for data)
 	var fee uint64
-	if fee, err = response.Quote.CalculateFee(minercraft.FeeCategoryMining, minercraft.FeeTypeData, txSizeInBytes); err != nil {
+	if fee, err = response.Quote.CalculateFee(mapi.FeeCategoryMining, mapi.FeeTypeData, txSizeInBytes); err != nil {
 		log.Fatalf("error occurred: %s", err.Error())
 	}
 
