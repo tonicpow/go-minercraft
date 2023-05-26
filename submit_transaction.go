@@ -6,6 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
+	"strings"
 )
 
 const (
@@ -185,12 +187,33 @@ func submitTransaction(ctx context.Context, client *Client, miner *Miner, tx *Tr
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshall JSON when submitting transaction %w", err)
 	}
+
+	sb := strings.Builder{}
+
+	api, err := MinerAPIByMinerID(client.minerAPIs, miner.MinerID, client.apiType)
+	if err != nil {
+		result.Response = &RequestResponse{Error: err}
+		return nil, err
+	}
+
+	route, err := ActionRouteByAPIType(SubmitTx, client.apiType)
+	if err != nil {
+		result.Response = &RequestResponse{Error: err}
+		return nil, err
+	}
+
+	sb.WriteString(api.URL + route)
+	submitURL, err := url.Parse(sb.String())
+	if err != nil {
+		result.Response = &RequestResponse{Error: err}
+		return nil, err
+	}
+
 	result.Response = httpRequest(ctx, client, &httpPayload{
 		Method: http.MethodPost,
-		// TODO: Align with new structure
-		// URL:    miner.URL + routeSubmitTx,
-		// Token:  miner.Token,
-		Data: data,
+		URL:    submitURL.String(),
+		Token:  api.Token,
+		Data:   data,
 	})
 	return result, nil
 }

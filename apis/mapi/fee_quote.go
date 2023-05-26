@@ -83,7 +83,7 @@ type (
 	RawFeePayload struct {
 		FeePayloadFields
 		Callbacks []*PolicyCallback `json:"callbacks"` // IP addresses of double-spend notification servers such as mAPI reference implementation
-		Fees      []*feeObj         `json:"fees"`
+		Fees      []*FeeObj         `json:"fees"`
 	}
 
 	// feePayloadFields are the same fields in both payloads
@@ -108,7 +108,7 @@ type (
 	// feeObj displays the MiningFee as well as the RelayFee for a specific
 	// FeeType, for example 'standard' or 'data'
 	// see https://github.com/bitcoin-sv-specs/brfc-merchantapi#expanded-payload-1
-	feeObj struct {
+	FeeObj struct {
 		FeeType   string  `json:"feeType"` // standard || data
 		MiningFee FeeUnit `json:"miningFee"`
 		RelayFee  FeeUnit `json:"relayFee"` // Fee for retaining Tx in secondary mempool

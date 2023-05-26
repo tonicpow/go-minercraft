@@ -5,30 +5,66 @@ import (
 	"encoding/json"
 	"errors"
 
+	"github.com/libsv/go-bt/v2"
+	"github.com/tonicpow/go-minercraft/apis/arc"
 	"github.com/tonicpow/go-minercraft/apis/mapi"
 )
 
-/*
-Example policyQuote response from Merchant API:
-
-{
-    "payload": "{\"apiVersion\":\"1.4.0\",\"timestamp\":\"2021-11-12T13:17:47.7498672Z\",\"expiryTime\":\"2021-11-12T13:27:47.7498672Z\",\"minerId\":\"030d1fe5c1b560efe196ba40540ce9017c20daa9504c4c4cec6184fc702d9f274e\",\"currentHighestBlockHash\":\"45628be2fe616167b7da399ab63455e60ffcf84147730f4af4affca90c7d437e\",\"currentHighestBlockHeight\":234,\"fees\":[{\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}},{\"feeType\":\"data\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}}],\"callbacks\":[{\"ipAddress\":\"123.456.789.123\"}],\"policies\":{\"skipscriptflags\":[\"MINIMALDATA\",\"DERSIG\",\"NULLDUMMY\",\"DISCOURAGE_UPGRADABLE_NOPS\",\"CLEANSTACK\"],\"maxtxsizepolicy\":99999,\"datacarriersize\":100000,\"maxscriptsizepolicy\":100000,\"maxscriptnumlengthpolicy\":100000,\"maxstackmemoryusagepolicy\":10000000,\"limitancestorcount\":1000,\"limitcpfpgroupmemberscount\":10,\"acceptnonstdoutputs\":true,\"datacarrier\":true,\"dustrelayfee\":150,\"maxstdtxvalidationduration\":99,\"maxnonstdtxvalidationduration\":100,\"dustlimitfactor\":10}}",
-    "signature": "30440220708e2e62a393f53c43d172bc1459b4daccf9cf23ff77cff923f09b2b49b94e0a022033792bee7bc3952f4b1bfbe9df6407086b5dbfc161df34fdee684dc97be72731",
-    "publicKey": "030d1fe5c1b560efe196ba40540ce9017c20daa9504c4c4cec6184fc702d9f274e",
-    "encoding": "UTF-8",
-    "mimetype": "application/json"
+type PolicyQuoteModelAdapter interface {
+	GetPolicyData() *PolicyPayload
 }
-*/
 
-// PolicyQuoteResponse is the raw response from the Merchant API request
+type PolicyQuoteMapiAdapter struct {
+	*mapi.PolicyQuoteModel
+}
+
+type PolicyQuoteArcAdapter struct {
+	*arc.PolicyQuoteModel
+}
+
+type UnifiedPolicy struct {
+	AcceptNonStdOutputs             bool              `json:"acceptnonstdoutputs"`
+	DataCarrier                     bool              `json:"datacarrier"`
+	DataCarrierSize                 uint32            `json:"datacarriersize"`
+	LimitAncestorCount              uint32            `json:"limitancestorcount"`
+	LimitCpfpGroupMembersCount      uint32            `json:"limitcpfpgroupmemberscount"`
+	MaxNonStdTxValidationDuration   uint32            `json:"maxnonstdtxvalidationduration"`
+	MaxScriptNumLengthPolicy        uint32            `json:"maxscriptnumlengthpolicy"`
+	MaxScriptSizePolicy             uint32            `json:"maxscriptsizepolicy"`
+	MaxStackMemoryUsagePolicy       uint64            `json:"maxstackmemoryusagepolicy"`
+	MaxStdTxValidationDuration      uint32            `json:"maxstdtxvalidationduration"`
+	MaxTxSizePolicy                 uint32            `json:"maxtxsizepolicy"`
+	SkipScriptFlags                 []mapi.ScriptFlag `json:"skipscriptflags"`
+	MaxConsolidationFactor          uint32            `json:"minconsolidationfactor"`
+	MaxConsolidationInputScriptSize uint32            `json:"maxconsolidationinputscriptsize"`
+	MinConfConsolidationInput       uint32            `json:"minconfconsolidationinput"`
+	AcceptNonStdConsolidationInput  bool              `json:"acceptnonstdconsolidationinput"`
+
+	// Additional fields for Policy in API2
+	MaxTxSigOpsCount uint32 `json:"maxtxsigopscount"`
+}
+
+type UnifiedFeePayload struct {
+	mapi.FeePayloadFields
+	Fees []*bt.Fee `json:"fees"`
+}
+
+// PolicyPayload is the unmarshalled version of the payload envelope
+type PolicyPayload struct {
+	UnifiedFeePayload                        // Inherit the same structure as the fee payload
+	Callbacks         []*mapi.PolicyCallback `json:"callbacks"` // IP addresses of double-spend notification servers such as mAPI reference implementation
+	Policies          *UnifiedPolicy         `json:"policies"`  // values of miner policies as configured by the mAPI reference implementation administrator
+}
+
+// PolicyQuoteResponse is the raw response from the API request
 //
 // Specs: https://github.com/bitcoin-sv-specs/brfc-merchantapi#1-get-policy-quote
 type PolicyQuoteResponse struct {
 	JSONEnvelope
-	Quote *mapi.PolicyPayload `json:"quote"` // Custom field for unmarshalled payload data
+	Quote *PolicyPayload `json:"quote"` // Custom field for unmarshalled payload data
 }
 
-// PolicyQuote will fire a Merchant API request to retrieve the policy from a given miner
+// PolicyQuote will fire a Merchant&Arc API request to retrieve the policy from a given miner
 //
 // This endpoint is used to get the different policies quoted by a miner.
 // It returns a JSONEnvelope with a payload that contains the policies used by a specific BSV miner.
@@ -37,6 +73,7 @@ type PolicyQuoteResponse struct {
 // includes information on DSNT IP addresses and miner policies.
 //
 // Specs: https://github.com/bitcoin-sv-specs/brfc-merchantapi#1-get-policy-quote
+// Specs: https://docs.gorillapool.io/arc/api.html#get-the-policy-settings
 func (c *Client) PolicyQuote(ctx context.Context, miner *Miner) (*PolicyQuoteResponse, error) {
 
 	// Make sure we have a valid miner
