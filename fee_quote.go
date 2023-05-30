@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"net/url"
+	"strings"
 
 	"github.com/libsv/go-bt/v2"
 	"github.com/tonicpow/go-minercraft/apis/mapi"
@@ -119,12 +121,27 @@ func rawPayloadIntoQuote(payload *mapi.RawFeePayload, quote *mapi.FeePayload) {
 
 // getQuote will fire the HTTP request to retrieve the fee/policy quote
 func getQuote(ctx context.Context, client *Client, miner *Miner, route string) (result *internalResult) {
+	sb := strings.Builder{}
+
+	api, err := MinerAPIByMinerID(client.minerAPIs, miner.MinerID, client.apiType)
+	if err != nil {
+		result.Response = &RequestResponse{Error: err}
+		return
+	}
+
+	sb.WriteString(api.URL + route)
+	result = &internalResult{Miner: miner}
+	quoteURL, err := url.Parse(sb.String())
+	if err != nil {
+		result.Response = &RequestResponse{Error: err}
+		return
+	}
+
 	result = &internalResult{Miner: miner}
 	result.Response = httpRequest(ctx, client, &httpPayload{
 		Method: http.MethodGet,
-		// TODO: Align with new structure
-		// URL:    miner.URL + route,
-		// Token:  miner.Token,
+		URL:    quoteURL.String(),
+		Token:  api.Token,
 	})
 	return
 }
