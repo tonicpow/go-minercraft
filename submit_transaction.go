@@ -194,13 +194,13 @@ func submitTransaction(ctx context.Context, client *Client, miner *Miner, tx *Tr
 
 	switch client.apiType {
 	case MAPI:
-		err = proceedMapi(tx, httpPayload)
+		err = proceedMapiSubmitTx(tx, httpPayload)
 		if err != nil {
 			return nil, err
 		}
 
 	case Arc:
-		err = proceedArc(tx, httpPayload)
+		err = proceedArcSubmitTx(tx, httpPayload)
 		if err != nil {
 			return nil, err
 		}
@@ -213,7 +213,7 @@ func submitTransaction(ctx context.Context, client *Client, miner *Miner, tx *Tr
 	return result, nil
 }
 
-func proceedArc(tx *Transaction, httpPayload *httpPayload) error {
+func proceedArcSubmitTx(tx *Transaction, httpPayload *httpPayload) error {
 	body := map[string]string{
 		"rawTx": tx.RawTx,
 	}
@@ -242,7 +242,7 @@ func proceedArc(tx *Transaction, httpPayload *httpPayload) error {
 	return nil
 }
 
-func proceedMapi(tx *Transaction, httpPayload *httpPayload) error {
+func proceedMapiSubmitTx(tx *Transaction, httpPayload *httpPayload) error {
 	data, err := json.Marshal(tx)
 	if err != nil {
 		return err
