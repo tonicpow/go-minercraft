@@ -16,7 +16,7 @@ func main() {
 	}
 
 	// Select the miner
-	miner := client.MinerByName(minercraft.MinerTaal)
+	miner := client.MinerByName(minercraft.MinerGorillaPool)
 
 	// Submit transaction
 	var response *minercraft.SubmitTransactionResponse

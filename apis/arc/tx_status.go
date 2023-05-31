@@ -40,3 +40,23 @@ func (s TxStatus) String() string {
 
 	return "Can't parse status"
 }
+
+func MapTxStatusToInt(status TxStatus) (int, bool) {
+	waitForStatusMap := map[TxStatus]int{
+		UNKNOWN:              0,
+		QUEUED:               1,
+		RECEIVED:             2,
+		STORED:               3,
+		ANNOUNCED_TO_NETWORK: 4,
+		REQUESTED_BY_NETWORK: 5,
+		SENT_TO_NETWORK:      6,
+		ACCEPTED_BY_NETWORK:  7,
+		SEEN_ON_NETWORK:      8,
+		MINED:                9,
+		CONFIRMED:            108,
+		REJECTED:             109,
+	}
+
+	value, ok := waitForStatusMap[status]
+	return value, ok
+}

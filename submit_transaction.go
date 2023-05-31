@@ -6,8 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
-	"strings"
+	"strconv"
 
 	"github.com/tonicpow/go-minercraft/apis/arc"
 	"github.com/tonicpow/go-minercraft/apis/mapi"
@@ -172,12 +171,6 @@ func (c *Client) SubmitTransaction(ctx context.Context, miner *Miner, tx *Transa
 // submitTransaction will fire the HTTP request to submit a transaction
 func submitTransaction(ctx context.Context, client *Client, miner *Miner, tx *Transaction) (*internalResult, error) {
 	result := &internalResult{Miner: miner}
-	data, err := json.Marshal(tx)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshall JSON when submitting transaction %w", err)
-	}
-
-	sb := strings.Builder{}
 
 	api, err := MinerAPIByMinerID(client.minerAPIs, miner.MinerID, client.apiType)
 	if err != nil {
@@ -191,20 +184,72 @@ func submitTransaction(ctx context.Context, client *Client, miner *Miner, tx *Tr
 		return nil, err
 	}
 
-	sb.WriteString(api.URL + route)
-	submitURL, err := url.Parse(sb.String())
-	if err != nil {
-		result.Response = &RequestResponse{Error: err}
-		return nil, err
+	submitURL := api.URL + route
+	httpPayload := &httpPayload{
+		Method:  http.MethodPost,
+		URL:     submitURL,
+		Token:   api.Token,
+		Headers: make(map[string]string),
 	}
 
-	result.Response = httpRequest(ctx, client, &httpPayload{
-		Method: http.MethodPost,
-		URL:    submitURL.String(),
-		Token:  api.Token,
-		Data:   data,
-	})
+	switch client.apiType {
+	case MAPI:
+		err = proceedMapi(tx, httpPayload)
+		if err != nil {
+			return nil, err
+		}
+
+	case Arc:
+		err = proceedArc(tx, httpPayload)
+		if err != nil {
+			return nil, err
+		}
+
+	default:
+		return nil, fmt.Errorf("unknown API type: %s", client.apiType)
+	}
+
+	result.Response = httpRequest(ctx, client, httpPayload)
 	return result, nil
+}
+
+func proceedArc(tx *Transaction, httpPayload *httpPayload) error {
+	body := map[string]string{
+		"rawTx": tx.RawTx,
+	}
+	data, err := json.Marshal(body)
+	if err != nil {
+		return fmt.Errorf("failed to marshall JSON when submitting transaction: %w", err)
+	}
+	httpPayload.Data = data
+
+	if tx.MerkleProof {
+		httpPayload.Headers["X-MerkleProof"] = "true"
+	}
+
+	if tx.CallBackURL != "" {
+		httpPayload.Headers["X-CallbackUrl"] = tx.CallBackURL
+	}
+
+	if tx.CallBackToken != "" {
+		httpPayload.Headers["X-CallbackToken"] = tx.CallBackToken
+	}
+
+	if statusCode, ok := arc.MapTxStatusToInt(tx.WaitForStatus); ok {
+		httpPayload.Headers["X-WaitForStatus"] = strconv.Itoa(statusCode)
+	}
+
+	return nil
+}
+
+func proceedMapi(tx *Transaction, httpPayload *httpPayload) error {
+	data, err := json.Marshal(tx)
+	if err != nil {
+		return err
+	}
+
+	httpPayload.Data = data
+	return nil
 }
 
 func (a *SubmitTxMapiAdapter) GetSubmitTxResponse() *UnifiedSubmissionPayload {
