@@ -92,7 +92,7 @@ func (c *Client) PolicyQuote(ctx context.Context, miner *Miner) (*PolicyQuoteRes
 		return nil, result.Response.Error
 	}
 
-	queryResponse := &PolicyQuoteResponse{
+	quoteResponse := &PolicyQuoteResponse{
 		JSONEnvelope: JSONEnvelope{
 			ApiType: c.apiType,
 			Miner:   result.Miner,
@@ -104,31 +104,40 @@ func (c *Client) PolicyQuote(ctx context.Context, miner *Miner) (*PolicyQuoteRes
 	switch c.apiType {
 	case MAPI:
 		model := &mapi.PolicyQuoteModel{}
-		err := queryResponse.process(result.Miner, result.Response.BodyContents)
-		if err != nil || len(queryResponse.Payload) <= 0 {
+		err := quoteResponse.process(result.Miner, result.Response.BodyContents)
+		if err != nil || len(quoteResponse.Payload) <= 0 {
 			return nil, err
 		}
 
-		err = json.Unmarshal([]byte(queryResponse.Payload), model)
+		err = json.Unmarshal([]byte(quoteResponse.Payload), model)
 		if err != nil {
 			return nil, err
 		}
 
 		modelAdapter = &PolicyQuoteMapiAdapter{PolicyQuoteModel: model}
+	case Arc:
+		model := &arc.PolicyQuoteModel{}
+		err := json.Unmarshal(result.Response.BodyContents, model)
+		if err != nil {
+			return nil, err
+		}
+
+		modelAdapter = &PolicyQuoteArcAdapter{PolicyQuoteModel: model}
+	default:
+		return nil, errors.New("unsupported api type")
 	}
 
-	// Parse the response
+	quoteResponse.Quote = modelAdapter.GetPolicyData()
+
+	isValid, err := quoteResponse.IsValid()
 	if err != nil {
 		return nil, err
 	}
 
-	// Valid?
-	if response.Quote == nil || len(response.Quote.Fees) == 0 {
-		return nil, errors.New("failed getting policy from: " + miner.Name)
-	}
+	quoteResponse.Validated = isValid
 
 	// Return the fully parsed response
-	return &response, nil
+	return quoteResponse, nil
 }
 
 func (a *PolicyQuoteMapiAdapter) GetPolicyData() *PolicyPayload {

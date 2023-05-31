@@ -210,6 +210,7 @@ func (c *Client) QueryTransaction(ctx context.Context, miner *Miner, txID string
 		if err != nil {
 			return nil, err
 		}
+
 		modelAdapter = &QueryTxArcAdapter{QueryTxModel: model}
 
 	default:
