@@ -6,6 +6,8 @@ import (
 	"errors"
 	"net/http"
 	"time"
+
+	"github.com/tonicpow/go-minercraft/apis/mapi"
 )
 
 // Reference: https://github.com/bitcoin-sv-specs/brfc-merchantapi#5-submit-multiple-transactions
@@ -44,10 +46,10 @@ type (
 
 	// Tx is the transaction format in the mapi txs response.
 	Tx struct {
-		ConflictedWith    []ConflictedWith `json:"conflictedWith,omitempty"`
-		ResultDescription string           `json:"resultDescription"`
-		ReturnResult      string           `json:"returnResult"`
-		TxID              string           `json:"txid"`
+		ConflictedWith    []mapi.ConflictedWith `json:"conflictedWith,omitempty"`
+		ResultDescription string                `json:"resultDescription"`
+		ReturnResult      string                `json:"returnResult"`
+		TxID              string                `json:"txid"`
 		// FailureRetryable if true indicates the tx can be resubmitted to mAPI.
 		FailureRetryable bool `json:"failureRetryable"`
 	}

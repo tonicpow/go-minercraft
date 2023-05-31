@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"github.com/libsv/go-bt/v2"
 	"github.com/tonicpow/go-minercraft/apis/arc"
@@ -124,10 +125,15 @@ func (c *Client) PolicyQuote(ctx context.Context, miner *Miner) (*PolicyQuoteRes
 
 		modelAdapter = &PolicyQuoteArcAdapter{PolicyQuoteModel: model}
 	default:
-		return nil, errors.New("unsupported api type")
+		return nil, fmt.Errorf("unknown API type: %s", c.apiType)
 	}
 
 	quoteResponse.Quote = modelAdapter.GetPolicyData()
+
+	// Valid?
+	if quoteResponse.Quote == nil {
+		return nil, errors.New("failed getting quote response from: " + miner.Name)
+	}
 
 	isValid, err := quoteResponse.IsValid()
 	if err != nil {

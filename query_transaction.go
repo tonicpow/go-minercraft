@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -214,7 +215,7 @@ func (c *Client) QueryTransaction(ctx context.Context, miner *Miner, txID string
 		modelAdapter = &QueryTxArcAdapter{QueryTxModel: model}
 
 	default:
-		return nil, errors.New("unsupported api type")
+		return nil, fmt.Errorf("unknown API type: %s", c.apiType)
 	}
 
 	queryResponse.Query = modelAdapter.GetQueryTxResponse()
