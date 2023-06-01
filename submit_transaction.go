@@ -111,6 +111,7 @@ func (c *Client) SubmitTransaction(ctx context.Context, miner *Miner, tx *Transa
 	if err != nil {
 		return nil, err
 	}
+
 	if result.Response.Error != nil {
 		return nil, result.Response.Error
 	}
