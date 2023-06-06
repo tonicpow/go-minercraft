@@ -15,7 +15,7 @@ type QuoteService interface {
 
 // MinerService is the MinerCraft miner related methods
 type MinerService interface {
-	AddMiner(miner Miner) error
+	AddMiner(miner Miner, apis []API) error
 	MinerByID(minerID string) *Miner
 	MinerByName(name string) *Miner
 	Miners() []*Miner

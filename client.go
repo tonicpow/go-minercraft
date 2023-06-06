@@ -2,6 +2,9 @@ package minercraft
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
+	"math/rand"
 	"net"
 	"net/http"
 	"strings"
@@ -26,42 +29,66 @@ type Client struct {
 }
 
 // AddMiner will add a new miner to the list of miners
-func (c *Client) AddMiner(miner Miner) error {
-	// TODO: Align with new structure
-	// Make sure we have the basic requirements
-	// if len(miner.Name) == 0 {
-	// 	return errors.New("missing miner name")
-	// } else if len(miner.URL) == 0 {
-	// 	return errors.New("missing miner url")
-	// }
+func (c *Client) AddMiner(miner Miner, apis []API) error {
+	// Check if miner name is empty
+	if len(miner.Name) == 0 {
+		return errors.New("missing miner name")
+	}
 
-	// // Check if a miner with that name already exists
-	// existingMiner := c.MinerByName(miner.Name)
-	// if existingMiner != nil {
-	// 	return fmt.Errorf("miner %s already exists", miner.Name)
-	// }
+	// Check if apis is empty or nil
+	if len(apis) == 0 || apis == nil {
+		return errors.New("at least one API must be provided")
+	}
 
-	// // Check if a miner with the minerID already exists
-	// if len(miner.MinerID) > 0 {
-	// 	if existingMiner = c.MinerByID(miner.MinerID); existingMiner != nil {
-	// 		return fmt.Errorf("miner %s already exists", miner.MinerID)
-	// 	}
-	// }
+	// Check if a miner with that name already exists
+	existingMiner := c.MinerByName(miner.Name)
+	if existingMiner != nil {
+		return fmt.Errorf("miner %s already exists", miner.Name)
+	}
 
-	// // Ensure that we have a protocol
-	// if !strings.Contains(miner.URL, "http") {
-	// 	return fmt.Errorf("miner %s is missing http from url", miner.Name)
-	// }
+	// Check if a miner with the minerID already exists
+	if len(miner.MinerID) > 0 {
+		if existingMiner = c.MinerByID(miner.MinerID); existingMiner != nil {
+			return fmt.Errorf("miner %s already exists", miner.MinerID)
+		}
+	}
 
-	// // Test parsing the url
-	// parsedURL, err := url.Parse(miner.URL)
-	// if err != nil {
-	// 	return err
-	// }
-	// // miner.URL = parsedURL.String()
+	// Check if the MinerAPIs already exist for the given MinerID
+	existingMinerAPIs := c.MinerAPIsByMinerID(miner.MinerID)
+	if existingMinerAPIs != nil {
+		return fmt.Errorf("miner APIs for MinerID %s already exist", miner.MinerID)
+	}
 
-	// // Append the new miner
-	// c.miners = append(c.miners, &miner)
+	// Check if the API types are valid
+	for _, api := range apis {
+		if !isValidAPIType(api.Type) {
+			return fmt.Errorf("invalid API type: %s", api.Type)
+		}
+	}
+
+	// Check if the API types are unique within the provided APIs
+	apiTypes := make(map[APIType]bool)
+	for _, api := range apis {
+		if apiTypes[api.Type] {
+			return fmt.Errorf("duplicate API type found: %s", api.Type)
+		}
+		apiTypes[api.Type] = true
+	}
+
+	// Check if the MinerID is unique or generate a new one
+	if len(miner.MinerID) == 0 || !c.isUniqueMinerID(miner.MinerID) {
+		miner.MinerID = generateUniqueMinerID()
+	}
+
+	// Append the new miner
+	c.miners = append(c.miners, &miner)
+
+	// Append the new miner APIs
+	c.minerAPIs = append(c.minerAPIs, &MinerAPIs{
+		MinerID: miner.MinerID,
+		APIs:    apis,
+	})
+
 	return nil
 }
 
@@ -303,4 +330,47 @@ func DefaultMiners() (miners []*Miner, err error) {
 func DefaultMinersAPIs() (minerAPIs []*MinerAPIs, err error) {
 	err = json.Unmarshal([]byte(KnownMinersAPIs), &minerAPIs)
 	return
+}
+
+func (c *Client) MinerAPIsByMinerID(minerID string) *MinerAPIs {
+	for _, minerAPIs := range c.minerAPIs {
+		if minerAPIs.MinerID == minerID {
+			return minerAPIs
+		}
+	}
+	return nil
+}
+
+func isValidAPIType(apiType APIType) bool {
+	switch apiType {
+	case MAPI, Arc:
+		return true
+	default:
+		return false
+	}
+}
+
+func (c *Client) isUniqueMinerID(minerID string) bool {
+	for _, miner := range c.miners {
+		if miner.MinerID == minerID {
+			return false
+		}
+	}
+	return true
+}
+
+func generateUniqueMinerID() string {
+	// Implement your logic to generate a unique miner ID
+	// Here's a simple example that generates a random ID
+	const idLength = 8
+	const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+	rand.Seed(time.Now().UnixNano())
+
+	id := make([]byte, idLength)
+	for i := range id {
+		id[i] = letters[rand.Intn(len(letters))]
+	}
+
+	return string(id)
 }
