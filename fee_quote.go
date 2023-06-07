@@ -51,6 +51,13 @@ func (c *Client) FeeQuote(ctx context.Context, miner *Miner) (*FeeQuoteResponse,
 		return nil, errors.New("failed getting quotes from: " + miner.Name)
 	}
 
+	isValid, err := response.IsValid()
+	if err != nil {
+		return nil, err
+	}
+
+	response.Validated = isValid
+
 	// Return the fully parsed response
 	return &response, nil
 }

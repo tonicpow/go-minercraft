@@ -203,6 +203,10 @@ func (c *Client) QueryTransaction(ctx context.Context, miner *Miner, txID string
 			return nil, err
 		}
 
+		if queryResponse.Payload == "" || queryResponse.Payload == "{}" {
+			return nil, errors.New("failed to unmarshal payload")
+		}
+
 		modelAdapter = &QueryTxMapiAdapter{QueryTxModel: model}
 
 	case Arc:

@@ -138,6 +138,10 @@ func (c *Client) SubmitTransaction(ctx context.Context, miner *Miner, tx *Transa
 			return nil, err
 		}
 
+		if submitResponse.Payload == "" || submitResponse.Payload == "{}" {
+			return nil, errors.New("failed to unmarshal payload")
+		}
+
 		modelAdapter = &SubmitTxMapiAdapter{SubmitTxModel: model.SubmitTxModel}
 	case Arc:
 		model := &SubmitTxArcAdapter{}
@@ -154,7 +158,7 @@ func (c *Client) SubmitTransaction(ctx context.Context, miner *Miner, tx *Transa
 	submitResponse.Results = modelAdapter.GetSubmitTxResponse()
 
 	// Valid?
-	if submitResponse.Results == nil {
+	if submitResponse.Results == nil && (len(submitResponse.Payload) <= 0 && c.apiType == MAPI) {
 		return nil, errors.New("failed getting submit response from: " + miner.Name)
 	}
 

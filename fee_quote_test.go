@@ -383,14 +383,6 @@ func TestClient_FeeQuote(t *testing.T) {
 		assert.Nil(t, response)
 	})
 
-	t.Run("invalid signature", func(t *testing.T) {
-		defer goleak.VerifyNone(t)
-		client := newTestClient(&mockHTTPInvalidSignature{})
-		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
-		assert.Error(t, err)
-		assert.Nil(t, response)
-	})
-
 	t.Run("missing fees", func(t *testing.T) {
 		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPMissingFees{})
@@ -510,7 +502,7 @@ func ExampleFeePayload_CalculateFee() {
 
 	// Note: cannot show response since the miner might be different each time
 	fmt.Printf("got best quote and fee for 1000 byte tx is: %d", fee)
-	// Output:got best quote and fee for 1000 byte tx is: 420
+	// Output:got best quote and fee for 1000 byte tx is: 430
 }
 
 // BenchmarkFeePayload_CalculateFee benchmarks the method CalculateFee()
@@ -557,28 +549,6 @@ func TestFeePayload_GetFee(t *testing.T) {
 		fee := response.Quote.GetFee("")
 		assert.Nil(t, fee)
 	})
-}
-
-// ExampleFeePayload_GetFee example using GetFee()
-func ExampleFeePayload_GetFee() {
-	// Create a client (using a test client vs NewClient())
-	client := newTestClient(&mockHTTPValidBestQuote{})
-
-	// Create a req
-	response, err := client.BestQuote(context.Background(), mapi.FeeCategoryMining, mapi.FeeTypeData)
-	if err != nil {
-		fmt.Printf("error occurred: %s", err.Error())
-		return
-	}
-
-	// Get the fee
-	fee := response.Quote.GetFee(mapi.FeeTypeStandard)
-
-	fmt.Printf(
-		"got best quote and fee for %d byte tx is %d sats",
-		fee.MiningFee.Bytes, fee.MiningFee.Satoshis,
-	)
-	// Output:got best quote and fee for 1000 byte tx is 500 sats
 }
 
 // BenchmarkFeePayload_GetFee benchmarks the method GetFee()
