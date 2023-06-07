@@ -19,7 +19,9 @@ type MinerService interface {
 	MinerByID(minerID string) *Miner
 	MinerByName(name string) *Miner
 	Miners() []*Miner
-	MinerUpdateToken(name, token string)
+	MinerAPIsByMinerID(minerID string) *MinerAPIs
+	MinerAPIByMinerID(minerID string, apiType APIType) (*API, error)
+	MinerUpdateToken(name, token string, apiType APIType)
 	RemoveMiner(miner *Miner) bool
 }
 
@@ -36,4 +38,5 @@ type ClientInterface interface {
 	QuoteService
 	TransactionService
 	UserAgent() string
+	APIType() APIType
 }

@@ -246,7 +246,7 @@ func queryTransaction(ctx context.Context, client *Client, miner *Miner, txHash 
 	}
 	sb := strings.Builder{}
 
-	api, err := MinerAPIByMinerID(client.minerAPIs, miner.MinerID, client.apiType)
+	api, err := client.MinerAPIByMinerID(miner.MinerID, client.apiType)
 	if err != nil {
 		result.Response = &RequestResponse{Error: err}
 		return

@@ -134,18 +134,26 @@ func MinerByID(miners []*Miner, minerID string) *Miner {
 	}
 	return nil
 }
-
-func MinerAPIByMinerID(minerAPIs []*MinerAPIs, minerID string, apiType APIType) (*API, error) {
-	for _, minerAPI := range minerAPIs {
+func (c *Client) MinerAPIByMinerID(minerID string, apiType APIType) (*API, error) {
+	for _, minerAPI := range c.minerAPIs {
 		if minerAPI.MinerID == minerID {
-			for _, api := range minerAPI.APIs {
-				if api.Type == apiType {
-					return &api, nil
+			for i := range minerAPI.APIs {
+				if minerAPI.APIs[i].Type == apiType {
+					return &minerAPI.APIs[i], nil
 				}
 			}
 		}
 	}
 	return nil, &APINotFoundError{MinerID: minerID, APIType: apiType}
+}
+
+func (c *Client) MinerAPIsByMinerID(minerID string) *MinerAPIs {
+	for _, minerAPIs := range c.minerAPIs {
+		if minerAPIs.MinerID == minerID {
+			return minerAPIs
+		}
+	}
+	return nil
 }
 
 func ActionRouteByAPIType(actionName APIActionName, apiType APIType) (string, error) {
@@ -162,10 +170,10 @@ func ActionRouteByAPIType(actionName APIActionName, apiType APIType) (string, er
 }
 
 // MinerUpdateToken will find a miner by name and update the token
-func (c *Client) MinerUpdateToken(name, token string) {
+func (c *Client) MinerUpdateToken(name, token string, apiType APIType) {
 	if miner := c.MinerByName(name); miner != nil {
-		// TODO: Align with new structure
-		// miner.Token = token
+		api, _ := c.MinerAPIByMinerID(miner.MinerID, apiType)
+		api.Token = token
 	}
 }
 
@@ -332,13 +340,8 @@ func DefaultMinersAPIs() (minerAPIs []*MinerAPIs, err error) {
 	return
 }
 
-func (c *Client) MinerAPIsByMinerID(minerID string) *MinerAPIs {
-	for _, minerAPIs := range c.minerAPIs {
-		if minerAPIs.MinerID == minerID {
-			return minerAPIs
-		}
-	}
-	return nil
+func (c *Client) APIType() APIType {
+	return c.apiType
 }
 
 func isValidAPIType(apiType APIType) bool {

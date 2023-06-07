@@ -101,7 +101,7 @@ func (c *Client) SubmitTransactions(ctx context.Context, miner *Miner, txs []Tra
 }
 
 func submitTransactions(ctx context.Context, client *Client, miner *Miner, txs []Transaction) (*RequestResponse, error) {
-	api, err := MinerAPIByMinerID(client.minerAPIs, miner.MinerID, client.apiType)
+	api, err := client.MinerAPIByMinerID(miner.MinerID, client.apiType)
 	if err != nil {
 		return nil, err
 	}

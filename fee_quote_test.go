@@ -11,6 +11,7 @@ import (
 
 	"github.com/libsv/go-bt/v2"
 	"github.com/stretchr/testify/assert"
+	"github.com/tonicpow/go-minercraft/apis/mapi"
 	"go.uber.org/goleak"
 )
 
@@ -299,8 +300,8 @@ func TestClient_FeeQuote(t *testing.T) {
 		assert.Equal(t, feeTestPublicKey, *response.PublicKey)
 		assert.Equal(t, testEncoding, response.Encoding)
 		assert.Equal(t, testMimeType, response.MimeType)
-		assert.Equal(t, 500, response.Quote.GetFee(FeeTypeStandard).MiningFee.Satoshis)
-		assert.Equal(t, 1000, response.Quote.GetFee(FeeTypeStandard).MiningFee.Bytes)
+		assert.Equal(t, 500, response.Quote.GetFee(mapi.FeeTypeStandard).MiningFee.Satoshis)
+		assert.Equal(t, 1000, response.Quote.GetFee(mapi.FeeTypeStandard).MiningFee.Bytes)
 	})
 
 	t.Run("valid parse values", func(t *testing.T) {
@@ -340,12 +341,12 @@ func TestClient_FeeQuote(t *testing.T) {
 
 		// Test getting rate from request
 		var rate uint64
-		rate, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 1000)
+		rate, err = response.Quote.CalculateFee(mapi.FeeCategoryMining, mapi.FeeTypeData, 1000)
 		assert.NoError(t, err)
 		assert.Equal(t, uint64(500), rate)
 
 		// Test relay rate
-		rate, err = response.Quote.CalculateFee(FeeCategoryRelay, FeeTypeData, 1000)
+		rate, err = response.Quote.CalculateFee(mapi.FeeCategoryRelay, mapi.FeeTypeData, 1000)
 		assert.NoError(t, err)
 		assert.Equal(t, uint64(250), rate)
 	})
@@ -439,22 +440,22 @@ func TestFeePayload_CalculateFee(t *testing.T) {
 
 		// Mining & Data
 		var fee uint64
-		fee, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 1000)
+		fee, err = response.Quote.CalculateFee(mapi.FeeCategoryMining, mapi.FeeTypeData, 1000)
 		assert.NoError(t, err)
 		assert.Equal(t, uint64(500), fee)
 
 		// Mining and standard
-		fee, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeStandard, 1000)
+		fee, err = response.Quote.CalculateFee(mapi.FeeCategoryMining, mapi.FeeTypeStandard, 1000)
 		assert.NoError(t, err)
 		assert.Equal(t, uint64(500), fee)
 
 		// Relay & Data
-		fee, err = response.Quote.CalculateFee(FeeCategoryRelay, FeeTypeData, 1000)
+		fee, err = response.Quote.CalculateFee(mapi.FeeCategoryRelay, mapi.FeeTypeData, 1000)
 		assert.NoError(t, err)
 		assert.Equal(t, uint64(250), fee)
 
 		// Relay and standard
-		fee, err = response.Quote.CalculateFee(FeeCategoryRelay, FeeTypeStandard, 1000)
+		fee, err = response.Quote.CalculateFee(mapi.FeeCategoryRelay, mapi.FeeTypeStandard, 1000)
 		assert.NoError(t, err)
 		assert.Equal(t, uint64(250), fee)
 	})
@@ -467,7 +468,7 @@ func TestFeePayload_CalculateFee(t *testing.T) {
 
 		// Zero tx size produces 0 fee and error
 		var fee uint64
-		fee, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 0)
+		fee, err = response.Quote.CalculateFee(mapi.FeeCategoryMining, mapi.FeeTypeData, 0)
 		assert.Error(t, err)
 		assert.Equal(t, uint64(1), fee)
 	})
@@ -480,7 +481,7 @@ func TestFeePayload_CalculateFee(t *testing.T) {
 
 		// Zero tx size produces 0 fee and error
 		var fee uint64
-		fee, err = response.Quote.CalculateFee(FeeCategoryRelay, FeeTypeStandard, 1000)
+		fee, err = response.Quote.CalculateFee(mapi.FeeCategoryRelay, mapi.FeeTypeStandard, 1000)
 		assert.Error(t, err)
 		assert.Equal(t, uint64(1), fee)
 	})
@@ -493,7 +494,7 @@ func ExampleFeePayload_CalculateFee() {
 	client := newTestClient(&mockHTTPValidBestQuote{})
 
 	// Create a req
-	response, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
+	response, err := client.BestQuote(context.Background(), mapi.FeeCategoryMining, mapi.FeeTypeData)
 	if err != nil {
 		fmt.Printf("error occurred: %s", err.Error())
 		return
@@ -501,7 +502,7 @@ func ExampleFeePayload_CalculateFee() {
 
 	// Calculate fee for tx
 	var fee uint64
-	fee, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 1000)
+	fee, err = response.Quote.CalculateFee(mapi.FeeCategoryMining, mapi.FeeTypeData, 1000)
 	if err != nil {
 		fmt.Printf("error occurred: %s", err.Error())
 		return
@@ -515,9 +516,9 @@ func ExampleFeePayload_CalculateFee() {
 // BenchmarkFeePayload_CalculateFee benchmarks the method CalculateFee()
 func BenchmarkFeePayload_CalculateFee(b *testing.B) {
 	client := newTestClient(&mockHTTPValidBestQuote{})
-	response, _ := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
+	response, _ := client.BestQuote(context.Background(), mapi.FeeCategoryMining, mapi.FeeTypeData)
 	for i := 0; i < b.N; i++ {
-		_, _ = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 1000)
+		_, _ = response.Quote.CalculateFee(mapi.FeeCategoryMining, mapi.FeeTypeData, 1000)
 	}
 }
 
@@ -536,12 +537,12 @@ func TestFeePayload_GetFee(t *testing.T) {
 		assert.NotNil(t, response)
 
 		// Standard
-		fee := response.Quote.GetFee(FeeTypeStandard)
+		fee := response.Quote.GetFee(mapi.FeeTypeStandard)
 		assert.NotNil(t, fee)
 		assert.Equal(t, bt.FeeTypeStandard, fee.FeeType)
 
 		// Data
-		fee = response.Quote.GetFee(FeeTypeData)
+		fee = response.Quote.GetFee(mapi.FeeTypeData)
 		assert.NotNil(t, fee)
 		assert.Equal(t, bt.FeeTypeData, fee.FeeType)
 	})
@@ -564,14 +565,14 @@ func ExampleFeePayload_GetFee() {
 	client := newTestClient(&mockHTTPValidBestQuote{})
 
 	// Create a req
-	response, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
+	response, err := client.BestQuote(context.Background(), mapi.FeeCategoryMining, mapi.FeeTypeData)
 	if err != nil {
 		fmt.Printf("error occurred: %s", err.Error())
 		return
 	}
 
 	// Get the fee
-	fee := response.Quote.GetFee(FeeTypeStandard)
+	fee := response.Quote.GetFee(mapi.FeeTypeStandard)
 
 	fmt.Printf(
 		"got best quote and fee for %d byte tx is %d sats",
@@ -583,8 +584,8 @@ func ExampleFeePayload_GetFee() {
 // BenchmarkFeePayload_GetFee benchmarks the method GetFee()
 func BenchmarkFeePayload_GetFee(b *testing.B) {
 	client := newTestClient(&mockHTTPValidBestQuote{})
-	response, _ := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
+	response, _ := client.BestQuote(context.Background(), mapi.FeeCategoryMining, mapi.FeeTypeData)
 	for i := 0; i < b.N; i++ {
-		_ = response.Quote.GetFee(FeeTypeStandard)
+		_ = response.Quote.GetFee(mapi.FeeTypeStandard)
 	}
 }

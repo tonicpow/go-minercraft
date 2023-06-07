@@ -97,12 +97,11 @@ func TestNewClient(t *testing.T) {
 		miners := []*Miner{{
 			MinerID: testMinerID,
 			Name:    testMinerName,
-			// TODO: Align with new structure
-			// Token:   testMinerToken,
-			// URL:     testMinerURL,
 		}}
 
-		client, err := NewClient(nil, nil, "", miners)
+		minerAPIs := []*MinerAPIs{{MinerID: testMinerID, APIs: []API{{Token: testMinerToken, URL: testMinerURL, Type: MAPI}}}}
+
+		client, err := NewClient(nil, nil, "", miners, minerAPIs)
 		assert.NotNil(t, client)
 		assert.NoError(t, err)
 
@@ -185,7 +184,6 @@ func BenchmarkDefaultClientOptions(b *testing.B) {
 	}
 }
 
-// TODO: Align with new structure
 // TestClient_AddMiner tests the method AddMiner()
 func TestClient_AddMiner(t *testing.T) {
 	t.Parallel()
@@ -426,7 +424,7 @@ func ExampleClient_MinerByName() {
 // BenchmarkClient_MinerByName benchmarks the method MinerByName()
 func BenchmarkClient_MinerByName(b *testing.B) {
 	client, _ := NewClient(nil, nil, "", nil, nil)
-	_ = client.AddMiner(Miner{Name: testMinerName, URL: testMinerURL})
+	_ = client.AddMiner(Miner{Name: testMinerName}, []API{API{URL: testMinerURL, Type: MAPI}})
 	for i := 0; i < b.N; i++ {
 		_ = client.MinerByName(testMinerName)
 	}
@@ -443,8 +441,7 @@ func TestClient_MinerByID(t *testing.T) {
 		err := client.AddMiner(Miner{
 			Name:    testMinerName,
 			MinerID: testMinerID,
-			URL:     testMinerURL,
-		})
+		}, []API{API{URL: testMinerURL, Type: MAPI}})
 		assert.NoError(t, err)
 
 		// Get valid miner
@@ -459,8 +456,7 @@ func TestClient_MinerByID(t *testing.T) {
 		err := client.AddMiner(Miner{
 			Name:    testMinerName,
 			MinerID: testMinerID,
-			URL:     testMinerURL,
-		})
+		}, []API{API{URL: testMinerURL, Type: MAPI}})
 		assert.NoError(t, err)
 
 		// Get invalid miner
@@ -471,14 +467,14 @@ func TestClient_MinerByID(t *testing.T) {
 
 // ExampleClient_MinerByID example using MinerByID()
 func ExampleClient_MinerByID() {
-	client, err := NewClient(nil, nil, nil)
+	client, err := NewClient(nil, nil, "", nil, nil)
 	if err != nil {
 		fmt.Printf("error occurred: %s", err.Error())
 		return
 	}
 
 	// Add a miner
-	if err = client.AddMiner(Miner{Name: testMinerName, MinerID: testMinerID, URL: testMinerURL}); err != nil {
+	if err = client.AddMiner(Miner{Name: testMinerName, MinerID: testMinerID}, []API{API{URL: testMinerURL, Type: MAPI}}); err != nil {
 		fmt.Printf("error occurred: %s", err.Error())
 		return
 	}
@@ -490,8 +486,8 @@ func ExampleClient_MinerByID() {
 
 // BenchmarkClient_MinerByID benchmarks the method MinerByID()
 func BenchmarkClient_MinerByID(b *testing.B) {
-	client, _ := NewClient(nil, nil, nil)
-	_ = client.AddMiner(Miner{Name: testMinerName, MinerID: testMinerID, URL: testMinerURL})
+	client, _ := NewClient(nil, nil, "", nil, nil)
+	_ = client.AddMiner(Miner{Name: testMinerName, MinerID: testMinerID}, []API{API{URL: testMinerURL, Type: MAPI}})
 	for i := 0; i < b.N; i++ {
 		_ = client.MinerByID(testMinerID)
 	}
@@ -508,18 +504,18 @@ func TestClient_MinerUpdateToken(t *testing.T) {
 		err := client.AddMiner(Miner{
 			Name:    testMinerName,
 			MinerID: testMinerID,
-			Token:   testMinerToken,
-			URL:     testMinerURL,
-		})
+		}, []API{{URL: testMinerURL, Type: MAPI, Token: testMinerToken}})
 		assert.NoError(t, err)
 
 		// Update a valid miner token
-		client.MinerUpdateToken(testMinerName, "99999")
+		client.MinerUpdateToken(testMinerName, "99999", MAPI)
 
 		// Get valid miner
 		miner := client.MinerByID(testMinerID)
+		api, err := client.MinerAPIByMinerID(testMinerID, MAPI)
+		assert.NoError(t, err)
 		assert.NotNil(t, miner)
-		assert.Equal(t, "99999", miner.Token)
+		assert.Equal(t, "99999", api.Token)
 	})
 
 	t.Run("update unknown miner", func(t *testing.T) {
@@ -529,13 +525,11 @@ func TestClient_MinerUpdateToken(t *testing.T) {
 		err := client.AddMiner(Miner{
 			Name:    testMinerName,
 			MinerID: testMinerID,
-			Token:   testMinerToken,
-			URL:     testMinerURL,
-		})
+		}, []API{API{URL: testMinerURL, Type: MAPI, Token: testMinerToken}})
 		assert.NoError(t, err)
 
 		// Update a invalid miner token
-		client.MinerUpdateToken("Unknown", "99999")
+		client.MinerUpdateToken("Unknown", "99999", MAPI)
 	})
 }
 
@@ -548,18 +542,23 @@ func ExampleClient_MinerUpdateToken() {
 	}
 
 	// Update existing miner token
-	client.MinerUpdateToken(MinerTaal, "9999")
+	client.MinerUpdateToken(MinerTaal, "9999", MAPI)
 
 	taal := client.MinerByName(MinerTaal)
+	api, err := client.MinerAPIByMinerID(taal.MinerID, client.APIType())
+	if err != nil {
+		fmt.Printf("error occurred: %s", err.Error())
+		return
+	}
 
 	// Get miner by id
-	fmt.Printf("miner token found: %s", client.MinerByName(MinerTaal).Token)
+	fmt.Printf("miner token found: %s", api.Token)
 	// Output:miner token found: 9999
 }
 
 // BenchmarkClient_MinerUpdateToken benchmarks the method MinerUpdateToken()
 func BenchmarkClient_MinerUpdateToken(b *testing.B) {
-	client, _ := NewClient(nil, nil, nil)
+	client, _ := NewClient(nil, nil, "", nil, nil)
 	for i := 0; i < b.N; i++ {
 		_ = client.MinerByName(MinerTaal)
 	}

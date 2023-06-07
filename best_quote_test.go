@@ -10,6 +10,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/tonicpow/go-minercraft/apis/mapi"
 	"go.uber.org/goleak"
 )
 
@@ -194,7 +195,7 @@ func TestClient_BestQuote(t *testing.T) {
 		client := newTestClient(&mockHTTPValidBestQuote{})
 
 		// Create a req
-		response, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
+		response, err := client.BestQuote(context.Background(), mapi.FeeCategoryMining, mapi.FeeTypeData)
 		require.NoError(t, err)
 		require.NotNil(t, response)
 
@@ -210,7 +211,7 @@ func TestClient_BestQuote(t *testing.T) {
 		defer goleak.VerifyNone(t)
 
 		client := newTestClient(&mockHTTPError{})
-		response, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
+		response, err := client.BestQuote(context.Background(), mapi.FeeCategoryMining, mapi.FeeTypeData)
 		require.Error(t, err)
 		require.Nil(t, response)
 	})
@@ -219,7 +220,7 @@ func TestClient_BestQuote(t *testing.T) {
 		defer goleak.VerifyNone(t)
 
 		client := newTestClient(&mockHTTPBadRequest{})
-		response, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
+		response, err := client.BestQuote(context.Background(), mapi.FeeCategoryMining, mapi.FeeTypeData)
 		require.Error(t, err)
 		require.Nil(t, response)
 	})
@@ -228,7 +229,7 @@ func TestClient_BestQuote(t *testing.T) {
 		defer goleak.VerifyNone(t)
 
 		client := newTestClient(&mockHTTPInvalidJSON{})
-		response, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
+		response, err := client.BestQuote(context.Background(), mapi.FeeCategoryMining, mapi.FeeTypeData)
 		require.Error(t, err)
 		require.Nil(t, response)
 	})
@@ -237,12 +238,12 @@ func TestClient_BestQuote(t *testing.T) {
 		defer goleak.VerifyNone(t)
 
 		client := newTestClient(&mockHTTPValidBestQuote{})
-		response, err := client.BestQuote(context.Background(), "invalid", FeeTypeData)
+		response, err := client.BestQuote(context.Background(), "invalid", mapi.FeeTypeData)
 		require.Error(t, err)
 		require.Nil(t, response)
 
 		// Create a req
-		response, err = client.BestQuote(context.Background(), FeeCategoryMining, "invalid")
+		response, err = client.BestQuote(context.Background(), mapi.FeeCategoryMining, "invalid")
 		require.Error(t, err)
 		require.Nil(t, response)
 	})
@@ -251,7 +252,7 @@ func TestClient_BestQuote(t *testing.T) {
 		defer goleak.VerifyNone(t)
 
 		client := newTestClient(&mockHTTPBetterRate{})
-		response, err := client.BestQuote(context.Background(), FeeCategoryRelay, FeeTypeData)
+		response, err := client.BestQuote(context.Background(), mapi.FeeCategoryRelay, mapi.FeeTypeData)
 		require.NoError(t, err)
 		require.NotNil(t, response)
 
@@ -259,11 +260,11 @@ func TestClient_BestQuote(t *testing.T) {
 		assert.Equal(t, 2, len(response.Quote.Fees))
 
 		var fee uint64
-		fee, err = response.Quote.CalculateFee(FeeCategoryRelay, FeeTypeData, 1000)
+		fee, err = response.Quote.CalculateFee(mapi.FeeCategoryRelay, mapi.FeeTypeData, 1000)
 		require.NoError(t, err)
 		assert.Equal(t, uint64(100), fee)
 
-		fee, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 1000)
+		fee, err = response.Quote.CalculateFee(mapi.FeeCategoryMining, mapi.FeeTypeData, 1000)
 		require.NoError(t, err)
 		assert.Equal(t, uint64(500), fee)
 	})
@@ -272,7 +273,7 @@ func TestClient_BestQuote(t *testing.T) {
 		defer goleak.VerifyNone(t)
 
 		client := newTestClient(&mockHTTPBadRate{})
-		response, err := client.BestQuote(context.Background(), FeeCategoryRelay, FeeTypeData)
+		response, err := client.BestQuote(context.Background(), mapi.FeeCategoryRelay, mapi.FeeTypeData)
 		require.Error(t, err)
 		require.Nil(t, response)
 	})
@@ -284,7 +285,7 @@ func TestClient_BestQuote(t *testing.T) {
 		client := newTestClient(&mockHTTPBestQuoteTwoFailed{})
 
 		// Create a req
-		response, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
+		response, err := client.BestQuote(context.Background(), mapi.FeeCategoryMining, mapi.FeeTypeData)
 		require.NoError(t, err)
 		require.NotNil(t, response)
 
@@ -305,7 +306,7 @@ func TestClient_BestQuote(t *testing.T) {
 		client := newTestClient(&mockHTTPBestQuoteAllFailed{})
 
 		// Create a req
-		response, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
+		response, err := client.BestQuote(context.Background(), mapi.FeeCategoryMining, mapi.FeeTypeData)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
@@ -317,7 +318,7 @@ func ExampleClient_BestQuote() {
 	client := newTestClient(&mockHTTPValidBestQuote{})
 
 	// Create a req
-	_, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
+	_, err := client.BestQuote(context.Background(), mapi.FeeCategoryMining, mapi.FeeTypeData)
 	if err != nil {
 		fmt.Printf("error occurred: %s", err.Error())
 		return
@@ -332,6 +333,6 @@ func ExampleClient_BestQuote() {
 func BenchmarkClient_BestQuote(b *testing.B) {
 	client := newTestClient(&mockHTTPValidBestQuote{})
 	for i := 0; i < b.N; i++ {
-		_, _ = client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
+		_, _ = client.BestQuote(context.Background(), mapi.FeeCategoryMining, mapi.FeeTypeData)
 	}
 }

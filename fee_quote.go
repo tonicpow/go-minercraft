@@ -123,7 +123,7 @@ func rawPayloadIntoQuote(payload *mapi.RawFeePayload, quote *mapi.FeePayload) {
 func getQuote(ctx context.Context, client *Client, miner *Miner, route string) (result *internalResult) {
 	sb := strings.Builder{}
 
-	api, err := MinerAPIByMinerID(client.minerAPIs, miner.MinerID, client.apiType)
+	api, err := client.MinerAPIByMinerID(miner.MinerID, client.apiType)
 	if err != nil {
 		result.Response = &RequestResponse{Error: err}
 		return

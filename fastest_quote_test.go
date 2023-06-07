@@ -185,7 +185,6 @@ func TestClient_FastestQuote(t *testing.T) {
 		client := newTestClient(&mockHTTPValidFastestQuoteSlow{})
 
 		// Create a req
-		// todo: this should produce a timeout (error)
 		response, err := client.FastestQuote(context.Background(), 1*time.Second)
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
