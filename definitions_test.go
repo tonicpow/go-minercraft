@@ -22,7 +22,7 @@ func Test_JSONEnvelope_process(t *testing.T) {
 			},
 			exp: &JSONEnvelope{
 				Miner:     nil,
-				Validated: true,
+				Validated: false,
 				JSONEnvelope: envelope.JSONEnvelope{
 					Payload:  "{\"index\":7\"}",
 					MimeType: "application/json",
@@ -39,7 +39,7 @@ func Test_JSONEnvelope_process(t *testing.T) {
 			},
 			exp: &JSONEnvelope{
 				Miner:     nil,
-				Validated: true,
+				Validated: false,
 				JSONEnvelope: envelope.JSONEnvelope{
 					Payload:   `{\"Test\":\"abc123\",\"Name\":\"4567890\",\"Thing\":\"%$oddchars££$-\"}`,
 					Signature: strToPtr("3045022100b2b3000353b1acaf6e0190a44fc26b0b43830e5aa8d1232813c928d003697c010220294796e63da19d238b29f9cb17e2f31f728ef77a41bfd0f5e355f99f347ff4bf"),
