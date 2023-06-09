@@ -2,6 +2,7 @@ package mapi
 
 import "github.com/libsv/go-bc"
 
+// QueryTxModel is the unmarshalled version of the payload envelope
 type QueryTxModel struct {
 	APIVersion            string          `json:"apiVersion"`
 	Timestamp             string          `json:"timestamp"`

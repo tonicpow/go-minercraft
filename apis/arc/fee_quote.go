@@ -1,3 +1,4 @@
+// arc package provides the API structures for the ARC service
 package arc
 
 import "github.com/libsv/go-bt/v2"

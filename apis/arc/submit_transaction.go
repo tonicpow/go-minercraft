@@ -2,6 +2,7 @@ package arc
 
 import "time"
 
+// SubmitTxModel is the unmarshalled version of the payload envelope
 type SubmitTxModel struct {
 	BlockHash   string    `json:"blockHash,omitempty"`
 	BlockHeight int64     `json:"blockHeight,omitempty"`

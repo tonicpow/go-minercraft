@@ -12,6 +12,7 @@ type Miner struct {
 	Name    string `json:"name,omitempty"`
 }
 
+// MinerAPIs is a configuration per miner, including connection url, auth token, etc
 type MinerAPIs struct {
 	MinerID string `json:"miner_id,omitempty"`
 	APIs    []API  `json:"apis,omitempty"`
@@ -20,6 +21,7 @@ type MinerAPIs struct {
 // APIType is the type of available APIs
 type APIType string
 
+// APIActionName is the name of the action for the API
 type APIActionName string
 
 // API is a configuration per miner, including connection url, auth token, etc

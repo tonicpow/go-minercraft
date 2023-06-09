@@ -140,7 +140,7 @@ const KnownMiners = `
 
 // Any pre-filled tokens are for free use only
 // update your custom token with client.MinerUpdateToken("name", "token")
-// TODO: Update client.MinerUpdateToken method and related
+// KnownMinersAPIs is a pre-filled list of known miners with their APIs
 const KnownMinersAPIs = `
 [
 	{

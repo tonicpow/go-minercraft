@@ -147,6 +147,7 @@ func (c *Client) MinerAPIByMinerID(minerID string, apiType APIType) (*API, error
 	return nil, &APINotFoundError{MinerID: minerID, APIType: apiType}
 }
 
+// MinerAPIsByMinerID will return a miner's APIs given a miner id
 func (c *Client) MinerAPIsByMinerID(minerID string) *MinerAPIs {
 	for _, minerAPIs := range c.minerAPIs {
 		if minerAPIs.MinerID == minerID {
@@ -156,6 +157,7 @@ func (c *Client) MinerAPIsByMinerID(minerID string) *MinerAPIs {
 	return nil
 }
 
+// ActionRouteByAPIType will return the route for a given action and API type
 func ActionRouteByAPIType(actionName APIActionName, apiType APIType) (string, error) {
 	for _, apiRoute := range Routes {
 		if apiRoute.Name == actionName {
@@ -340,10 +342,12 @@ func DefaultMinersAPIs() (minerAPIs []*MinerAPIs, err error) {
 	return
 }
 
+// APIType will return the API type
 func (c *Client) APIType() APIType {
 	return c.apiType
 }
 
+// isValidAPIType will return true if the API type is valid and part of our predefined list
 func isValidAPIType(apiType APIType) bool {
 	switch apiType {
 	case MAPI, Arc:
@@ -353,6 +357,7 @@ func isValidAPIType(apiType APIType) bool {
 	}
 }
 
+// isUniqueMinerID will return true if the miner ID is unique
 func (c *Client) isUniqueMinerID(minerID string) bool {
 	for _, miner := range c.miners {
 		if miner.MinerID == minerID {
@@ -362,6 +367,7 @@ func (c *Client) isUniqueMinerID(minerID string) bool {
 	return true
 }
 
+// generateUniqueMinerID will generate a unique miner ID
 func generateUniqueMinerID() string {
 	// Implement your logic to generate a unique miner ID
 	// Here's a simple example that generates a random ID

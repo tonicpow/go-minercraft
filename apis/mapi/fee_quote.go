@@ -79,14 +79,14 @@ type FeePayload struct {
 
 type (
 
-	// rawFeePayload is the unmarshalled version of the payload envelope
+	// RawFeePayload is the unmarshalled version of the payload envelope
 	RawFeePayload struct {
 		FeePayloadFields
 		Callbacks []*PolicyCallback `json:"callbacks"` // IP addresses of double-spend notification servers such as mAPI reference implementation
 		Fees      []*FeeObj         `json:"fees"`
 	}
 
-	// feePayloadFields are the same fields in both payloads
+	// FeePayloadFields are the same fields in both payloads
 	FeePayloadFields struct {
 		APIVersion                string      `json:"apiVersion"`
 		Timestamp                 string      `json:"timestamp"`
@@ -97,7 +97,7 @@ type (
 		MinerReputation           interface{} `json:"minerReputation"` // Not sure what this value is
 	}
 
-	// feeUnit displays the amount of Satoshis needed
+	// FeeUnit displays the amount of Satoshis needed
 	// for a specific amount of Bytes in a transaction
 	// see https://github.com/bitcoin-sv-specs/brfc-merchantapi#expanded-payload-1
 	FeeUnit struct {

@@ -47,6 +47,7 @@ type Callback struct {
 	Timestamp       string `json:"timestamp"`
 }
 
+// SubmitTxModel is the unmarshalled version of the payload envelope
 type SubmitTxModel struct {
 	// mAPI
 	APIVersion                string            `json:"apiVersion"`

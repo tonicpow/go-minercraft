@@ -2,6 +2,7 @@ package arc
 
 import "time"
 
+// QueryTxModel is the unmarshalled version of the payload envelope
 type QueryTxModel struct {
 	BlockHash   string `json:"blockHash,omitempty"`
 	BlockHeight int64  `json:"blockHeight,omitempty"`

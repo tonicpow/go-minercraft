@@ -1,5 +1,6 @@
 package arc
 
+// TxStatus is the status of the transaction
 type TxStatus string
 
 const (
@@ -18,20 +19,33 @@ const (
 	REJECTED             TxStatus = "REJECTED"             // 109
 )
 
+// String returns the string representation of the TxStatus
 func (s TxStatus) String() string {
 	statuses := map[TxStatus]string{
-		UNKNOWN:              "UNKNOWN",
-		QUEUED:               "QUEUED",
-		RECEIVED:             "RECEIVED",
-		STORED:               "STORED",
+		// UNKNOWN contains value for unknown status
+		UNKNOWN: "UNKNOWN",
+		// QUEUED contains value for queued status
+		QUEUED: "QUEUED",
+		// RECEIVED contains value for received status
+		RECEIVED: "RECEIVED",
+		// STORED contains value for stored status
+		STORED: "STORED",
+		// ANNOUNCED_TO_NETWORK contains value for announced to network status
 		ANNOUNCED_TO_NETWORK: "ANNOUNCED_TO_NETWORK",
+		// REQUESTED_BY_NETWORK contains value for requested by network status
 		REQUESTED_BY_NETWORK: "REQUESTED_BY_NETWORK",
-		SENT_TO_NETWORK:      "SENT_TO_NETWORK",
-		ACCEPTED_BY_NETWORK:  "ACCEPTED_BY_NETWORK",
-		SEEN_ON_NETWORK:      "SEEN_ON_NETWORK",
-		MINED:                "MINED",
-		CONFIRMED:            "CONFIRMED",
-		REJECTED:             "REJECTED",
+		// SENT_TO_NETWORK contains value for sent to network status
+		SENT_TO_NETWORK: "SENT_TO_NETWORK",
+		// ACCEPTED_BY_NETWORK contains value for accepted by network status
+		ACCEPTED_BY_NETWORK: "ACCEPTED_BY_NETWORK",
+		// SEEN_ON_NETWORK contains value for seen on network status
+		SEEN_ON_NETWORK: "SEEN_ON_NETWORK",
+		// MINED contains value for mined status
+		MINED: "MINED",
+		// CONFIRMED contains value for confirmed status
+		CONFIRMED: "CONFIRMED",
+		// REJECTED contains value for rejected status
+		REJECTED: "REJECTED",
 	}
 
 	if status, ok := statuses[s]; ok {
@@ -41,6 +55,7 @@ func (s TxStatus) String() string {
 	return "Can't parse status"
 }
 
+// MapTxStatusToInt maps the TxStatus to an int value
 func MapTxStatusToInt(status TxStatus) (int, bool) {
 	waitForStatusMap := map[TxStatus]int{
 		UNKNOWN:              0,

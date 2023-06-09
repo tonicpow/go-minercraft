@@ -78,6 +78,7 @@ Example PolicyQuoteResponse.Payload (unmarshalled):
 }
 */
 
+// Policy is the unmarshalled version of the payload envelope
 type Policy struct {
 	AcceptNonStdOutputs             bool         `json:"acceptnonstdoutputs"`
 	DataCarrier                     bool         `json:"datacarrier"`
@@ -97,6 +98,7 @@ type Policy struct {
 	AcceptNonStdConsolidationInput  bool         `json:"acceptnonstdconsolidationinput"`
 }
 
+// PolicyQuoteModel is the unmarshalled version of the payload envelope
 type PolicyQuoteModel struct {
 	APIVersion                string           `json:"apiVersion"`
 	Timestamp                 string           `json:"timestamp"`
@@ -114,11 +116,16 @@ type ScriptFlag string
 
 // All known script flags
 const (
-	FlagCleanStack               ScriptFlag = "CLEANSTACK"
-	FlagDerSig                   ScriptFlag = "DERSIG"
+	// FlagCleanStack is the CLEANSTACK flag
+	FlagCleanStack ScriptFlag = "CLEANSTACK"
+	// FlagDerSig is the DERSIG flag
+	FlagDerSig ScriptFlag = "DERSIG"
+	// FlagDiscourageUpgradableNops is the DISCOURAGE_UPGRADABLE_NOPS flag
 	FlagDiscourageUpgradableNops ScriptFlag = "DISCOURAGE_UPGRADABLE_NOPS"
-	FlagMinimalData              ScriptFlag = "MINIMALDATA"
-	FlagNullDummy                ScriptFlag = "NULLDUMMY"
+	// FlagMinimalData is the MINIMALDATA flag
+	FlagMinimalData ScriptFlag = "MINIMALDATA"
+	// FlagNullDummy is the NULLDUMMY flag
+	FlagNullDummy ScriptFlag = "NULLDUMMY"
 )
 
 // PolicyCallback is the callback address
