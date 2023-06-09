@@ -120,6 +120,10 @@ func (c *Client) PolicyQuote(ctx context.Context, miner *Miner) (*PolicyQuoteRes
 			return nil, err
 		}
 
+		if model.Fees == nil || len(model.Fees) <= 0 {
+			return nil, errors.New("empty fees")
+		}
+
 		modelAdapter = &PolicyQuoteMapiAdapter{PolicyQuoteModel: model}
 	case Arc:
 		model := &arc.PolicyQuoteModel{}
