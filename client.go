@@ -1,10 +1,11 @@
 package minercraft
 
 import (
+	"crypto/rand"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"math/rand"
+	"math/big"
 	"net"
 	"net/http"
 	"strings"
@@ -134,6 +135,8 @@ func MinerByID(miners []*Miner, minerID string) *Miner {
 	}
 	return nil
 }
+
+// MinerAPIByMinerID will return a miner's API given a miner id and API type
 func (c *Client) MinerAPIByMinerID(minerID string, apiType APIType) (*API, error) {
 	for _, minerAPI := range c.minerAPIs {
 		if minerAPI.MinerID == minerID {
@@ -369,16 +372,16 @@ func (c *Client) isUniqueMinerID(minerID string) bool {
 
 // generateUniqueMinerID will generate a unique miner ID
 func generateUniqueMinerID() string {
-	// Implement your logic to generate a unique miner ID
-	// Here's a simple example that generates a random ID
 	const idLength = 8
 	const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
-	rand.Seed(time.Now().UnixNano())
-
 	id := make([]byte, idLength)
 	for i := range id {
-		id[i] = letters[rand.Intn(len(letters))]
+		num, err := rand.Int(rand.Reader, big.NewInt(int64(len(letters))))
+		if err != nil {
+			return ""
+		}
+		id[i] = letters[num.Int64()]
 	}
 
 	return string(id)

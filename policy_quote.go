@@ -11,18 +11,22 @@ import (
 	"github.com/tonicpow/go-minercraft/apis/mapi"
 )
 
+// PolicyQuoteModelAdapter is the interface for the adapter to get the policy quote response
 type PolicyQuoteModelAdapter interface {
 	GetPolicyData() *PolicyPayload
 }
 
+// PolicyQuoteMapiAdapter is the adapter for the mAPI response
 type PolicyQuoteMapiAdapter struct {
 	*mapi.PolicyQuoteModel
 }
 
+// PolicyQuoteArcAdapter is the adapter for the Arc response
 type PolicyQuoteArcAdapter struct {
 	*arc.PolicyQuoteModel
 }
 
+// UnifiedPolicy is the unmarshalled version of the policy
 type UnifiedPolicy struct {
 	AcceptNonStdOutputs             bool              `json:"acceptnonstdoutputs"`
 	DataCarrier                     bool              `json:"datacarrier"`
@@ -45,6 +49,7 @@ type UnifiedPolicy struct {
 	MaxTxSigOpsCount uint32 `json:"maxtxsigopscount"`
 }
 
+// UnifiedFeePayload is the unmarshalled version of the payload envelope
 type UnifiedFeePayload struct {
 	mapi.FeePayloadFields
 	Fees []*bt.Fee `json:"fees"`
@@ -95,7 +100,7 @@ func (c *Client) PolicyQuote(ctx context.Context, miner *Miner) (*PolicyQuoteRes
 
 	quoteResponse := &PolicyQuoteResponse{
 		JSONEnvelope: JSONEnvelope{
-			ApiType: c.apiType,
+			APIType: c.apiType,
 			Miner:   result.Miner,
 		},
 	}
@@ -105,7 +110,7 @@ func (c *Client) PolicyQuote(ctx context.Context, miner *Miner) (*PolicyQuoteRes
 	switch c.apiType {
 	case MAPI:
 		model := &mapi.PolicyQuoteModel{}
-		err := quoteResponse.process(result.Miner, result.Response.BodyContents)
+		err = quoteResponse.process(result.Miner, result.Response.BodyContents)
 		if err != nil || len(quoteResponse.Payload) <= 0 {
 			return nil, err
 		}
@@ -118,7 +123,7 @@ func (c *Client) PolicyQuote(ctx context.Context, miner *Miner) (*PolicyQuoteRes
 		modelAdapter = &PolicyQuoteMapiAdapter{PolicyQuoteModel: model}
 	case Arc:
 		model := &arc.PolicyQuoteModel{}
-		err := json.Unmarshal(result.Response.BodyContents, model)
+		err = json.Unmarshal(result.Response.BodyContents, model)
 		if err != nil {
 			return nil, err
 		}
@@ -146,6 +151,7 @@ func (c *Client) PolicyQuote(ctx context.Context, miner *Miner) (*PolicyQuoteRes
 	return quoteResponse, nil
 }
 
+// GetPolicyData will return the policy data from the mapi adapter
 func (a *PolicyQuoteMapiAdapter) GetPolicyData() *PolicyPayload {
 	// Tworzenie instancji UnifiedFeePayload
 	feePayload := UnifiedFeePayload{
@@ -171,6 +177,7 @@ func (a *PolicyQuoteMapiAdapter) GetPolicyData() *PolicyPayload {
 
 	callbacks := make([]*mapi.PolicyCallback, len(a.Callbacks))
 	for i, cb := range a.Callbacks {
+		//nolint:gosec,exportloopref // ignore those linter errors
 		callbacks[i] = &cb
 	}
 
@@ -201,6 +208,7 @@ func (a *PolicyQuoteMapiAdapter) GetPolicyData() *PolicyPayload {
 	return policyPayload
 }
 
+// GetPolicyData will return the policy data from the arc adapter
 func (a *PolicyQuoteArcAdapter) GetPolicyData() *PolicyPayload {
 
 	feePayload := UnifiedFeePayload{

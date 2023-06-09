@@ -17,14 +17,17 @@ const (
 	MerkleFormatTSC = "TSC"
 )
 
+// SubmitTxModelAdapter is the interface for the adapter to get the submit tx response
 type SubmitTxModelAdapter interface {
 	GetSubmitTxResponse() *UnifiedSubmissionPayload
 }
 
+// SubmitTxMapiAdapter is the adapter for the mAPI response
 type SubmitTxMapiAdapter struct {
 	*mapi.SubmitTxModel
 }
 
+// SubmitTxArcAdapter is the adapter for the Arc response
 type SubmitTxArcAdapter struct {
 	*arc.SubmitTxModel
 }
@@ -118,7 +121,7 @@ func (c *Client) SubmitTransaction(ctx context.Context, miner *Miner, tx *Transa
 
 	submitResponse := &SubmitTransactionResponse{
 		JSONEnvelope: JSONEnvelope{
-			ApiType: c.apiType,
+			APIType: c.apiType,
 			Miner:   result.Miner,
 		},
 	}
@@ -128,7 +131,7 @@ func (c *Client) SubmitTransaction(ctx context.Context, miner *Miner, tx *Transa
 	switch c.apiType {
 	case MAPI:
 		model := &SubmitTxMapiAdapter{}
-		err := submitResponse.process(result.Miner, result.Response.BodyContents)
+		err = submitResponse.process(result.Miner, result.Response.BodyContents)
 		if err != nil || len(submitResponse.Payload) <= 0 {
 			return nil, err
 		}
@@ -145,7 +148,7 @@ func (c *Client) SubmitTransaction(ctx context.Context, miner *Miner, tx *Transa
 		modelAdapter = &SubmitTxMapiAdapter{SubmitTxModel: model.SubmitTxModel}
 	case Arc:
 		model := &SubmitTxArcAdapter{}
-		err := json.Unmarshal(result.Response.BodyContents, model)
+		err = json.Unmarshal(result.Response.BodyContents, model)
 		if err != nil {
 			return nil, err
 		}
@@ -218,6 +221,7 @@ func submitTransaction(ctx context.Context, client *Client, miner *Miner, tx *Tr
 	return result, nil
 }
 
+// proceedArcSubmitTx will proceed with the Arc submit tx
 func proceedArcSubmitTx(tx *Transaction, httpPayload *httpPayload) error {
 	body := map[string]string{
 		"rawTx": tx.RawTx,
@@ -247,6 +251,7 @@ func proceedArcSubmitTx(tx *Transaction, httpPayload *httpPayload) error {
 	return nil
 }
 
+// proceedMapiSubmitTx will proceed with the mAPI submit tx
 func proceedMapiSubmitTx(tx *Transaction, httpPayload *httpPayload) error {
 	data, err := json.Marshal(tx)
 	if err != nil {
@@ -257,6 +262,7 @@ func proceedMapiSubmitTx(tx *Transaction, httpPayload *httpPayload) error {
 	return nil
 }
 
+// GetSubmitTxResponse will return the unified response for mAPI adapter
 func (a *SubmitTxMapiAdapter) GetSubmitTxResponse() *UnifiedSubmissionPayload {
 	return &UnifiedSubmissionPayload{
 		APIVersion:                a.APIVersion,
@@ -273,6 +279,7 @@ func (a *SubmitTxMapiAdapter) GetSubmitTxResponse() *UnifiedSubmissionPayload {
 	}
 }
 
+// GetSubmitTxResponse will return the unified response for Arc adapter
 func (a *SubmitTxArcAdapter) GetSubmitTxResponse() *UnifiedSubmissionPayload {
 	return &UnifiedSubmissionPayload{
 		BlockHash:   a.BlockHash,

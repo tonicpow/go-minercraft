@@ -3,49 +3,49 @@ package arc
 // TxStatus is the status of the transaction
 type TxStatus string
 
+// List of statuses available here: https://github.com/bitcoin-sv/arc
 const (
-	// List of statuses available here: https://github.com/bitcoin-sv/arc
-	UNKNOWN              TxStatus = "UNKNOWN"              // 0
-	QUEUED               TxStatus = "QUEUED"               // 1
-	RECEIVED             TxStatus = "RECEIVED"             // 2
-	STORED               TxStatus = "STORED"               // 3
-	ANNOUNCED_TO_NETWORK TxStatus = "ANNOUNCED_TO_NETWORK" // 4
-	REQUESTED_BY_NETWORK TxStatus = "REQUESTED_BY_NETWORK" // 5
-	SENT_TO_NETWORK      TxStatus = "SENT_TO_NETWORK"      // 6
-	ACCEPTED_BY_NETWORK  TxStatus = "ACCEPTED_BY_NETWORK"  // 7
-	SEEN_ON_NETWORK      TxStatus = "SEEN_ON_NETWORK"      // 8
-	MINED                TxStatus = "MINED"                // 9
-	CONFIRMED            TxStatus = "CONFIRMED"            // 108
-	REJECTED             TxStatus = "REJECTED"             // 109
+	// Unknown contains value for unknown status
+	Unknown TxStatus = "UNKNOWN" // 0
+	// Queued contains value for queued status
+	Queued TxStatus = "QUEUED" // 1
+	// Received contains value for received status
+	Received TxStatus = "RECEIVED" // 2
+	// Stored contains value for stored status
+	Stored TxStatus = "STORED" // 3
+	// AnnouncedToNetwork contains value for announced to network status
+	AnnouncedToNetwork TxStatus = "ANNOUNCED_TO_NETWORK" // 4
+	// RequestedByNetwork contains value for requested by network status
+	RequestedByNetwork TxStatus = "REQUESTED_BY_NETWORK" // 5
+	// SentToNetwork contains value for sent to network status
+	SentToNetwork TxStatus = "SENT_TO_NETWORK" // 6
+	// AcceptedByNetwork contains value for accepted by network status
+	AcceptedByNetwork TxStatus = "ACCEPTED_BY_NETWORK" // 7
+	// SeenOnNetwork contains value for seen on network status
+	SeenOnNetwork TxStatus = "SEEN_ON_NETWORK" // 8
+	// Mined contains value for mined status
+	Mined TxStatus = "MINED" // 9
+	// Confirmed contains value for confirmed status
+	Confirmed TxStatus = "CONFIRMED" // 108
+	// Rejected contains value for rejected status
+	Rejected TxStatus = "REJECTED" // 109
 )
 
 // String returns the string representation of the TxStatus
 func (s TxStatus) String() string {
 	statuses := map[TxStatus]string{
-		// UNKNOWN contains value for unknown status
-		UNKNOWN: "UNKNOWN",
-		// QUEUED contains value for queued status
-		QUEUED: "QUEUED",
-		// RECEIVED contains value for received status
-		RECEIVED: "RECEIVED",
-		// STORED contains value for stored status
-		STORED: "STORED",
-		// ANNOUNCED_TO_NETWORK contains value for announced to network status
-		ANNOUNCED_TO_NETWORK: "ANNOUNCED_TO_NETWORK",
-		// REQUESTED_BY_NETWORK contains value for requested by network status
-		REQUESTED_BY_NETWORK: "REQUESTED_BY_NETWORK",
-		// SENT_TO_NETWORK contains value for sent to network status
-		SENT_TO_NETWORK: "SENT_TO_NETWORK",
-		// ACCEPTED_BY_NETWORK contains value for accepted by network status
-		ACCEPTED_BY_NETWORK: "ACCEPTED_BY_NETWORK",
-		// SEEN_ON_NETWORK contains value for seen on network status
-		SEEN_ON_NETWORK: "SEEN_ON_NETWORK",
-		// MINED contains value for mined status
-		MINED: "MINED",
-		// CONFIRMED contains value for confirmed status
-		CONFIRMED: "CONFIRMED",
-		// REJECTED contains value for rejected status
-		REJECTED: "REJECTED",
+		Unknown:            "UNKNOWN",
+		Queued:             "QUEUED",
+		Received:           "RECEIVED",
+		Stored:             "STORED",
+		AnnouncedToNetwork: "ANNOUNCED_TO_NETWORK",
+		RequestedByNetwork: "REQUESTED_BY_NETWORK",
+		SentToNetwork:      "SENT_TO_NETWORK",
+		AcceptedByNetwork:  "ACCEPTED_BY_NETWORK",
+		SeenOnNetwork:      "SEEN_ON_NETWORK",
+		Mined:              "MINED",
+		Confirmed:          "CONFIRMED",
+		Rejected:           "REJECTED",
 	}
 
 	if status, ok := statuses[s]; ok {
@@ -58,18 +58,18 @@ func (s TxStatus) String() string {
 // MapTxStatusToInt maps the TxStatus to an int value
 func MapTxStatusToInt(status TxStatus) (int, bool) {
 	waitForStatusMap := map[TxStatus]int{
-		UNKNOWN:              0,
-		QUEUED:               1,
-		RECEIVED:             2,
-		STORED:               3,
-		ANNOUNCED_TO_NETWORK: 4,
-		REQUESTED_BY_NETWORK: 5,
-		SENT_TO_NETWORK:      6,
-		ACCEPTED_BY_NETWORK:  7,
-		SEEN_ON_NETWORK:      8,
-		MINED:                9,
-		CONFIRMED:            108,
-		REJECTED:             109,
+		Unknown:            0,
+		Queued:             1,
+		Received:           2,
+		Stored:             3,
+		AnnouncedToNetwork: 4,
+		RequestedByNetwork: 5,
+		SentToNetwork:      6,
+		AcceptedByNetwork:  7,
+		SeenOnNetwork:      8,
+		Mined:              9,
+		Confirmed:          108,
+		Rejected:           109,
 	}
 
 	value, ok := waitForStatusMap[status]

@@ -1,3 +1,4 @@
+// Package mapi provides the API structures for the mAPI service
 package mapi
 
 import (
@@ -105,7 +106,7 @@ type (
 		Bytes    int `json:"bytes"`    // Number of bytes that the Fee covers
 	}
 
-	// feeObj displays the MiningFee as well as the RelayFee for a specific
+	// FeeObj displays the MiningFee as well as the RelayFee for a specific
 	// FeeType, for example 'standard' or 'data'
 	// see https://github.com/bitcoin-sv-specs/brfc-merchantapi#expanded-payload-1
 	FeeObj struct {

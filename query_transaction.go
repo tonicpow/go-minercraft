@@ -23,14 +23,17 @@ const QueryTransactionFailure = "failure"
 // QueryTransactionInMempoolFailure in mempool but not in a block yet
 const QueryTransactionInMempoolFailure = "Transaction in mempool but not yet in block"
 
+// QueryTxModelAdapter is the interface for the adapter to get the query tx response
 type QueryTxModelAdapter interface {
 	GetQueryTxResponse() *QueryTxResponse
 }
 
+// QueryTxMapiAdapter is the adapter for the mAPI response
 type QueryTxMapiAdapter struct {
 	*mapi.QueryTxModel
 }
 
+// QueryTxArcAdapter is the adapter for the Arc response
 type QueryTxArcAdapter struct {
 	*arc.QueryTxModel
 }
@@ -183,7 +186,7 @@ func (c *Client) QueryTransaction(ctx context.Context, miner *Miner, txID string
 
 	queryResponse := &QueryTransactionResponse{
 		JSONEnvelope: JSONEnvelope{
-			ApiType: c.apiType,
+			APIType: c.apiType,
 			Miner:   result.Miner,
 		},
 	}
@@ -281,6 +284,7 @@ func queryTransaction(ctx context.Context, client *Client, miner *Miner, txHash 
 	return
 }
 
+// GetQueryTxResponse will return the query tx response from mapi adapter
 func (m *QueryTxMapiAdapter) GetQueryTxResponse() *QueryTxResponse {
 	response := &QueryTxResponse{
 		TxID:        m.TxID,
@@ -301,6 +305,7 @@ func (m *QueryTxMapiAdapter) GetQueryTxResponse() *QueryTxResponse {
 	return response
 }
 
+// GetQueryTxResponse will return the query tx response from arc adapter
 func (m *QueryTxArcAdapter) GetQueryTxResponse() *QueryTxResponse {
 	response := &QueryTxResponse{
 		TxID:        m.TxID,

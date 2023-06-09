@@ -33,7 +33,7 @@ type (
 		Signature string            `json:"signature"`
 	}
 
-	// TxsPayload is the structure of the json payload string in the MapiResponse.
+	// UnifiedTxsPayload is the structure of the json payload string in the MapiResponse.
 	UnifiedTxsPayload struct {
 		APIVersion                string      `json:"apiVersion"`
 		CurrentHighestBlockHash   string      `json:"currentHighestBlockHash"`
@@ -45,7 +45,7 @@ type (
 		TxSecondMempoolExpiry     int         `json:"txSecondMempoolExpiry"`
 	}
 
-	// Tx is the transaction format in the mapi txs response.
+	// UnifiedTx is the transaction format in the mapi txs response.
 	UnifiedTx struct {
 		// mAPI specific fields
 		ConflictedWith    []mapi.ConflictedWith `json:"conflictedWith,omitempty"`
@@ -141,7 +141,7 @@ func submitTransactions(ctx context.Context, client *Client, miner *Miner, txs [
 }
 
 func proceedArcSubmitTxs(txs []Transaction, httpPayload *httpPayload) error {
-	var rawTxs []string
+	var rawTxs = make([]string, 0, len(txs))
 	for _, tx := range txs {
 		rawTxs = append(rawTxs, tx.RawTx)
 	}
