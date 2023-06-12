@@ -8,8 +8,6 @@ pull_request_rules:
     conditions:
       - -draft
       - author~=^dependabot(|-preview)\[bot\]$
-      - check-success='test (1.17.x, ubuntu-latest)'
-      - check-success='test (1.18.x, ubuntu-latest)'
       - check-success='test (1.19.x, ubuntu-latest)'
       - check-success='Analyze (go)'
       - title~=^Bump [^\s]+ from ([\d]+)\..+ to \1\.
@@ -22,8 +20,6 @@ pull_request_rules:
   - name: Alert on major version detection
     conditions:
       - author~=^dependabot(|-preview)\[bot\]$
-      - check-success='test (1.17.x, ubuntu-latest)'
-      - check-success='test (1.18.x, ubuntu-latest)'
       - check-success='test (1.19.x, ubuntu-latest)'
       - check-success='Analyze (go)'
       - -title~=^Bump [^\s]+ from ([\d]+)\..+ to \1\.
@@ -40,8 +36,6 @@ pull_request_rules:
       - "#approved-reviews-by>=1"
       - "#review-requested=0"
       - "#changes-requested-reviews-by=0"
-      - check-success='test (1.17.x, ubuntu-latest)'
-      - check-success='test (1.18.x, ubuntu-latest)'
       - check-success='test (1.19.x, ubuntu-latest)'
       - check-success='Analyze (go)'
       - -title~=(?i)wip
@@ -180,6 +174,7 @@ pull_request_rules:
         - author!=theflyingcodr
         - author!=Tigh-Gherr
         - author!=roppa
+        - author!=wregulski
     actions:
       comment:
         message: "Welcome to our open-source project @{{author}}! 💘"
