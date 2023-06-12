@@ -1,12 +1,12 @@
 # go-minercraft
-> Interact with Bitcoin Miner APIs (unofficial Go library of [Minercraft](https://github.com/interplanaria/minercraft))
+> Interact with Bitcoin Miner APIs via mAPI or ARC (unofficial Go library of [Minercraft](https://github.com/interplanaria/minercraft))
 
 [![Release](https://img.shields.io/github/release-pre/tonicpow/go-minercraft.svg?logo=github&style=flat&v=1)](https://github.com/tonicpow/go-minercraft/releases)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/tonicpow/go-minercraft/run-tests.yml?branch=master&logo=github&v=1)](https://github.com/tonicpow/go-minercraft/actions)
 [![Report](https://goreportcard.com/badge/github.com/tonicpow/go-minercraft?style=flat&v=1)](https://goreportcard.com/report/github.com/tonicpow/go-minercraft)
 [![codecov](https://codecov.io/gh/tonicpow/go-minercraft/branch/master/graph/badge.svg?v=1)](https://codecov.io/gh/tonicpow/go-minercraft)
 [![Go](https://img.shields.io/github/go-mod/go-version/tonicpow/go-minercraft?v=1)](https://golang.org/)
-[![mAPI](https://img.shields.io/badge/mAPI-1.4.0-blue.svg)](https://github.com/bitcoin-sv-specs/brfc-merchantapi)
+[![mAPI](https://img.shields.io/badge/mAPI-1.5.0-blue.svg)](https://github.com/bitcoin-sv-specs/brfc-merchantapi)
 [![ARC](https://img.shields.io/badge/ARC-1.0.32-blue.svg)](https://github.com/bitcoin-sv/arc)
 <br>
 [![Mergify Status](https://img.shields.io/endpoint.svg?url=https://api.mergify.com/v1/badges/tonicpow/go-minercraft&style=flat&v=1)](https://mergify.io)
