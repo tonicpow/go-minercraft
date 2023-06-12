@@ -10,8 +10,37 @@ import (
 type Miner struct {
 	MinerID string `json:"miner_id,omitempty"`
 	Name    string `json:"name,omitempty"`
-	Token   string `json:"token,omitempty"`
-	URL     string `json:"url"`
+}
+
+// MinerAPIs is a configuration per miner, including connection url, auth token, etc
+type MinerAPIs struct {
+	MinerID string `json:"miner_id,omitempty"`
+	APIs    []API  `json:"apis,omitempty"`
+}
+
+// APIType is the type of available APIs
+type APIType string
+
+// APIActionName is the name of the action for the API
+type APIActionName string
+
+// API is a configuration per miner, including connection url, auth token, etc
+type API struct {
+	Type  APIType `json:"type,omitempty"`
+	Token string  `json:"token,omitempty"`
+	URL   string  `json:"url,omitempty"`
+}
+
+// APIRoute contains the routes for a specific API related to a specific action
+type APIRoute struct {
+	Name   APIActionName      `json:"name,omitempty"`
+	Routes []APISpecificRoute `json:"routes,omitempty"`
+}
+
+// APISpecificRoute contains route definition for a specific API type
+type APISpecificRoute struct {
+	Route   string  `json:"route,omitempty"`
+	APIType APIType `json:"apitype,omitempty"`
 }
 
 // JSONEnvelope is a standard response from the Merchant API requests
@@ -23,8 +52,9 @@ type Miner struct {
 // helper property to indicate if the envelope is or isn't valid.
 // Consumers can also independently validate the envelope.
 type JSONEnvelope struct {
-	Miner     *Miner `json:"miner"`     // Custom field for our internal Miner configuration
-	Validated bool   `json:"validated"` // Custom field if the signature has been validated
+	Miner     *Miner  `json:"miner"`     // Custom field for our internal Miner configuration
+	Validated bool    `json:"validated"` // Custom field if the signature has been validated
+	APIType   APIType `json:"apiType"`   // Custom field for the API type
 	envelope.JSONEnvelope
 }
 
@@ -39,7 +69,5 @@ func (p *JSONEnvelope) process(miner *Miner, bodyContents []byte) (err error) {
 		return
 	}
 
-	// verify JSONEnvelope
-	p.Validated, err = p.IsValid()
 	return
 }

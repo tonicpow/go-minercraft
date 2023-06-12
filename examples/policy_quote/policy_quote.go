@@ -10,7 +10,7 @@ import (
 func main() {
 
 	// Create a new client
-	client, err := minercraft.NewClient(nil, nil, nil)
+	client, err := minercraft.NewClient(nil, nil, minercraft.Arc, nil, nil)
 	if err != nil {
 		log.Fatalf("error occurred: %s", err.Error())
 	}
@@ -25,8 +25,9 @@ func main() {
 	}
 
 	// Display the results
-	// todo: At this time (1/10/21) there is no policy response from any miner
 	log.Printf("miner: %s", response.Miner.Name)
+	log.Printf("is valid: %t", response.Validated)
 	log.Printf("callbacks: %+v", response.Quote.Callbacks)
 	log.Printf("policy quote: %+v", response.Quote.Policies)
+	log.Printf("fee payload fields: %+v", response.Quote.FeePayloadFields)
 }

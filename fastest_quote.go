@@ -55,7 +55,7 @@ func (c *Client) fetchFastestQuote(ctx context.Context, timeout time.Duration) *
 		wg.Add(1)
 		go func(ctx2 context.Context, wg *sync.WaitGroup, client *Client, miner *Miner) {
 			defer wg.Done()
-			res := getQuote(ctx2, client, miner, routeFeeQuote)
+			res := getQuote(ctx2, client, miner, mAPIRouteFeeQuote)
 			if res.Response.Error == nil {
 				resultsChannel <- res
 			}

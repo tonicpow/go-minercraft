@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/tonicpow/go-minercraft/apis/mapi"
 )
 
 // MockClient mocks the http client.
@@ -53,18 +54,18 @@ func TestClient_SubmitTransactions(t *testing.T) {
 			miner: MinerMatterpool,
 			txs:   []Transaction{{RawTx: rawTx}},
 			exp: &SubmitTransactionsResponse{
-				Payload: TxsPayload{
+				Payload: UnifiedTxsPayload{
 					APIVersion:                "1.3.0",
 					Timestamp:                 time.Date(2020, time.November, 13, 8, 31, 56, 572251100, time.UTC),
 					MinerID:                   "030d1fe5c1b560efe196ba40540ce9017c20daa9504c4c4cec6184fc702d9f274e",
 					CurrentHighestBlockHash:   "08dc4bb006fc7e7186544343c3ccbb5a773d0a19cd2ccff1fa52f51eb6faf2ab",
 					CurrentHighestBlockHeight: 151,
 					TxSecondMempoolExpiry:     0,
-					Txs: []Tx{{
+					Txs: []UnifiedTx{{
 						TxID:              "3145011f34a00d0666ea265b87c8e44108f87d3b53b853976906519ee8e1475f",
 						ReturnResult:      "failure",
 						ResultDescription: "Missing inputs",
-						ConflictedWith: []ConflictedWith{{
+						ConflictedWith: []mapi.ConflictedWith{{
 							TxID: "86e1b384d3d169fd6aa4d34cf2d6f487436da54154befaab5a1fb25f844d65a8",
 							Size: 191,
 							Hex:  "01000000010136836d73f29cbe648bc2aeea20286502a3c2f2d3cff54522d0cc76bb755e9f000000006a4730440220761fb63128d4184fc142f2e854c499c52422db0136191f29f0bbe0969b6021770220536d72606d49dbbd244d2633b8b19031234138f045c530cc773e6e72bb34c62c4121027ae06a5b3fe1de495fa9d4e738e48810b8b06fa6c959a5305426f78f42b48f8cffffffff0198929800000000001976a91482932cf55b847ffa52832d2bbec2838f658f226788ac00000000",

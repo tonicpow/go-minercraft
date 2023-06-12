@@ -86,10 +86,11 @@ type RequestResponse struct {
 
 // httpPayload is used for a httpRequest
 type httpPayload struct {
-	Method string `json:"method"`
-	URL    string `json:"url"`
-	Token  string `json:"token"`
-	Data   []byte `json:"data"`
+	Method  string            `json:"method"`
+	URL     string            `json:"url"`
+	Token   string            `json:"token"`
+	Data    []byte            `json:"data"`
+	Headers map[string]string `json:"headers"`
 }
 
 // httpRequest is a generic request wrapper that can be used without constraints.
@@ -130,6 +131,10 @@ func httpRequest(ctx context.Context, client *Client,
 		ctx, payload.Method, payload.URL, bodyReader,
 	); response.Error != nil {
 		return
+	}
+
+	for key, value := range payload.Headers {
+		request.Header.Set(key, value)
 	}
 
 	// Change the header (user agent is in case they block default Go user agents)

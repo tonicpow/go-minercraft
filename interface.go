@@ -15,11 +15,13 @@ type QuoteService interface {
 
 // MinerService is the MinerCraft miner related methods
 type MinerService interface {
-	AddMiner(miner Miner) error
+	AddMiner(miner Miner, apis []API) error
 	MinerByID(minerID string) *Miner
 	MinerByName(name string) *Miner
 	Miners() []*Miner
-	MinerUpdateToken(name, token string)
+	MinerAPIsByMinerID(minerID string) *MinerAPIs
+	MinerAPIByMinerID(minerID string, apiType APIType) (*API, error)
+	MinerUpdateToken(name, token string, apiType APIType)
 	RemoveMiner(miner *Miner) bool
 }
 
@@ -36,4 +38,5 @@ type ClientInterface interface {
 	QuoteService
 	TransactionService
 	UserAgent() string
+	APIType() APIType
 }

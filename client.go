@@ -1,12 +1,13 @@
 package minercraft
 
 import (
+	"crypto/rand"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math/big"
 	"net"
 	"net/http"
-	"net/url"
 	"strings"
 	"time"
 
@@ -21,19 +22,23 @@ type HTTPInterface interface {
 
 // Client is the parent struct that contains the miner clients and list of miners to use
 type Client struct {
+	apiType    APIType        // The API type to use
 	httpClient HTTPInterface  // Interface for all HTTP requests
 	miners     []*Miner       // List of loaded miners
+	minerAPIs  []*MinerAPIs   // List of loaded miners APIs
 	Options    *ClientOptions // Client options config
 }
 
 // AddMiner will add a new miner to the list of miners
-func (c *Client) AddMiner(miner Miner) error {
-
-	// Make sure we have the basic requirements
+func (c *Client) AddMiner(miner Miner, apis []API) error {
+	// Check if miner name is empty
 	if len(miner.Name) == 0 {
 		return errors.New("missing miner name")
-	} else if len(miner.URL) == 0 {
-		return errors.New("missing miner url")
+	}
+
+	// Check if apis is empty or nil
+	if len(apis) == 0 || apis == nil {
+		return errors.New("at least one API must be provided")
 	}
 
 	// Check if a miner with that name already exists
@@ -49,20 +54,42 @@ func (c *Client) AddMiner(miner Miner) error {
 		}
 	}
 
-	// Ensure that we have a protocol
-	if !strings.Contains(miner.URL, "http") {
-		return fmt.Errorf("miner %s is missing http from url", miner.Name)
+	// Check if the MinerAPIs already exist for the given MinerID
+	existingMinerAPIs := c.MinerAPIsByMinerID(miner.MinerID)
+	if existingMinerAPIs != nil {
+		return fmt.Errorf("miner APIs for MinerID %s already exist", miner.MinerID)
 	}
 
-	// Test parsing the url
-	parsedURL, err := url.Parse(miner.URL)
-	if err != nil {
-		return err
+	// Check if the API types are valid
+	for _, api := range apis {
+		if !isValidAPIType(api.Type) {
+			return fmt.Errorf("invalid API type: %s", api.Type)
+		}
 	}
-	miner.URL = parsedURL.String()
+
+	// Check if the API types are unique within the provided APIs
+	apiTypes := make(map[APIType]bool)
+	for _, api := range apis {
+		if apiTypes[api.Type] {
+			return fmt.Errorf("duplicate API type found: %s", api.Type)
+		}
+		apiTypes[api.Type] = true
+	}
+
+	// Check if the MinerID is unique or generate a new one
+	if len(miner.MinerID) == 0 || !c.isUniqueMinerID(miner.MinerID) {
+		miner.MinerID = generateUniqueMinerID()
+	}
 
 	// Append the new miner
 	c.miners = append(c.miners, &miner)
+
+	// Append the new miner APIs
+	c.minerAPIs = append(c.minerAPIs, &MinerAPIs{
+		MinerID: miner.MinerID,
+		APIs:    apis,
+	})
+
 	return nil
 }
 
@@ -109,10 +136,49 @@ func MinerByID(miners []*Miner, minerID string) *Miner {
 	return nil
 }
 
+// MinerAPIByMinerID will return a miner's API given a miner id and API type
+func (c *Client) MinerAPIByMinerID(minerID string, apiType APIType) (*API, error) {
+	for _, minerAPI := range c.minerAPIs {
+		if minerAPI.MinerID == minerID {
+			for i := range minerAPI.APIs {
+				if minerAPI.APIs[i].Type == apiType {
+					return &minerAPI.APIs[i], nil
+				}
+			}
+		}
+	}
+	return nil, &APINotFoundError{MinerID: minerID, APIType: apiType}
+}
+
+// MinerAPIsByMinerID will return a miner's APIs given a miner id
+func (c *Client) MinerAPIsByMinerID(minerID string) *MinerAPIs {
+	for _, minerAPIs := range c.minerAPIs {
+		if minerAPIs.MinerID == minerID {
+			return minerAPIs
+		}
+	}
+	return nil
+}
+
+// ActionRouteByAPIType will return the route for a given action and API type
+func ActionRouteByAPIType(actionName APIActionName, apiType APIType) (string, error) {
+	for _, apiRoute := range Routes {
+		if apiRoute.Name == actionName {
+			for _, route := range apiRoute.Routes {
+				if route.APIType == apiType {
+					return route.Route, nil
+				}
+			}
+		}
+	}
+	return "", &ActionRouteNotFoundError{ActionName: actionName, APIType: apiType}
+}
+
 // MinerUpdateToken will find a miner by name and update the token
-func (c *Client) MinerUpdateToken(name, token string) {
+func (c *Client) MinerUpdateToken(name, token string, apiType APIType) {
 	if miner := c.MinerByName(name); miner != nil {
-		miner.Token = token
+		api, _ := c.MinerAPIByMinerID(miner.MinerID, apiType)
+		api.Token = token
 	}
 }
 
@@ -169,17 +235,26 @@ func DefaultClientOptions() (clientOptions *ClientOptions) {
 // customHTTPClient: use your own custom HTTP client
 // customMiners: use your own custom list of miners
 func NewClient(clientOptions *ClientOptions, customHTTPClient HTTPInterface,
-	customMiners []*Miner) (client ClientInterface, err error) {
+	apiType APIType, customMiners []*Miner, customMinersAPIDef []*MinerAPIs) (client ClientInterface, err error) {
 
 	// Create the new client
-	return createClient(clientOptions, customHTTPClient, customMiners)
+	return createClient(clientOptions, apiType, customHTTPClient, customMiners, customMinersAPIDef)
 }
 
 // createClient will make a new http client based on the options provided
-func createClient(options *ClientOptions, customHTTPClient HTTPInterface, customMiners []*Miner) (c *Client, err error) {
+func createClient(options *ClientOptions, apiType APIType, customHTTPClient HTTPInterface,
+	customMiners []*Miner, customMinersAPIDef []*MinerAPIs) (c *Client, err error) {
 
 	// Create a client
 	c = new(Client)
+
+	// For now set MerchantAPI as the default if not set
+	if apiType == "" {
+		apiType = MAPI
+	}
+
+	// Set the client API type
+	c.apiType = apiType
 
 	// Set options (either default or user modified)
 	if options == nil {
@@ -190,10 +265,17 @@ func createClient(options *ClientOptions, customHTTPClient HTTPInterface, custom
 	c.Options = options
 
 	// Load custom vs pre-defined
-	if len(customMiners) > 0 {
+	if len(customMiners) > 0 && len(customMinersAPIDef) > 0 {
 		c.miners = customMiners
+		c.minerAPIs = customMinersAPIDef
 	} else {
-		if c.miners, err = DefaultMiners(); err != nil {
+		c.miners, err = DefaultMiners()
+		if err != nil {
+			return nil, err
+		}
+
+		c.minerAPIs, err = DefaultMinersAPIs()
+		if err != nil {
 			return nil, err
 		}
 	}
@@ -255,4 +337,52 @@ func createClient(options *ClientOptions, customHTTPClient HTTPInterface, custom
 func DefaultMiners() (miners []*Miner, err error) {
 	err = json.Unmarshal([]byte(KnownMiners), &miners)
 	return
+}
+
+// DefaultMinersAPIs will parse the config JSON and return a list of miner APIs
+func DefaultMinersAPIs() (minerAPIs []*MinerAPIs, err error) {
+	err = json.Unmarshal([]byte(KnownMinersAPIs), &minerAPIs)
+	return
+}
+
+// APIType will return the API type
+func (c *Client) APIType() APIType {
+	return c.apiType
+}
+
+// isValidAPIType will return true if the API type is valid and part of our predefined list
+func isValidAPIType(apiType APIType) bool {
+	switch apiType {
+	case MAPI, Arc:
+		return true
+	default:
+		return false
+	}
+}
+
+// isUniqueMinerID will return true if the miner ID is unique
+func (c *Client) isUniqueMinerID(minerID string) bool {
+	for _, miner := range c.miners {
+		if miner.MinerID == minerID {
+			return false
+		}
+	}
+	return true
+}
+
+// generateUniqueMinerID will generate a unique miner ID
+func generateUniqueMinerID() string {
+	const idLength = 8
+	const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+	id := make([]byte, idLength)
+	for i := range id {
+		num, err := rand.Int(rand.Reader, big.NewInt(int64(len(letters))))
+		if err != nil {
+			return ""
+		}
+		id[i] = letters[num.Int64()]
+	}
+
+	return string(id)
 }

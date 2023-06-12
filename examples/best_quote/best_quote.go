@@ -5,12 +5,13 @@ import (
 	"log"
 
 	"github.com/tonicpow/go-minercraft"
+	"github.com/tonicpow/go-minercraft/apis/mapi"
 )
 
 func main() {
 
 	// Create a new client
-	client, err := minercraft.NewClient(nil, nil, nil)
+	client, err := minercraft.NewClient(nil, nil, "", nil, nil)
 	if err != nil {
 		log.Fatalf("error occurred: %s", err.Error())
 	}
@@ -19,7 +20,7 @@ func main() {
 
 	// Fetch quotes from all miners
 	var response *minercraft.FeeQuoteResponse
-	response, err = client.BestQuote(context.Background(), minercraft.FeeCategoryMining, minercraft.FeeTypeData)
+	response, err = client.BestQuote(context.Background(), mapi.FeeCategoryMining, mapi.FeeTypeData)
 	if err != nil {
 		log.Fatalf("error occurred: %s", err.Error())
 	}

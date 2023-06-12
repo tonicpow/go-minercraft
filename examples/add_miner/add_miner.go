@@ -7,9 +7,9 @@ import (
 )
 
 func main() {
-
+	apiType := minercraft.MAPI
 	// Create a new client
-	client, err := minercraft.NewClient(nil, nil, nil)
+	client, err := minercraft.NewClient(nil, nil, apiType, nil, nil)
 	if err != nil {
 		log.Fatalf("error occurred: %s", err.Error())
 	}
@@ -17,13 +17,16 @@ func main() {
 	// Add a custom miner!
 	if err = client.AddMiner(minercraft.Miner{
 		Name: "Custom",
-		URL:  "https://mapi.customminer.com",
-	}); err != nil {
+	}, []minercraft.API{{URL: "https://mapi.customminer.com", Type: apiType}}); err != nil {
 		log.Fatalf("error occurred: %s", err.Error())
 	}
 
 	// Show all miners loaded
 	for _, miner := range client.Miners() {
-		log.Printf("miner: %s (%s)", miner.Name, miner.URL)
+		api, err := client.MinerAPIByMinerID(miner.MinerID, apiType)
+		if err != nil {
+			log.Fatalf("error occurred: %s", err.Error())
+		}
+		log.Printf("miner: %s (%s)", miner.Name, api.URL)
 	}
 }

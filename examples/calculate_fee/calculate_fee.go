@@ -5,12 +5,13 @@ import (
 	"log"
 
 	"github.com/tonicpow/go-minercraft"
+	"github.com/tonicpow/go-minercraft/apis/mapi"
 )
 
 func main() {
 
 	// Create a new client
-	client, err := minercraft.NewClient(nil, nil, nil)
+	client, err := minercraft.NewClient(nil, nil, "", nil, nil)
 	if err != nil {
 		log.Fatalf("error occurred: %s", err.Error())
 	}
@@ -29,7 +30,7 @@ func main() {
 
 	// Get the fee for a specific tx size (for mining and for data)
 	var fee uint64
-	if fee, err = response.Quote.CalculateFee(minercraft.FeeCategoryMining, minercraft.FeeTypeStandard, txSizeInBytes); err != nil {
+	if fee, err = response.Quote.CalculateFee(mapi.FeeCategoryMining, mapi.FeeTypeStandard, txSizeInBytes); err != nil {
 		log.Fatalf("error occurred: %s", err.Error())
 	}
 

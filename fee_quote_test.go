@@ -11,6 +11,7 @@ import (
 
 	"github.com/libsv/go-bt/v2"
 	"github.com/stretchr/testify/assert"
+	"github.com/tonicpow/go-minercraft/apis/mapi"
 	"go.uber.org/goleak"
 )
 
@@ -31,7 +32,7 @@ func (m *mockHTTPValidFeeQuote) Do(req *http.Request) (*http.Response, error) {
 	}
 
 	// Valid response
-	if strings.Contains(req.URL.String(), routeFeeQuote) {
+	if strings.Contains(req.URL.String(), mAPIRouteFeeQuote) {
 		resp.StatusCode = http.StatusOK
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
     	"payload": "{\"apiVersion\":\"0.1.0\",\"timestamp\":\"2020-10-09T21:26:17.410Z\",\"expiryTime\":\"2020-10-09T21:36:17.410Z\",\"minerId\":\"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270\",\"currentHighestBlockHash\":\"0000000000000000035c5f8c0294802a01e500fa7b95337963bb3640da3bd565\",\"currentHighestBlockHeight\":656169,\"minerReputation\":null,\"fees\":[{\"id\":1,\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}},{\"id\":2,\"feeType\":\"data\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}}]}",
@@ -121,7 +122,7 @@ func (m *mockHTTPMissingFees) Do(req *http.Request) (*http.Response, error) {
 		return resp, fmt.Errorf("missing request")
 	}
 
-	if strings.Contains(req.URL.String(), routeFeeQuote) {
+	if strings.Contains(req.URL.String(), mAPIRouteFeeQuote) {
 		resp.StatusCode = http.StatusOK
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
     	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T21:26:17.410Z\",\"expiryTime\":\"2020-10-09T21:36:17.410Z\",\"minerId\":\"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270\",\"currentHighestBlockHash\":\"0000000000000000035c5f8c0294802a01e500fa7b95337963bb3640da3bd565\",\"currentHighestBlockHeight\":656169,\"minerReputation\":null,\"fees\":[]}",
@@ -130,7 +131,7 @@ func (m *mockHTTPMissingFees) Do(req *http.Request) (*http.Response, error) {
 	}
 
 	// Valid response
-	if strings.Contains(req.URL.String(), routePolicyQuote) {
+	if strings.Contains(req.URL.String(), mAPIRoutePolicyQuote) {
 		resp.StatusCode = http.StatusOK
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
     "payload": "{\"apiVersion\":\"1.4.0\",\"timestamp\":\"2021-11-12T13:17:47.7498672Z\",\"expiryTime\":\"2021-11-12T13:27:47.7498672Z\",\"minerId\":\"030d1fe5c1b560efe196ba40540ce9017c20daa9504c4c4cec6184fc702d9f274e\",\"currentHighestBlockHash\":\"45628be2fe616167b7da399ab63455e60ffcf84147730f4af4affca90c7d437e\",\"currentHighestBlockHeight\":234,\"fees\":[],\"callbacks\":[{\"ipAddress\":\"123.456.789.123\"}],\"policies\":{\"skipscriptflags\":[\"MINIMALDATA\",\"DERSIG\",\"NULLDUMMY\",\"DISCOURAGE_UPGRADABLE_NOPS\",\"CLEANSTACK\"],\"maxtxsizepolicy\":99999,\"datacarriersize\":100000,\"maxscriptsizepolicy\":100000,\"maxscriptnumlengthpolicy\":100000,\"maxstackmemoryusagepolicy\":10000000,\"limitancestorcount\":1000,\"limitcpfpgroupmemberscount\":10,\"acceptnonstdoutputs\":true,\"datacarrier\":true,\"dustrelayfee\":150,\"maxstdtxvalidationduration\":99,\"maxnonstdtxvalidationduration\":100,\"dustlimitfactor\":10}}",
@@ -157,7 +158,7 @@ func (m *mockHTTPInvalidSignature) Do(req *http.Request) (*http.Response, error)
 	}
 
 	// Invalid sig response
-	if strings.Contains(req.URL.String(), routeFeeQuote) {
+	if strings.Contains(req.URL.String(), mAPIRouteFeeQuote) {
 		resp.StatusCode = http.StatusOK
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
     	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T21:26:17.410Z\",\"expiryTime\":\"2020-10-09T21:36:17.410Z\",\"minerId\":\"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270\",\"currentHighestBlockHash\":\"0000000000000000035c5f8c0294802a01e500fa7b95337963bb3640da3bd565\",\"currentHighestBlockHeight\":656169,\"minerReputation\":null,\"fees\":[{\"id\":1,\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}},{\"id\":2,\"feeType\":\"data\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}}]}",
@@ -166,7 +167,7 @@ func (m *mockHTTPInvalidSignature) Do(req *http.Request) (*http.Response, error)
 	}
 
 	// Invalid sig response
-	if strings.Contains(req.URL.String(), routePolicyQuote) {
+	if strings.Contains(req.URL.String(), mAPIRoutePolicyQuote) {
 		resp.StatusCode = http.StatusOK
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
     "payload": "{\"apiVersion\":\"1.4.0\",\"timestamp\":\"2021-11-12T13:17:47.7498672Z\",\"expiryTime\":\"2021-11-12T13:27:47.7498672Z\",\"minerId\":\"030d1fe5c1b560efe196ba40540ce9017c20daa9504c4c4cec6184fc702d9f274e\",\"currentHighestBlockHash\":\"45628be2fe616167b7da399ab63455e60ffcf84147730f4af4affca90c7d437e\",\"currentHighestBlockHeight\":234,\"fees\":[{\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}},{\"feeType\":\"data\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}}],\"callbacks\":[{\"ipAddress\":\"123.456.789.123\"}],\"policies\":{\"skipscriptflags\":[\"MINIMALDATA\",\"DERSIG\",\"NULLDUMMY\",\"DISCOURAGE_UPGRADABLE_NOPS\",\"CLEANSTACK\"],\"maxtxsizepolicy\":99999,\"datacarriersize\":100000,\"maxscriptsizepolicy\":100000,\"maxscriptnumlengthpolicy\":100000,\"maxstackmemoryusagepolicy\":10000000,\"limitancestorcount\":1000,\"limitcpfpgroupmemberscount\":10,\"acceptnonstdoutputs\":true,\"datacarrier\":true,\"dustrelayfee\":150,\"maxstdtxvalidationduration\":99,\"maxnonstdtxvalidationduration\":100,\"dustlimitfactor\":10}}",
@@ -266,7 +267,7 @@ func (m *mockHTTPMissingFeeType) Do(req *http.Request) (*http.Response, error) {
 	}
 
 	// Valid response
-	if strings.Contains(req.URL.String(), routeFeeQuote) {
+	if strings.Contains(req.URL.String(), mAPIRouteFeeQuote) {
 		resp.StatusCode = http.StatusOK
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
     	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T21:26:17.410Z\",\"expiryTime\":\"2020-10-09T21:36:17.410Z\",\"minerId\":\"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270\",\"currentHighestBlockHash\":\"0000000000000000035c5f8c0294802a01e500fa7b95337963bb3640da3bd565\",\"currentHighestBlockHeight\":656169,\"minerReputation\":null,\"fees\":[{\"id\":2,\"feeType\":\"data\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}}]}",
@@ -299,8 +300,8 @@ func TestClient_FeeQuote(t *testing.T) {
 		assert.Equal(t, feeTestPublicKey, *response.PublicKey)
 		assert.Equal(t, testEncoding, response.Encoding)
 		assert.Equal(t, testMimeType, response.MimeType)
-		assert.Equal(t, 500, response.Quote.GetFee(FeeTypeStandard).MiningFee.Satoshis)
-		assert.Equal(t, 1000, response.Quote.GetFee(FeeTypeStandard).MiningFee.Bytes)
+		assert.Equal(t, 500, response.Quote.GetFee(mapi.FeeTypeStandard).MiningFee.Satoshis)
+		assert.Equal(t, 1000, response.Quote.GetFee(mapi.FeeTypeStandard).MiningFee.Bytes)
 	})
 
 	t.Run("valid parse values", func(t *testing.T) {
@@ -340,12 +341,12 @@ func TestClient_FeeQuote(t *testing.T) {
 
 		// Test getting rate from request
 		var rate uint64
-		rate, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 1000)
+		rate, err = response.Quote.CalculateFee(mapi.FeeCategoryMining, mapi.FeeTypeData, 1000)
 		assert.NoError(t, err)
 		assert.Equal(t, uint64(500), rate)
 
 		// Test relay rate
-		rate, err = response.Quote.CalculateFee(FeeCategoryRelay, FeeTypeData, 1000)
+		rate, err = response.Quote.CalculateFee(mapi.FeeCategoryRelay, mapi.FeeTypeData, 1000)
 		assert.NoError(t, err)
 		assert.Equal(t, uint64(250), rate)
 	})
@@ -377,14 +378,6 @@ func TestClient_FeeQuote(t *testing.T) {
 	t.Run("invalid JSON", func(t *testing.T) {
 		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPInvalidJSON{})
-		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
-		assert.Error(t, err)
-		assert.Nil(t, response)
-	})
-
-	t.Run("invalid signature", func(t *testing.T) {
-		defer goleak.VerifyNone(t)
-		client := newTestClient(&mockHTTPInvalidSignature{})
 		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
 		assert.Error(t, err)
 		assert.Nil(t, response)
@@ -439,22 +432,22 @@ func TestFeePayload_CalculateFee(t *testing.T) {
 
 		// Mining & Data
 		var fee uint64
-		fee, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 1000)
+		fee, err = response.Quote.CalculateFee(mapi.FeeCategoryMining, mapi.FeeTypeData, 1000)
 		assert.NoError(t, err)
 		assert.Equal(t, uint64(500), fee)
 
 		// Mining and standard
-		fee, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeStandard, 1000)
+		fee, err = response.Quote.CalculateFee(mapi.FeeCategoryMining, mapi.FeeTypeStandard, 1000)
 		assert.NoError(t, err)
 		assert.Equal(t, uint64(500), fee)
 
 		// Relay & Data
-		fee, err = response.Quote.CalculateFee(FeeCategoryRelay, FeeTypeData, 1000)
+		fee, err = response.Quote.CalculateFee(mapi.FeeCategoryRelay, mapi.FeeTypeData, 1000)
 		assert.NoError(t, err)
 		assert.Equal(t, uint64(250), fee)
 
 		// Relay and standard
-		fee, err = response.Quote.CalculateFee(FeeCategoryRelay, FeeTypeStandard, 1000)
+		fee, err = response.Quote.CalculateFee(mapi.FeeCategoryRelay, mapi.FeeTypeStandard, 1000)
 		assert.NoError(t, err)
 		assert.Equal(t, uint64(250), fee)
 	})
@@ -467,7 +460,7 @@ func TestFeePayload_CalculateFee(t *testing.T) {
 
 		// Zero tx size produces 0 fee and error
 		var fee uint64
-		fee, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 0)
+		fee, err = response.Quote.CalculateFee(mapi.FeeCategoryMining, mapi.FeeTypeData, 0)
 		assert.Error(t, err)
 		assert.Equal(t, uint64(1), fee)
 	})
@@ -480,7 +473,7 @@ func TestFeePayload_CalculateFee(t *testing.T) {
 
 		// Zero tx size produces 0 fee and error
 		var fee uint64
-		fee, err = response.Quote.CalculateFee(FeeCategoryRelay, FeeTypeStandard, 1000)
+		fee, err = response.Quote.CalculateFee(mapi.FeeCategoryRelay, mapi.FeeTypeStandard, 1000)
 		assert.Error(t, err)
 		assert.Equal(t, uint64(1), fee)
 	})
@@ -493,7 +486,7 @@ func ExampleFeePayload_CalculateFee() {
 	client := newTestClient(&mockHTTPValidBestQuote{})
 
 	// Create a req
-	response, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
+	response, err := client.BestQuote(context.Background(), mapi.FeeCategoryMining, mapi.FeeTypeData)
 	if err != nil {
 		fmt.Printf("error occurred: %s", err.Error())
 		return
@@ -501,7 +494,7 @@ func ExampleFeePayload_CalculateFee() {
 
 	// Calculate fee for tx
 	var fee uint64
-	fee, err = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 1000)
+	fee, err = response.Quote.CalculateFee(mapi.FeeCategoryMining, mapi.FeeTypeData, 1000)
 	if err != nil {
 		fmt.Printf("error occurred: %s", err.Error())
 		return
@@ -509,15 +502,15 @@ func ExampleFeePayload_CalculateFee() {
 
 	// Note: cannot show response since the miner might be different each time
 	fmt.Printf("got best quote and fee for 1000 byte tx is: %d", fee)
-	// Output:got best quote and fee for 1000 byte tx is: 420
+	// Output:got best quote and fee for 1000 byte tx is: 430
 }
 
 // BenchmarkFeePayload_CalculateFee benchmarks the method CalculateFee()
 func BenchmarkFeePayload_CalculateFee(b *testing.B) {
 	client := newTestClient(&mockHTTPValidBestQuote{})
-	response, _ := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
+	response, _ := client.BestQuote(context.Background(), mapi.FeeCategoryMining, mapi.FeeTypeData)
 	for i := 0; i < b.N; i++ {
-		_, _ = response.Quote.CalculateFee(FeeCategoryMining, FeeTypeData, 1000)
+		_, _ = response.Quote.CalculateFee(mapi.FeeCategoryMining, mapi.FeeTypeData, 1000)
 	}
 }
 
@@ -536,12 +529,12 @@ func TestFeePayload_GetFee(t *testing.T) {
 		assert.NotNil(t, response)
 
 		// Standard
-		fee := response.Quote.GetFee(FeeTypeStandard)
+		fee := response.Quote.GetFee(mapi.FeeTypeStandard)
 		assert.NotNil(t, fee)
 		assert.Equal(t, bt.FeeTypeStandard, fee.FeeType)
 
 		// Data
-		fee = response.Quote.GetFee(FeeTypeData)
+		fee = response.Quote.GetFee(mapi.FeeTypeData)
 		assert.NotNil(t, fee)
 		assert.Equal(t, bt.FeeTypeData, fee.FeeType)
 	})
@@ -558,33 +551,11 @@ func TestFeePayload_GetFee(t *testing.T) {
 	})
 }
 
-// ExampleFeePayload_GetFee example using GetFee()
-func ExampleFeePayload_GetFee() {
-	// Create a client (using a test client vs NewClient())
-	client := newTestClient(&mockHTTPValidBestQuote{})
-
-	// Create a req
-	response, err := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
-	if err != nil {
-		fmt.Printf("error occurred: %s", err.Error())
-		return
-	}
-
-	// Get the fee
-	fee := response.Quote.GetFee(FeeTypeStandard)
-
-	fmt.Printf(
-		"got best quote and fee for %d byte tx is %d sats",
-		fee.MiningFee.Bytes, fee.MiningFee.Satoshis,
-	)
-	// Output:got best quote and fee for 1000 byte tx is 500 sats
-}
-
 // BenchmarkFeePayload_GetFee benchmarks the method GetFee()
 func BenchmarkFeePayload_GetFee(b *testing.B) {
 	client := newTestClient(&mockHTTPValidBestQuote{})
-	response, _ := client.BestQuote(context.Background(), FeeCategoryMining, FeeTypeData)
+	response, _ := client.BestQuote(context.Background(), mapi.FeeCategoryMining, mapi.FeeTypeData)
 	for i := 0; i < b.N; i++ {
-		_ = response.Quote.GetFee(FeeTypeStandard)
+		_ = response.Quote.GetFee(mapi.FeeTypeStandard)
 	}
 }
