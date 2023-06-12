@@ -7,7 +7,7 @@
 [![codecov](https://codecov.io/gh/tonicpow/go-minercraft/branch/master/graph/badge.svg?v=1)](https://codecov.io/gh/tonicpow/go-minercraft)
 [![Go](https://img.shields.io/github/go-mod/go-version/tonicpow/go-minercraft?v=1)](https://golang.org/)
 [![mAPI](https://img.shields.io/badge/mAPI-1.4.0-blue.svg)](https://github.com/bitcoin-sv-specs/brfc-merchantapi)
-[![mAPI](https://img.shields.io/badge/mAPI-1.5.0-blue.svg)](https://github.com/bitcoin-sv-specs/brfc-merchantapi)
+[![ARC](https://img.shields.io/badge/ARC-1.0.32-blue.svg)](https://github.com/bitcoin-sv/arc)
 <br>
 [![Mergify Status](https://img.shields.io/endpoint.svg?url=https://api.mergify.com/v1/badges/tonicpow/go-minercraft&style=flat&v=1)](https://mergify.io)
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod&v=1)](https://gitpod.io/#https://github.com/tonicpow/go-minercraft)
@@ -52,6 +52,7 @@ View documentation on hosting your own [mAPI server](https://github.com/bitcoin-
   - [x] [Query Transaction Status](https://github.com/bitcoin-sv-specs/brfc-merchantapi#4-query-transaction-status)
   - [x] [Submit Transaction](https://github.com/bitcoin-sv-specs/brfc-merchantapi#3-submit-transaction)
   - [x] [Submit Batched Transactions](https://github.com/bitcoin-sv-specs/brfc-merchantapi#5-submit-multiple-transactions)
+- [ARC](https://github.com/bitcoin-sv/arc) Support
 - Custom Features:
   - [Client](client.go) is completely configurable
   - Using default [heimdall http client](https://github.com/gojektech/heimdall) with exponential backoff & more
@@ -105,7 +106,7 @@ install               Install the application
 install-go            Install the application (Using Native Go)
 install-releaser      Install the GoReleaser application
 lint                  Run the golangci-lint application (install if not found)
-release               Full production release (creates release in Github)
+release               Full production release (creates release in GitHub)
 release               Runs common.release then runs godocs
 release-snap          Test the full release (build binaries)
 release-test          Full production test release (everything except deploy)
@@ -185,6 +186,8 @@ or by making a [**bitcoin donation**](https://tonicpow.com/?utm_source=github&ut
 [Unwriter & Interplanaria](https://github.com/interplanaria) for their original contribution: [Minercraft](https://github.com/interplanaria/minercraft) which was the inspiration for this library.
       
 nChain & team for developing the [brfc-merchant-api](https://github.com/bitcoin-sv-specs/brfc-merchantapi) specifications.
+
+[wregulski](https://github.com/wregulski) for adding [ARC](https://www.bitcoinsv.com/arc) support.
 
 <br/>
 
