@@ -106,46 +106,6 @@ func (m *mockHTTPBadRate) Do(req *http.Request) (*http.Response, error) {
 	return resp, nil
 }
 
-// mockHTTPBestQuoteTwoFailed for mocking requests
-type mockHTTPBestQuoteTwoFailed struct{}
-
-// Do is a mock http request
-func (m *mockHTTPBestQuoteTwoFailed) Do(req *http.Request) (*http.Response, error) {
-	resp := new(http.Response)
-	resp.StatusCode = http.StatusBadRequest
-
-	// No req found
-	if req == nil {
-		return resp, fmt.Errorf("missing request")
-	}
-
-	// Valid response
-	if req.URL.String() == feeQuoteURLTaal {
-		resp.StatusCode = http.StatusBadRequest
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(``)))
-	}
-
-	if req.URL.String() == feeQuoteURLMatterPool {
-		resp.StatusCode = http.StatusBadRequest
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(``)))
-	}
-
-	if req.URL.String() == feeQuoteURLGorillaPool {
-		resp.StatusCode = http.StatusBadRequest
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(``)))
-	}
-
-	if req.URL.String() == feeQuoteURLMempool {
-		resp.StatusCode = http.StatusOK
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
-    	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T22:09:04.433Z\",\"expiryTime\":\"2020-10-09T22:19:04.433Z\",\"minerId\":null,\"currentHighestBlockHash\":\"0000000000000000028285a9168c95457521a743765f499de389c094e883f42a\",\"currentHighestBlockHeight\":656171,\"minerReputation\":null,\"fees\":[{\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}},{\"feeType\":\"data\",\"miningFee\":{\"satoshis\":420,\"bytes\":1000},\"relayFee\":{\"satoshis\":150,\"bytes\":1000}}]}",
-    	"signature": null,"publicKey": null,"encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
-	}
-
-	// Default is valid
-	return resp, nil
-}
-
 // mockHTTPBestQuoteAllFailed for mocking requests
 type mockHTTPBestQuoteAllFailed struct{}
 
