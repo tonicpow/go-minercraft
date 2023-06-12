@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/tonicpow/go-minercraft/apis/mapi"
+	"github.com/tonicpow/go-minercraft/v2/apis/mapi"
 	"go.uber.org/goleak"
 )
 

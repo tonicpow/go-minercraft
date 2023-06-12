@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/tonicpow/go-minercraft"
+	"github.com/tonicpow/go-minercraft/v2"
 )
 
 func main() {

@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/libsv/go-bt/v2"
-	"github.com/tonicpow/go-minercraft/apis/mapi"
+	"github.com/tonicpow/go-minercraft/v2/apis/mapi"
 )
 
 // FeeQuoteResponse is the raw response from the Merchant API request

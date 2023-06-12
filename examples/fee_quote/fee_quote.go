@@ -4,8 +4,8 @@ import (
 	"context"
 	"log"
 
-	"github.com/tonicpow/go-minercraft"
-	"github.com/tonicpow/go-minercraft/apis/mapi"
+	"github.com/tonicpow/go-minercraft/v2"
+	"github.com/tonicpow/go-minercraft/v2/apis/mapi"
 )
 
 func main() {

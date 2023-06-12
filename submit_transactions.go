@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/tonicpow/go-minercraft/apis/arc"
-	"github.com/tonicpow/go-minercraft/apis/mapi"
+	"github.com/tonicpow/go-minercraft/v2/apis/arc"
+	"github.com/tonicpow/go-minercraft/v2/apis/mapi"
 )
 
 type (

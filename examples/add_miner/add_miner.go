@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/tonicpow/go-minercraft"
+	"github.com/tonicpow/go-minercraft/v2"
 )
 
 func main() {
@@ -23,7 +23,8 @@ func main() {
 
 	// Show all miners loaded
 	for _, miner := range client.Miners() {
-		api, err := client.MinerAPIByMinerID(miner.MinerID, apiType)
+		var api *minercraft.API
+		api, err = client.MinerAPIByMinerID(miner.MinerID, apiType)
 		if err != nil {
 			log.Fatalf("error occurred: %s", err.Error())
 		}

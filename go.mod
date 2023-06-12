@@ -1,4 +1,4 @@
-module github.com/tonicpow/go-minercraft
+module github.com/tonicpow/go-minercraft/v2
 
 go 1.19
 
