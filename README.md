@@ -31,7 +31,12 @@
 
 **go-minercraft** requires a [supported release of Go](https://golang.org/doc/devel/release.html#policy).
 ```shell script
-go get -u github.com/tonicpow/go-minercraft
+go get -u github.com/tonicpow/go-minercraft/v2
+```
+
+> If you want to install the **deprecated V1**:
+```shell script
+go get -u github.com/tonicpow/go-minercraft@v1
 ```
 
 <br/>
