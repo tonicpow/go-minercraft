@@ -222,7 +222,7 @@ func TestClient_BestQuote(t *testing.T) {
 		var fee uint64
 		fee, err = response.Quote.CalculateFee(mapi.FeeCategoryRelay, mapi.FeeTypeData, 1000)
 		require.NoError(t, err)
-		assert.Equal(t, uint64(100), fee)
+		assert.Equal(t, uint64(250), fee)
 
 		fee, err = response.Quote.CalculateFee(mapi.FeeCategoryMining, mapi.FeeTypeData, 1000)
 		require.NoError(t, err)

@@ -502,7 +502,7 @@ func ExampleFeePayload_CalculateFee() {
 
 	// Note: cannot show response since the miner might be different each time
 	fmt.Printf("got best quote and fee for 1000 byte tx is: %d", fee)
-	// Output:got best quote and fee for 1000 byte tx is: 430
+	// Output:got best quote and fee for 1000 byte tx is: 500
 }
 
 // BenchmarkFeePayload_CalculateFee benchmarks the method CalculateFee()

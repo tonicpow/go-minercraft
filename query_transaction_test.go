@@ -76,7 +76,7 @@ func TestClient_QueryTransaction(t *testing.T) {
 		client := newTestClient(&mockHTTPValidQuery{})
 
 		// Create a req
-		response, err := client.QueryTransaction(context.Background(), client.MinerByName(MinerMatterpool), testTx)
+		response, err := client.QueryTransaction(context.Background(), client.MinerByName(MinerGorillaPool), testTx)
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 
@@ -90,13 +90,13 @@ func TestClient_QueryTransaction(t *testing.T) {
 
 	t.Run("validate parsed values", func(t *testing.T) {
 		client := newTestClient(&mockHTTPValidQuery{})
-		response, err := client.QueryTransaction(context.Background(), client.MinerByName(MinerMatterpool), testTx)
+		response, err := client.QueryTransaction(context.Background(), client.MinerByName(MinerGorillaPool), testTx)
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 
 		// Test parsed values
-		assert.Equal(t, MinerMatterpool, response.Miner.Name)
-		assert.Equal(t, "0253a9b2d017254b91704ba52aad0df5ca32b4fb5cb6b267ada6aefa2bc5833a93", response.Miner.MinerID)
+		assert.Equal(t, MinerGorillaPool, response.Miner.Name)
+		assert.Equal(t, "03ad780153c47df915b3d2e23af727c68facaca4facd5f155bf5018b979b9aeb83", response.Miner.MinerID)
 		assert.Equal(t, "2020-10-10T13:07:26.014Z", response.Query.Timestamp)
 		assert.Equal(t, "0.1.0", response.Query.APIVersion)
 		assert.Equal(t, "0000000000000000050a09fe90b0e8542bba9e712edb8cc9349e61888fe45ac5", response.Query.BlockHash)
@@ -113,35 +113,35 @@ func TestClient_QueryTransaction(t *testing.T) {
 
 	t.Run("http error", func(t *testing.T) {
 		client := newTestClient(&mockHTTPError{})
-		response, err := client.QueryTransaction(context.Background(), client.MinerByName(MinerMatterpool), testTx)
+		response, err := client.QueryTransaction(context.Background(), client.MinerByName(MinerGorillaPool), testTx)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
 
 	t.Run("bad request", func(t *testing.T) {
 		client := newTestClient(&mockHTTPBadRequest{})
-		response, err := client.QueryTransaction(context.Background(), client.MinerByName(MinerMatterpool), testTx)
+		response, err := client.QueryTransaction(context.Background(), client.MinerByName(MinerGorillaPool), testTx)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
 
 	t.Run("invalid JSON", func(t *testing.T) {
 		client := newTestClient(&mockHTTPInvalidJSON{})
-		response, err := client.QueryTransaction(context.Background(), client.MinerByName(MinerMatterpool), testTx)
+		response, err := client.QueryTransaction(context.Background(), client.MinerByName(MinerGorillaPool), testTx)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
 
 	t.Run("invalid signature", func(t *testing.T) {
 		client := newTestClient(&mockHTTPInvalidSignature{})
-		response, err := client.QueryTransaction(context.Background(), client.MinerByName(MinerMatterpool), testTx)
+		response, err := client.QueryTransaction(context.Background(), client.MinerByName(MinerGorillaPool), testTx)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
 
 	t.Run("bad query", func(t *testing.T) {
 		client := newTestClient(&mockHTTPBadQuery{})
-		response, err := client.QueryTransaction(context.Background(), client.MinerByName(MinerMatterpool), testTx)
+		response, err := client.QueryTransaction(context.Background(), client.MinerByName(MinerGorillaPool), testTx)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})

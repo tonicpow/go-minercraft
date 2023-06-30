@@ -46,12 +46,12 @@ func TestClient_SubmitTransactions(t *testing.T) {
 			err: errors.New("miner was nil"),
 		},
 		"empty txs should return error": {
-			miner: MinerMatterpool,
+			miner: MinerGorillaPool,
 			err:   errors.New("no transactions"),
 			txs:   []Transaction{},
 		},
 		"one valid and one invalid tx should return specific response": {
-			miner: MinerMatterpool,
+			miner: MinerGorillaPool,
 			txs:   []Transaction{{RawTx: rawTx}},
 			exp: &SubmitTransactionsResponse{
 				Payload: UnifiedTxsPayload{

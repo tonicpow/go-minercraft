@@ -63,7 +63,7 @@ func TestNewClient(t *testing.T) {
 		assert.NoError(t, err)
 
 		// Test default miners
-		assert.Equal(t, 4, len(client.Miners()))
+		assert.Equal(t, 2, len(client.Miners()))
 	})
 
 	t.Run("custom http client", func(t *testing.T) {
@@ -82,12 +82,12 @@ func TestNewClient(t *testing.T) {
 		assert.Equal(t, MinerTaal, miner.Name)
 
 		// Get Mempool
-		miner = client.MinerByName(MinerMempool)
-		assert.Equal(t, MinerMempool, miner.Name)
+		// miner = client.MinerByName(MinerMempool)
+		// assert.Equal(t, MinerMempool, miner.Name)
 
 		// Get Matterpool
-		miner = client.MinerByName(MinerMatterpool)
-		assert.Equal(t, MinerMatterpool, miner.Name)
+		// miner = client.MinerByName(MinerMatterpool)
+		// assert.Equal(t, MinerMatterpool, miner.Name)
 
 		// Get GorillaPool
 		miner = client.MinerByName(MinerGorillaPool)
@@ -123,7 +123,7 @@ func ExampleNewClient() {
 	}
 
 	fmt.Printf("created new client with %d default miners", len(client.Miners()))
-	// Output:created new client with 4 default miners
+	// Output:created new client with 2 default miners
 }
 
 // BenchmarkNewClient benchmarks the method NewClient()
@@ -619,7 +619,7 @@ func ExampleClient_RemoveMiner() {
 
 	// Show response
 	fmt.Printf("total miners: %d", len(client.Miners()))
-	// Output:total miners: 3
+	// Output:total miners: 1
 }
 
 // BenchmarkClient_RemoveMiner benchmarks the method RemoveMiner()
@@ -637,11 +637,11 @@ func TestDefaultMiners(t *testing.T) {
 		miners, err := DefaultMiners()
 		require.NoError(t, err)
 		require.NotNil(t, miners)
-		assert.Equal(t, 4, len(miners))
+		// assert.Equal(t, MinerMempool, miners[1].Name)
+		//assert.Equal(t, MinerMatterpool, miners[1].Name)
+		assert.Equal(t, 2, len(miners))
 		assert.Equal(t, MinerTaal, miners[0].Name)
-		assert.Equal(t, MinerMempool, miners[1].Name)
-		assert.Equal(t, MinerGorillaPool, miners[3].Name)
-		assert.Equal(t, MinerMatterpool, miners[2].Name)
+		assert.Equal(t, MinerGorillaPool, miners[1].Name)
 	})
 }
 
@@ -649,7 +649,7 @@ func TestDefaultMiners(t *testing.T) {
 func ExampleDefaultMiners() {
 	miners, _ := DefaultMiners()
 	fmt.Printf("total miners: %d", len(miners))
-	// Output:total miners: 4
+	// Output:total miners: 2
 }
 
 // BenchmarkDefaultMiners benchmarks the method DefaultMiners()

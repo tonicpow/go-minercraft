@@ -82,7 +82,7 @@ func TestClient_SubmitTransaction(t *testing.T) {
 		client := newTestClient(&mockHTTPValidSubmission{})
 
 		// Create a req
-		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerMatterpool), tx)
+		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerGorillaPool), tx)
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 
@@ -99,12 +99,12 @@ func TestClient_SubmitTransaction(t *testing.T) {
 		defer goleak.VerifyNone(t)
 
 		client := newTestClient(&mockHTTPValidSubmission{})
-		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerMatterpool), tx)
+		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerGorillaPool), tx)
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 
 		// Test parsed values
-		assert.Equal(t, MinerMatterpool, response.Miner.Name)
+		assert.Equal(t, MinerGorillaPool, response.Miner.Name)
 		assert.Equal(t, submitTestPublicKey, response.Results.MinerID)
 		assert.Equal(t, "2020-01-15T11:40:29.826Z", response.Results.Timestamp)
 		assert.Equal(t, "0.1.0", response.Results.APIVersion)
@@ -123,7 +123,7 @@ func TestClient_SubmitTransaction(t *testing.T) {
 	t.Run("http error", func(t *testing.T) {
 		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPError{})
-		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerMatterpool), tx)
+		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerGorillaPool), tx)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
@@ -131,7 +131,7 @@ func TestClient_SubmitTransaction(t *testing.T) {
 	t.Run("bad request", func(t *testing.T) {
 		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPBadRequest{})
-		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerMatterpool), tx)
+		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerGorillaPool), tx)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
@@ -139,7 +139,7 @@ func TestClient_SubmitTransaction(t *testing.T) {
 	t.Run("invalid JSON", func(t *testing.T) {
 		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPInvalidJSON{})
-		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerMatterpool), tx)
+		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerGorillaPool), tx)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
@@ -147,7 +147,7 @@ func TestClient_SubmitTransaction(t *testing.T) {
 	t.Run("invalid signature", func(t *testing.T) {
 		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPInvalidSignature{})
-		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerMatterpool), tx)
+		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerGorillaPool), tx)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
@@ -155,7 +155,7 @@ func TestClient_SubmitTransaction(t *testing.T) {
 	t.Run("bad submission", func(t *testing.T) {
 		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPBadSubmission{})
-		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerMatterpool), tx)
+		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerGorillaPool), tx)
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})
