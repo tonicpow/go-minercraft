@@ -157,7 +157,7 @@ func (c *Client) PolicyQuote(ctx context.Context, miner *Miner) (*PolicyQuoteRes
 
 // GetPolicyData will return the policy data from the mapi adapter
 func (a *PolicyQuoteMapiAdapter) GetPolicyData() *PolicyPayload {
-	// Tworzenie instancji UnifiedFeePayload
+	// Creates instance of UnifiedFeePayload
 	feePayload := UnifiedFeePayload{
 		FeePayloadFields: mapi.FeePayloadFields{
 			APIVersion:                a.APIVersion,
