@@ -255,13 +255,17 @@ func queryTransaction(ctx context.Context, client *Client, miner *Miner, txHash 
 
 	api, err := client.MinerAPIByMinerID(miner.MinerID, client.apiType)
 	if err != nil {
-		result.Response = &RequestResponse{Error: err}
+		result = &internalResult{
+			Response: &RequestResponse{Error: err},
+		}
 		return
 	}
 
 	route, err := ActionRouteByAPIType(QueryTx, client.apiType)
 	if err != nil {
-		result.Response = &RequestResponse{Error: err}
+		result = &internalResult{
+			Response: &RequestResponse{Error: err},
+		}
 		return
 	}
 

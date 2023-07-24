@@ -132,7 +132,9 @@ func getQuote(ctx context.Context, client *Client, miner *Miner, route string) (
 
 	api, err := client.MinerAPIByMinerID(miner.MinerID, client.apiType)
 	if err != nil {
-		result.Response = &RequestResponse{Error: err}
+		result = &internalResult{
+			Response: &RequestResponse{Error: err},
+		}
 		return
 	}
 
@@ -144,7 +146,6 @@ func getQuote(ctx context.Context, client *Client, miner *Miner, route string) (
 		return
 	}
 
-	result = &internalResult{Miner: miner}
 	result.Response = httpRequest(ctx, client, &httpPayload{
 		Method: http.MethodGet,
 		URL:    quoteURL.String(),
