@@ -20,7 +20,7 @@ const (
 	testMinerName  = "TestMiner"
 	testMinerToken = "0987654321"
 	testMinerURL   = "https://testminer.com"
-	testTx         = "7e0c4651fc256c0433bd704d7e13d24c8d10235f4b28ba192849c5d318de974b"
+	testTx         = "7e0c4651fc256c0433bd704d7e13d24c8d10235f4b28ba192849c5d318de974b" //nolint:gosec // Test data
 	testAPIType    = "mAPI"
 )
 
