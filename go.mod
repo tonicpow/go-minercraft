@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/gojektech/heimdall/v6 v6.1.0
-	github.com/libsv/go-bc v0.1.11
+	github.com/libsv/go-bc v0.1.12
 	github.com/libsv/go-bk v0.1.6
 	github.com/libsv/go-bt/v2 v2.2.5
 	github.com/stretchr/testify v1.8.4
@@ -14,7 +14,6 @@ require (
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gojektech/valkyrie v0.0.0-20190210220504-8f62c1e7ba45 // indirect
-	github.com/kr/text v0.2.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rogpeppe/go-internal v1.10.0 // indirect
