@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/gojektech/heimdall/v6 v6.1.0
-	github.com/libsv/go-bc v0.1.12
+	github.com/libsv/go-bc v0.1.17
 	github.com/libsv/go-bk v0.1.6
 	github.com/libsv/go-bt/v2 v2.2.5
 	github.com/stretchr/testify v1.8.4
