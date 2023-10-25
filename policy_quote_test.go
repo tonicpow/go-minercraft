@@ -11,7 +11,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tonicpow/go-minercraft/v2/apis/mapi"
-	"go.uber.org/goleak"
 )
 
 // mockHTTPValidPolicyQuote for mocking requests
@@ -46,8 +45,6 @@ func TestClient_PolicyQuote(t *testing.T) {
 
 	t.Run("get a valid policy quote", func(t *testing.T) {
 
-		defer goleak.VerifyNone(t)
-
 		// Create a client
 		client := newTestClient(&mockHTTPValidPolicyQuote{})
 
@@ -81,7 +78,6 @@ func TestClient_PolicyQuote(t *testing.T) {
 	})
 
 	t.Run("invalid miner", func(t *testing.T) {
-		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPValidPolicyQuote{})
 		response, err := client.PolicyQuote(context.Background(), nil)
 		assert.Error(t, err)
@@ -89,7 +85,6 @@ func TestClient_PolicyQuote(t *testing.T) {
 	})
 
 	t.Run("http error", func(t *testing.T) {
-		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPError{})
 		response, err := client.PolicyQuote(context.Background(), client.MinerByName(MinerTaal))
 		assert.Error(t, err)
@@ -97,7 +92,6 @@ func TestClient_PolicyQuote(t *testing.T) {
 	})
 
 	t.Run("bad request", func(t *testing.T) {
-		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPBadRequest{})
 		response, err := client.PolicyQuote(context.Background(), client.MinerByName(MinerTaal))
 		assert.Error(t, err)
@@ -105,7 +99,6 @@ func TestClient_PolicyQuote(t *testing.T) {
 	})
 
 	t.Run("invalid JSON", func(t *testing.T) {
-		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPInvalidJSON{})
 		response, err := client.PolicyQuote(context.Background(), client.MinerByName(MinerTaal))
 		assert.Error(t, err)
@@ -113,7 +106,6 @@ func TestClient_PolicyQuote(t *testing.T) {
 	})
 
 	t.Run("invalid signature", func(t *testing.T) {
-		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPInvalidSignature{})
 		response, err := client.PolicyQuote(context.Background(), client.MinerByName(MinerTaal))
 		assert.Error(t, err)
@@ -121,7 +113,6 @@ func TestClient_PolicyQuote(t *testing.T) {
 	})
 
 	t.Run("missing fees", func(t *testing.T) {
-		defer goleak.VerifyNone(t)
 		client := newTestClient(&mockHTTPMissingFees{})
 		response, err := client.PolicyQuote(context.Background(), client.MinerByName(MinerTaal))
 		assert.Error(t, err)

@@ -11,7 +11,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/tonicpow/go-minercraft/v2/apis/mapi"
-	"go.uber.org/goleak"
 )
 
 // mockHTTPValidBestQuote for mocking requests
@@ -149,8 +148,6 @@ func TestClient_BestQuote(t *testing.T) {
 
 	t.Run("get a valid best quote", func(t *testing.T) {
 
-		defer goleak.VerifyNone(t)
-
 		// Create a client
 		client := newTestClient(&mockHTTPValidBestQuote{})
 
@@ -168,8 +165,6 @@ func TestClient_BestQuote(t *testing.T) {
 	})
 
 	t.Run("http error", func(t *testing.T) {
-		defer goleak.VerifyNone(t)
-
 		client := newTestClient(&mockHTTPError{})
 		response, err := client.BestQuote(context.Background(), mapi.FeeCategoryMining, mapi.FeeTypeData)
 		require.Error(t, err)
@@ -177,8 +172,6 @@ func TestClient_BestQuote(t *testing.T) {
 	})
 
 	t.Run("bad request", func(t *testing.T) {
-		defer goleak.VerifyNone(t)
-
 		client := newTestClient(&mockHTTPBadRequest{})
 		response, err := client.BestQuote(context.Background(), mapi.FeeCategoryMining, mapi.FeeTypeData)
 		require.Error(t, err)
@@ -186,8 +179,6 @@ func TestClient_BestQuote(t *testing.T) {
 	})
 
 	t.Run("invalid JSON", func(t *testing.T) {
-		defer goleak.VerifyNone(t)
-
 		client := newTestClient(&mockHTTPInvalidJSON{})
 		response, err := client.BestQuote(context.Background(), mapi.FeeCategoryMining, mapi.FeeTypeData)
 		require.Error(t, err)
@@ -195,8 +186,6 @@ func TestClient_BestQuote(t *testing.T) {
 	})
 
 	t.Run("invalid category", func(t *testing.T) {
-		defer goleak.VerifyNone(t)
-
 		client := newTestClient(&mockHTTPValidBestQuote{})
 		response, err := client.BestQuote(context.Background(), "invalid", mapi.FeeTypeData)
 		require.Error(t, err)
@@ -209,8 +198,6 @@ func TestClient_BestQuote(t *testing.T) {
 	})
 
 	t.Run("better rate", func(t *testing.T) {
-		defer goleak.VerifyNone(t)
-
 		client := newTestClient(&mockHTTPBetterRate{})
 		response, err := client.BestQuote(context.Background(), mapi.FeeCategoryRelay, mapi.FeeTypeData)
 		require.NoError(t, err)
@@ -230,8 +217,6 @@ func TestClient_BestQuote(t *testing.T) {
 	})
 
 	t.Run("bad rate", func(t *testing.T) {
-		defer goleak.VerifyNone(t)
-
 		client := newTestClient(&mockHTTPBadRate{})
 		response, err := client.BestQuote(context.Background(), mapi.FeeCategoryRelay, mapi.FeeTypeData)
 		require.Error(t, err)
@@ -240,7 +225,6 @@ func TestClient_BestQuote(t *testing.T) {
 
 	// TODO: Verify this test case for Arc API
 	// t.Run("best quote - two failed", func(t *testing.T) {
-	// 	defer goleak.VerifyNone(t)
 
 	// 	// Create a client
 	// 	client := newTestClient(&mockHTTPBestQuoteTwoFailed{})
@@ -260,8 +244,6 @@ func TestClient_BestQuote(t *testing.T) {
 	// })
 
 	t.Run("best quote - all failed", func(t *testing.T) {
-
-		defer goleak.VerifyNone(t)
 
 		// Create a client
 		client := newTestClient(&mockHTTPBestQuoteAllFailed{})

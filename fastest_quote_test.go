@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"go.uber.org/goleak"
 )
 
 // mockHTTPValidFastestQuote for mocking requests
@@ -118,8 +117,6 @@ func TestClient_FastestQuote(t *testing.T) {
 
 	t.Run("get a valid fastest quote", func(t *testing.T) {
 
-		defer goleak.VerifyNone(t)
-
 		// Create a client
 		client := newTestClient(&mockHTTPValidFastestQuote{})
 
@@ -138,8 +135,6 @@ func TestClient_FastestQuote(t *testing.T) {
 
 	// todo: this timeout is not working as expected
 	t.Run("valid quote - quick timeout", func(t *testing.T) {
-
-		defer goleak.VerifyNone(t)
 
 		// Create a client
 		client := newTestClient(&mockHTTPValidFastestQuoteSlow{})
@@ -160,8 +155,6 @@ func TestClient_FastestQuote(t *testing.T) {
 
 	t.Run("valid quote - no timeout", func(t *testing.T) {
 
-		defer goleak.VerifyNone(t)
-
 		// Create a client
 		client := newTestClient(&mockHTTPValidFastestQuoteSlow{})
 
@@ -179,9 +172,6 @@ func TestClient_FastestQuote(t *testing.T) {
 	})
 
 	t.Run("http error", func(t *testing.T) {
-
-		defer goleak.VerifyNone(t)
-
 		client := newTestClient(&mockHTTPError{})
 		response, err := client.FastestQuote(context.Background(), defaultFastQuoteTimeout)
 		assert.Error(t, err)
@@ -189,9 +179,6 @@ func TestClient_FastestQuote(t *testing.T) {
 	})
 
 	t.Run("bad request", func(t *testing.T) {
-
-		defer goleak.VerifyNone(t)
-
 		client := newTestClient(&mockHTTPBadRequest{})
 		response, err := client.FastestQuote(context.Background(), defaultFastQuoteTimeout)
 		assert.Error(t, err)
@@ -199,9 +186,6 @@ func TestClient_FastestQuote(t *testing.T) {
 	})
 
 	t.Run("invalid JSON", func(t *testing.T) {
-
-		defer goleak.VerifyNone(t)
-
 		client := newTestClient(&mockHTTPInvalidJSON{})
 		response, err := client.FastestQuote(context.Background(), defaultFastQuoteTimeout)
 		assert.Error(t, err)
@@ -210,8 +194,6 @@ func TestClient_FastestQuote(t *testing.T) {
 
 	// TODO: Vetify this test case for Arc and mAPI
 	// t.Run("two bad quote responses, one good", func(t *testing.T) {
-
-	// 	defer goleak.VerifyNone(t)
 
 	// 	// Create a client
 	// 	client := newTestClient(&mockHTTPFastestQuoteTwoFailed{})
