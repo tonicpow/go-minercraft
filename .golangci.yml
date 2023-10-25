@@ -340,7 +340,7 @@ linters:
     - sqlclosecheck
     - nolintlint
     - gci
-    - goconst
+    #- goconst
     #- lll
   disable:
     - dupl
@@ -353,6 +353,7 @@ linters:
     - testpackage
     - whitespace
     - wsl
+    - testifylint
   disable-all: false
   presets:
     - bugs
