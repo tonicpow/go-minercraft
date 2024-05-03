@@ -3,7 +3,7 @@ package minercraft
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"testing"
 	"time"
@@ -39,7 +39,7 @@ func (m *mockHTTPDefaultClient) Do(req *http.Request) (*http.Response, error) {
 
 	if req.URL.String() == "/test" {
 		resp.StatusCode = http.StatusOK
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{"message":"test"}`)))
+		resp.Body = io.NopCloser(bytes.NewBufferString(`{"message":"test"}`))
 	}
 
 	// Default is valid
@@ -60,22 +60,22 @@ func TestNewClient(t *testing.T) {
 	t.Run("valid new client", func(t *testing.T) {
 		client, err := NewClient(nil, nil, testAPIType, nil, nil)
 		assert.NotNil(t, client)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		// Test default miners
-		assert.Equal(t, 2, len(client.Miners()))
+		assert.Len(t, client.Miners(), 2)
 	})
 
 	t.Run("custom http client", func(t *testing.T) {
 		client, err := NewClient(nil, http.DefaultClient, testAPIType, nil, nil)
 		assert.NotNil(t, client)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	})
 
 	t.Run("default miners", func(t *testing.T) {
 		client, err := NewClient(nil, nil, testAPIType, nil, nil)
-		assert.NotNil(t, client)
-		assert.NoError(t, err)
+		require.NotNil(t, client)
+		require.NoError(t, err)
 
 		// Get Taal
 		miner := client.MinerByName(MinerTaal)
@@ -104,13 +104,13 @@ func TestNewClient(t *testing.T) {
 
 		client, err := NewClient(nil, nil, testAPIType, miners, minerAPIs)
 		assert.NotNil(t, client)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		// Get test miner
 		miner := client.MinerByName(testMinerName)
 		assert.Equal(t, testMinerName, miner.Name)
 
-		assert.Equal(t, 1, len(client.Miners()))
+		assert.Len(t, client.Miners(), 1)
 	})
 }
 
@@ -141,7 +141,7 @@ func TestDefaultClientOptions(t *testing.T) {
 		options := DefaultClientOptions()
 
 		assert.Equal(t, defaultUserAgent, options.UserAgent)
-		assert.Equal(t, 2.0, options.BackOffExponentFactor)
+		assert.InDelta(t, 2.0, options.BackOffExponentFactor, 0.001)
 		assert.Equal(t, 2*time.Millisecond, options.BackOffInitialTimeout)
 		assert.Equal(t, 2*time.Millisecond, options.BackOffMaximumJitterInterval)
 		assert.Equal(t, 10*time.Millisecond, options.BackOffMaxTimeout)
@@ -160,7 +160,7 @@ func TestDefaultClientOptions(t *testing.T) {
 		options.RequestRetryCount = 0
 		client, err := NewClient(options, nil, testAPIType, nil, nil)
 		assert.NotNil(t, client)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	})
 }
 
@@ -206,7 +206,7 @@ func TestClient_AddMiner(t *testing.T) {
 					Name:    "Test",
 				},
 				[]API{
-					API{
+					{
 						Token: testMinerToken,
 						URL:   "https://testminer.com",
 						Type:  testAPIType,
@@ -222,7 +222,7 @@ func TestClient_AddMiner(t *testing.T) {
 		for _, test := range tests {
 			t.Run(test.testCase, func(t *testing.T) {
 				err := client.AddMiner(test.inputMiner, test.inputAPIs)
-				assert.NoError(t, err)
+				require.NoError(t, err)
 
 				// Get the miner
 				miner := client.MinerByName(test.inputMiner.Name)
@@ -330,8 +330,8 @@ func TestClient_AddMiner(t *testing.T) {
 		client := newTestClient(&mockHTTPDefaultClient{})
 
 		// Add a miner to start
-		err := client.AddMiner(Miner{MinerID: testMinerID, Name: "Test"}, []API{API{URL: testMinerURL, Type: testAPIType}})
-		assert.NoError(t, err)
+		err := client.AddMiner(Miner{MinerID: testMinerID, Name: "Test"}, []API{{URL: testMinerURL, Type: testAPIType}})
+		require.NoError(t, err)
 
 		for _, test := range tests {
 			t.Run(test.testCase, func(t *testing.T) {
@@ -380,7 +380,7 @@ func TestClient_MinerByName(t *testing.T) {
 		err := client.AddMiner(Miner{
 			Name: testMinerName,
 		}, []API{{URL: testMinerURL, Type: testAPIType}})
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		// Get valid miner
 		miner := client.MinerByName(testMinerName)
@@ -395,7 +395,7 @@ func TestClient_MinerByName(t *testing.T) {
 			Name: testMinerName,
 		}, []API{{URL: testMinerURL, Type: testAPIType}},
 		)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		// Get invalid miner
 		miner := client.MinerByName("Unknown")
@@ -443,7 +443,7 @@ func TestClient_MinerByID(t *testing.T) {
 			Name:    testMinerName,
 			MinerID: testMinerID,
 		}, []API{{URL: testMinerURL, Type: testAPIType}})
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		// Get valid miner
 		miner := client.MinerByID(testMinerID)
@@ -458,7 +458,7 @@ func TestClient_MinerByID(t *testing.T) {
 			Name:    testMinerName,
 			MinerID: testMinerID,
 		}, []API{{URL: testMinerURL, Type: testAPIType}})
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		// Get invalid miner
 		miner := client.MinerByID("00000")
@@ -488,7 +488,9 @@ func ExampleClient_MinerByID() {
 // BenchmarkClient_MinerByID benchmarks the method MinerByID()
 func BenchmarkClient_MinerByID(b *testing.B) {
 	client, _ := NewClient(nil, nil, testAPIType, nil, nil)
-	_ = client.AddMiner(Miner{Name: testMinerName, MinerID: testMinerID}, []API{API{URL: testMinerURL, Type: testAPIType}})
+	_ = client.AddMiner(
+		Miner{Name: testMinerName, MinerID: testMinerID},
+		[]API{{URL: testMinerURL, Type: testAPIType}})
 	for i := 0; i < b.N; i++ {
 		_ = client.MinerByID(testMinerID)
 	}
@@ -506,15 +508,16 @@ func TestClient_MinerUpdateToken(t *testing.T) {
 			Name:    testMinerName,
 			MinerID: testMinerID,
 		}, []API{{URL: testMinerURL, Type: testAPIType, Token: testMinerToken}})
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		// Update a valid miner token
 		client.MinerUpdateToken(testMinerName, "99999", testAPIType)
 
 		// Get valid miner
 		miner := client.MinerByID(testMinerID)
-		api, err := client.MinerAPIByMinerID(testMinerID, testAPIType)
-		assert.NoError(t, err)
+		var api *API
+		api, err = client.MinerAPIByMinerID(testMinerID, testAPIType)
+		require.NoError(t, err)
 		assert.NotNil(t, miner)
 		assert.Equal(t, "99999", api.Token)
 	})
@@ -526,8 +529,8 @@ func TestClient_MinerUpdateToken(t *testing.T) {
 		err := client.AddMiner(Miner{
 			Name:    testMinerName,
 			MinerID: testMinerID,
-		}, []API{API{URL: testMinerURL, Type: testAPIType, Token: testMinerToken}})
-		assert.NoError(t, err)
+		}, []API{{URL: testMinerURL, Type: testAPIType, Token: testMinerToken}})
+		require.NoError(t, err)
 
 		// Update a invalid miner token
 		client.MinerUpdateToken("Unknown", "99999", testAPIType)
@@ -574,7 +577,7 @@ func TestClient_RemoveMiner(t *testing.T) {
 
 		// Remove miner
 		removed := client.RemoveMiner(client.MinerByName(MinerTaal))
-		assert.Equal(t, true, removed)
+		assert.True(t, removed)
 
 		// Try to get the miner
 		miner := client.MinerByName(MinerTaal)
@@ -592,7 +595,7 @@ func TestClient_RemoveMiner(t *testing.T) {
 
 		// Remove miner
 		removed := client.RemoveMiner(dummyMiner)
-		assert.Equal(t, false, removed)
+		assert.False(t, removed)
 	})
 
 	t.Run("remove a nil miner", func(t *testing.T) {
@@ -601,7 +604,7 @@ func TestClient_RemoveMiner(t *testing.T) {
 		// Remove miner
 		assert.Panics(t, func() {
 			removed := client.RemoveMiner(nil)
-			assert.Equal(t, false, removed)
+			assert.False(t, removed)
 		})
 	})
 }
@@ -639,7 +642,7 @@ func TestDefaultMiners(t *testing.T) {
 		require.NotNil(t, miners)
 		// assert.Equal(t, MinerMempool, miners[1].Name)
 		//assert.Equal(t, MinerMatterpool, miners[1].Name)
-		assert.Equal(t, 2, len(miners))
+		assert.Len(t, miners, 2)
 		assert.Equal(t, MinerTaal, miners[0].Name)
 		assert.Equal(t, MinerGorillaPool, miners[1].Name)
 	})

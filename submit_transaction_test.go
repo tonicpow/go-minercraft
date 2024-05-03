@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const submitTestSignature = "3045022100f65ae83b20bc60e7a5f0e9c1bd9aceb2b26962ad0ee35472264e83e059f4b9be022010ca2334ff088d6e085eb3c2118306e61ec97781e8e1544e75224533dcc32379"
@@ -32,10 +33,10 @@ func (m *mockHTTPValidSubmission) Do(req *http.Request) (*http.Response, error) 
 	// Valid response
 	if strings.Contains(req.URL.String(), "/mapi/tx") {
 		resp.StatusCode = http.StatusOK
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
+		resp.Body = io.NopCloser(bytes.NewBufferString(`{
     	"payload": "{\"apiVersion\":\"0.1.0\",\"timestamp\":\"2020-01-15T11:40:29.826Z\",\"txid\":\"6bdbcfab0526d30e8d68279f79dff61fb4026ace8b7b32789af016336e54f2f0\",\"returnResult\":\"success\",\"resultDescription\":\"\",\"minerId\":\"03fcfcfcd0841b0a6ed2057fa8ed404788de47ceb3390c53e79c4ecd1e05819031\",\"currentHighestBlockHash\":\"71a7374389afaec80fcabbbf08dcd82d392cf68c9a13fe29da1a0c853facef01\",\"currentHighestBlockHeight\":207,\"txSecondMempoolExpiry\":0}",
     	"signature": "3045022100f65ae83b20bc60e7a5f0e9c1bd9aceb2b26962ad0ee35472264e83e059f4b9be022010ca2334ff088d6e085eb3c2118306e61ec97781e8e1544e75224533dcc32379",
-    	"publicKey": "03fcfcfcd0841b0a6ed2057fa8ed404788de47ceb3390c53e79c4ecd1e05819031","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+    	"publicKey": "03fcfcfcd0841b0a6ed2057fa8ed404788de47ceb3390c53e79c4ecd1e05819031","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`))
 	}
 
 	// Default is valid
@@ -58,10 +59,10 @@ func (m *mockHTTPBadSubmission) Do(req *http.Request) (*http.Response, error) {
 	// Valid response
 	if strings.Contains(req.URL.String(), "/mapi/tx") {
 		resp.StatusCode = http.StatusOK
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
+		resp.Body = io.NopCloser(bytes.NewBufferString(`{
     	"payload": "{}",
     	"signature": "3044022066a8a39ff5f5eae818636aa03fdfc386ea4f33f41993cf41d4fb6d4745ae032102206a8895a6f742d809647ad1a1df12230e9b480275853ed28bc178f4b48afd802a",
-    	"publicKey": "0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+    	"publicKey": "0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`))
 	}
 
 	// Default is valid
@@ -80,11 +81,11 @@ func TestClient_SubmitTransaction(t *testing.T) {
 
 		// Create a req
 		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerGorillaPool), tx)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, response)
 
 		// Check returned values
-		assert.Equal(t, true, response.Validated)
+		assert.True(t, response.Validated)
 		assert.Equal(t, submitTestSignature, *response.Signature)
 		assert.Equal(t, submitTestPublicKey, *response.PublicKey)
 		assert.Equal(t, testEncoding, response.Encoding)
@@ -95,7 +96,7 @@ func TestClient_SubmitTransaction(t *testing.T) {
 
 		client := newTestClient(&mockHTTPValidSubmission{})
 		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerGorillaPool), tx)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, response)
 
 		// Test parsed values
@@ -110,42 +111,42 @@ func TestClient_SubmitTransaction(t *testing.T) {
 	t.Run("invalid miner", func(t *testing.T) {
 		client := newTestClient(&mockHTTPValidSubmission{})
 		response, err := client.SubmitTransaction(context.Background(), nil, tx)
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, response)
 	})
 
 	t.Run("http error", func(t *testing.T) {
 		client := newTestClient(&mockHTTPError{})
 		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerGorillaPool), tx)
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, response)
 	})
 
 	t.Run("bad request", func(t *testing.T) {
 		client := newTestClient(&mockHTTPBadRequest{})
 		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerGorillaPool), tx)
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, response)
 	})
 
 	t.Run("invalid JSON", func(t *testing.T) {
 		client := newTestClient(&mockHTTPInvalidJSON{})
 		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerGorillaPool), tx)
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, response)
 	})
 
 	t.Run("invalid signature", func(t *testing.T) {
 		client := newTestClient(&mockHTTPInvalidSignature{})
 		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerGorillaPool), tx)
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, response)
 	})
 
 	t.Run("bad submission", func(t *testing.T) {
 		client := newTestClient(&mockHTTPBadSubmission{})
 		response, err := client.SubmitTransaction(context.Background(), client.MinerByName(MinerGorillaPool), tx)
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, response)
 	})
 }

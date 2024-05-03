@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"testing"
 
@@ -29,32 +29,32 @@ func (m *mockHTTPValidBestQuote) Do(req *http.Request) (*http.Response, error) {
 	// Valid response
 	if req.URL.String() == feeQuoteURLTaal {
 		resp.StatusCode = http.StatusOK
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
+		resp.Body = io.NopCloser(bytes.NewBufferString(`{
     	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T21:26:17.410Z\",\"expiryTime\":\"2020-10-09T21:36:17.410Z\",\"minerId\":\"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270\",\"currentHighestBlockHash\":\"0000000000000000035c5f8c0294802a01e500fa7b95337963bb3640da3bd565\",\"currentHighestBlockHeight\":656169,\"minerReputation\":null,\"fees\":[{\"id\":1,\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":400,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}},{\"id\":2,\"feeType\":\"data\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":225,\"bytes\":1000}}]}",
    	 	"signature": "3045022100eed49f6bf75d8f975f581271e3df658fbe8ec67e6301ea8fc25a72d18c92e30e022056af253f0d24db6a8fde4e2c1ee95e7a5ecf2c7cdc93246f8328c9e0ca582fc4",
-    	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+    	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`))
 	}
 
 	if req.URL.String() == feeQuoteURLMatterPool {
 		resp.StatusCode = http.StatusOK
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
+		resp.Body = io.NopCloser(bytes.NewBufferString(`{
     	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T22:08:26.236Z\",\"expiryTime\":\"2020-10-09T22:18:26.236Z\",\"minerId\":\"0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087\",\"currentHighestBlockHash\":\"0000000000000000028285a9168c95457521a743765f499de389c094e883f42a\",\"currentHighestBlockHeight\":656171,\"minerReputation\":null,\"fees\":[{\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":400,\"bytes\":1000},\"relayFee\":{\"satoshis\":100,\"bytes\":1000}},{\"feeType\":\"data\",\"miningFee\":{\"satoshis\":430,\"bytes\":1000},\"relayFee\":{\"satoshis\":110,\"bytes\":1000}}]}",
     	"signature": "3044022011f90db2661726eb2659c3447ccaa9fd3368194f87d5d86a23e673c45d5d714502200c51eb600e3370b49d759aa4d441000286937b0803037a1d6de4c5a5c559d74c",
-    	"publicKey": "0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+    	"publicKey": "0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`))
 	}
 
 	if req.URL.String() == feeQuoteURLMempool {
 		resp.StatusCode = http.StatusOK
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
+		resp.Body = io.NopCloser(bytes.NewBufferString(`{
     	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T22:09:04.433Z\",\"expiryTime\":\"2020-10-09T22:19:04.433Z\",\"minerId\":null,\"currentHighestBlockHash\":\"0000000000000000028285a9168c95457521a743765f499de389c094e883f42a\",\"currentHighestBlockHeight\":656171,\"minerReputation\":null,\"fees\":[{\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}},{\"feeType\":\"data\",\"miningFee\":{\"satoshis\":420,\"bytes\":1000},\"relayFee\":{\"satoshis\":150,\"bytes\":1000}}]}",
-    	"signature": null,"publicKey": null,"encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+    	"signature": null,"publicKey": null,"encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`))
 	}
 
 	if req.URL.String() == feeQuoteURLGorillaPool {
 		resp.StatusCode = http.StatusOK
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
+		resp.Body = io.NopCloser(bytes.NewBufferString(`{
     	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T22:09:04.433Z\",\"expiryTime\":\"2020-10-09T22:19:04.433Z\",\"minerId\":null,\"currentHighestBlockHash\":\"0000000000000000101c34c7cabadbff321f125fac9ba3c2b1294c4d81085f4a\",\"currentHighestBlockHeight\":713780,\"minerReputation\":null,\"fees\":[{\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}},{\"feeType\":\"data\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}}]}",
-    	"signature": null,"publicKey": null,"encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+    	"signature": null,"publicKey": null,"encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`))
 	}
 
 	// Default is valid
@@ -77,28 +77,28 @@ func (m *mockHTTPBadRate) Do(req *http.Request) (*http.Response, error) {
 	// Valid response
 	if req.URL.String() == feeQuoteURLTaal {
 		resp.StatusCode = http.StatusOK
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
+		resp.Body = io.NopCloser(bytes.NewBufferString(`{
     	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T21:26:17.410Z\",\"expiryTime\":\"2020-10-09T21:36:17.410Z\",\"minerId\":\"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270\",\"currentHighestBlockHash\":\"0000000000000000035c5f8c0294802a01e500fa7b95337963bb3640da3bd565\",\"currentHighestBlockHeight\":656169,\"minerReputation\":null,\"fees\":[{\"id\":1,\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":0,\"bytes\":1000},\"relayFee\":{\"satoshis\":0,\"bytes\":1000}},{\"id\":2,\"feeType\":\"data\",\"miningFee\":{\"satoshis\":0,\"bytes\":1000},\"relayFee\":{\"satoshis\":0,\"bytes\":1000}}]}",
    	 	"signature": "3045022100eed49f6bf75d8f975f581271e3df658fbe8ec67e6301ea8fc25a72d18c92e30e022056af253f0d24db6a8fde4e2c1ee95e7a5ecf2c7cdc93246f8328c9e0ca582fc4",
-    	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+    	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`))
 	}
 
 	if req.URL.String() == feeQuoteURLMatterPool {
 		resp.StatusCode = http.StatusOK
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
+		resp.Body = io.NopCloser(bytes.NewBufferString(`{
     	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T22:08:26.236Z\",\"expiryTime\":\"2020-10-09T22:18:26.236Z\",\"minerId\":\"0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087\",\"currentHighestBlockHash\":\"0000000000000000028285a9168c95457521a743765f499de389c094e883f42a\",\"currentHighestBlockHeight\":656171,\"minerReputation\":null,\"fees\":[{\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":0,\"bytes\":1000},\"relayFee\":{\"satoshis\":0,\"bytes\":1000}},{\"feeType\":\"data\",\"miningFee\":{\"satoshis\":0,\"bytes\":1000},\"relayFee\":{\"satoshis\":0,\"bytes\":1000}}]}",
     	"signature": "3044022011f90db2661726eb2659c3447ccaa9fd3368194f87d5d86a23e673c45d5d714502200c51eb600e3370b49d759aa4d441000286937b0803037a1d6de4c5a5c559d74c",
-    	"publicKey": "0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+    	"publicKey": "0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`))
 	}
 
 	if req.URL.String() == feeQuoteURLMempool {
 		resp.StatusCode = http.StatusBadRequest
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(``)))
+		resp.Body = io.NopCloser(bytes.NewBufferString(``))
 	}
 
 	if req.URL.String() == feeQuoteURLGorillaPool {
 		resp.StatusCode = http.StatusBadRequest
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(``)))
+		resp.Body = io.NopCloser(bytes.NewBufferString(``))
 	}
 
 	// Default is valid
@@ -121,22 +121,22 @@ func (m *mockHTTPBestQuoteAllFailed) Do(req *http.Request) (*http.Response, erro
 	// Valid response
 	if req.URL.String() == feeQuoteURLTaal {
 		resp.StatusCode = http.StatusBadRequest
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(``)))
+		resp.Body = io.NopCloser(bytes.NewBufferString(``))
 	}
 
 	if req.URL.String() == feeQuoteURLMatterPool {
 		resp.StatusCode = http.StatusBadRequest
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(``)))
+		resp.Body = io.NopCloser(bytes.NewBufferString(``))
 	}
 
 	if req.URL.String() == feeQuoteURLMempool {
 		resp.StatusCode = http.StatusBadRequest
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(``)))
+		resp.Body = io.NopCloser(bytes.NewBufferString(``))
 	}
 
 	if req.URL.String() == feeQuoteURLGorillaPool {
 		resp.StatusCode = http.StatusBadRequest
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(``)))
+		resp.Body = io.NopCloser(bytes.NewBufferString(``))
 	}
 
 	// Default is valid
@@ -161,7 +161,7 @@ func TestClient_BestQuote(t *testing.T) {
 		assert.Equal(t, testMimeType, response.MimeType)
 
 		// Check that we got fees
-		assert.Equal(t, 2, len(response.Quote.Fees))
+		assert.Len(t, response.Quote.Fees, 2)
 	})
 
 	t.Run("http error", func(t *testing.T) {
@@ -204,7 +204,7 @@ func TestClient_BestQuote(t *testing.T) {
 		require.NotNil(t, response)
 
 		// Check that we got fees
-		assert.Equal(t, 2, len(response.Quote.Fees))
+		assert.Len(t, response.Quote.Fees, 2)
 
 		var fee uint64
 		fee, err = response.Quote.CalculateFee(mapi.FeeCategoryRelay, mapi.FeeTypeData, 1000)
@@ -250,7 +250,7 @@ func TestClient_BestQuote(t *testing.T) {
 
 		// Create a req
 		response, err := client.BestQuote(context.Background(), mapi.FeeCategoryMining, mapi.FeeTypeData)
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, response)
 	})
 }

@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_ErrorResponse_AsError(t *testing.T) {
@@ -21,7 +22,9 @@ func Test_ErrorResponse_AsError(t *testing.T) {
 	}
 	var testErr error = err
 	var errResp ErrorResponse
-	assert.True(t, errors.As(testErr, &errResp))
+	// Use assert.ErrorAs to verify the type of the error
+	require.ErrorAs(t, testErr, &errResp)
+
 	assert.EqualValues(t, err, errResp)
 }
 
@@ -29,16 +32,18 @@ func Test_ErrRetryable(t *testing.T) {
 	// Ensure ErrRetryable can be checked for Retryable
 	err := ErrRetryable{err: ErrorResponse{}}
 	var testErr error = err
+
 	// test using our helper method
 	assert.True(t, IsRetryable(testErr))
-	assert.Error(t, err)
-	// test using the As method
-	var r Retryable
-	assert.True(t, errors.As(testErr, &r))
+	require.Error(t, err)
 
-	// test using the As method
+	// test using the As method for interface Retryable
+	var r Retryable
+	require.ErrorAs(t, testErr, &r)
+
+	// test using the As method for ErrorResponse
 	var e ErrorResponse
-	assert.True(t, errors.As(testErr, &e))
+	require.ErrorAs(t, testErr, &e)
 
 	err = ErrRetryable{err: fmt.Errorf("new err")}
 	assert.False(t, errors.As(err, &e))

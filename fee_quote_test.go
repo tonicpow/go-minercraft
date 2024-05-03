@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"testing"
 
 	"github.com/libsv/go-bt/v2"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/tonicpow/go-minercraft/v2/apis/mapi"
 )
 
@@ -33,10 +34,10 @@ func (m *mockHTTPValidFeeQuote) Do(req *http.Request) (*http.Response, error) {
 	// Valid response
 	if strings.Contains(req.URL.String(), mAPIRouteFeeQuote) {
 		resp.StatusCode = http.StatusOK
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
+		resp.Body = io.NopCloser(bytes.NewBufferString(`{
     	"payload": "{\"apiVersion\":\"0.1.0\",\"timestamp\":\"2020-10-09T21:26:17.410Z\",\"expiryTime\":\"2020-10-09T21:36:17.410Z\",\"minerId\":\"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270\",\"currentHighestBlockHash\":\"0000000000000000035c5f8c0294802a01e500fa7b95337963bb3640da3bd565\",\"currentHighestBlockHeight\":656169,\"minerReputation\":null,\"fees\":[{\"id\":1,\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}},{\"id\":2,\"feeType\":\"data\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}}]}",
    	 	"signature": "3045022100eed49f6bf75d8f975f581271e3df658fbe8ec67e6301ea8fc25a72d18c92e30e022056af253f0d24db6a8fde4e2c1ee95e7a5ecf2c7cdc93246f8328c9e0ca582fc4",
-    	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+    	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`))
 	}
 
 	// Default is valid
@@ -57,7 +58,7 @@ func (m *mockHTTPError) Do(req *http.Request) (*http.Response, error) {
 	}
 
 	if req.URL.String() != "" {
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(``)))
+		resp.Body = io.NopCloser(bytes.NewBufferString(``))
 		return resp, fmt.Errorf(`http timeout`)
 	}
 
@@ -79,7 +80,7 @@ func (m *mockHTTPBadRequest) Do(req *http.Request) (*http.Response, error) {
 	}
 
 	if req.URL.String() != "" {
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(``)))
+		resp.Body = io.NopCloser(bytes.NewBufferString(``))
 	}
 
 	// Default is valid
@@ -100,7 +101,7 @@ func (m *mockHTTPInvalidJSON) Do(req *http.Request) (*http.Response, error) {
 	}
 
 	if req.URL.String() != "" {
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{invalid:json}`)))
+		resp.Body = io.NopCloser(bytes.NewBufferString(`{invalid:json}`))
 		resp.StatusCode = http.StatusOK
 	}
 
@@ -123,20 +124,20 @@ func (m *mockHTTPMissingFees) Do(req *http.Request) (*http.Response, error) {
 
 	if strings.Contains(req.URL.String(), mAPIRouteFeeQuote) {
 		resp.StatusCode = http.StatusOK
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
+		resp.Body = io.NopCloser(bytes.NewBufferString(`{
     	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T21:26:17.410Z\",\"expiryTime\":\"2020-10-09T21:36:17.410Z\",\"minerId\":\"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270\",\"currentHighestBlockHash\":\"0000000000000000035c5f8c0294802a01e500fa7b95337963bb3640da3bd565\",\"currentHighestBlockHeight\":656169,\"minerReputation\":null,\"fees\":[]}",
    	 	"signature": "3045022100eed49f6bf75d8f975f581271e3df658fbe8ec67e6301ea8fc25a72d18c92e30e022056af253f0d24db6a8fde4e2c1ee95e7a5ecf2c7cdc93246f8328c9e0ca582fc4",
-    	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+    	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`))
 	}
 
 	// Valid response
 	if strings.Contains(req.URL.String(), mAPIRoutePolicyQuote) {
 		resp.StatusCode = http.StatusOK
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
+		resp.Body = io.NopCloser(bytes.NewBufferString(`{
     "payload": "{\"apiVersion\":\"1.4.0\",\"timestamp\":\"2021-11-12T13:17:47.7498672Z\",\"expiryTime\":\"2021-11-12T13:27:47.7498672Z\",\"minerId\":\"030d1fe5c1b560efe196ba40540ce9017c20daa9504c4c4cec6184fc702d9f274e\",\"currentHighestBlockHash\":\"45628be2fe616167b7da399ab63455e60ffcf84147730f4af4affca90c7d437e\",\"currentHighestBlockHeight\":234,\"fees\":[],\"callbacks\":[{\"ipAddress\":\"123.456.789.123\"}],\"policies\":{\"skipscriptflags\":[\"MINIMALDATA\",\"DERSIG\",\"NULLDUMMY\",\"DISCOURAGE_UPGRADABLE_NOPS\",\"CLEANSTACK\"],\"maxtxsizepolicy\":99999,\"datacarriersize\":100000,\"maxscriptsizepolicy\":100000,\"maxscriptnumlengthpolicy\":100000,\"maxstackmemoryusagepolicy\":10000000,\"limitancestorcount\":1000,\"limitcpfpgroupmemberscount\":10,\"acceptnonstdoutputs\":true,\"datacarrier\":true,\"dustrelayfee\":150,\"maxstdtxvalidationduration\":99,\"maxnonstdtxvalidationduration\":100,\"dustlimitfactor\":10}}",
     "signature": "30440220708e2e62a393f53c43d172bc1459b4daccf9cf23ff77cff923f09b2b49b94e0a022033792bee7bc3952f4b1bfbe9df6407086b5dbfc161df34fdee684dc97be72731",
     "publicKey": "030d1fe5c1b560efe196ba40540ce9017c20daa9504c4c4cec6184fc702d9f274e",
-    "encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+    "encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`))
 	}
 
 	// Default is valid
@@ -159,38 +160,38 @@ func (m *mockHTTPInvalidSignature) Do(req *http.Request) (*http.Response, error)
 	// Invalid sig response
 	if strings.Contains(req.URL.String(), mAPIRouteFeeQuote) {
 		resp.StatusCode = http.StatusOK
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
+		resp.Body = io.NopCloser(bytes.NewBufferString(`{
     	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T21:26:17.410Z\",\"expiryTime\":\"2020-10-09T21:36:17.410Z\",\"minerId\":\"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270\",\"currentHighestBlockHash\":\"0000000000000000035c5f8c0294802a01e500fa7b95337963bb3640da3bd565\",\"currentHighestBlockHeight\":656169,\"minerReputation\":null,\"fees\":[{\"id\":1,\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}},{\"id\":2,\"feeType\":\"data\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}}]}",
    	 	"signature": "03045022100eed49f6bf75d8f975f581271e3df658fbe8ec67e6301ea8fc25a72d18c92e30e022056af253f0d24db6a8fde4e2c1ee95e7a5ecf2c7cdc93246f8328c9e0ca582fc40",
-    	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+    	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`))
 	}
 
 	// Invalid sig response
 	if strings.Contains(req.URL.String(), mAPIRoutePolicyQuote) {
 		resp.StatusCode = http.StatusOK
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
+		resp.Body = io.NopCloser(bytes.NewBufferString(`{
     "payload": "{\"apiVersion\":\"1.4.0\",\"timestamp\":\"2021-11-12T13:17:47.7498672Z\",\"expiryTime\":\"2021-11-12T13:27:47.7498672Z\",\"minerId\":\"030d1fe5c1b560efe196ba40540ce9017c20daa9504c4c4cec6184fc702d9f274e\",\"currentHighestBlockHash\":\"45628be2fe616167b7da399ab63455e60ffcf84147730f4af4affca90c7d437e\",\"currentHighestBlockHeight\":234,\"fees\":[{\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}},{\"feeType\":\"data\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}}],\"callbacks\":[{\"ipAddress\":\"123.456.789.123\"}],\"policies\":{\"skipscriptflags\":[\"MINIMALDATA\",\"DERSIG\",\"NULLDUMMY\",\"DISCOURAGE_UPGRADABLE_NOPS\",\"CLEANSTACK\"],\"maxtxsizepolicy\":99999,\"datacarriersize\":100000,\"maxscriptsizepolicy\":100000,\"maxscriptnumlengthpolicy\":100000,\"maxstackmemoryusagepolicy\":10000000,\"limitancestorcount\":1000,\"limitcpfpgroupmemberscount\":10,\"acceptnonstdoutputs\":true,\"datacarrier\":true,\"dustrelayfee\":150,\"maxstdtxvalidationduration\":99,\"maxnonstdtxvalidationduration\":100,\"dustlimitfactor\":10}}",
     "signature": "z0440221708e2e62a393f53c43d172bc14f9b4daccf9cf23ff77cff923f09b2b49b94e0a022033792bee7bc3952f4b1bfbe9df6407086b5dbfc161df34fdee684dc97be72731",
     "publicKey": "030d1fe5c1b560efe196ba40540ce9017c20daa9504c4c4cec6184fc702d9f274e",
-    "encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+    "encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`))
 	}
 
 	// Invalid sig response
 	if strings.Contains(req.URL.String(), "/mapi/tx/"+testTx) {
 		resp.StatusCode = http.StatusOK
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
+		resp.Body = io.NopCloser(bytes.NewBufferString(`{
     	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-11T15:41:29.269Z\",\"returnResult\":\"success\",\"resultDescription\":\"\",\"blockHash\":\"0000000000000000050a09fe90b0e8542bba9e712edb8cc9349e61888fe45ac5\",\"blockHeight\":612530,\"confirmations\":43923,\"minerId\":\"0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087\",\"txSecondMempoolExpiry\":0}",
    	 	"signature": "03045022100eed49f6bf75d8f975f581271e3df658fbe8ec67e6301ea8fc25a72d18c92e30e022056af253f0d24db6a8fde4e2c1ee95e7a5ecf2c7cdc93246f8328c9e0ca582fc40",
-    	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+    	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`))
 	}
 
 	// Invalid sig response
 	if strings.Contains(req.URL.String(), "/mapi/tx") {
 		resp.StatusCode = http.StatusOK
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
+		resp.Body = io.NopCloser(bytes.NewBufferString(`{
     	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-01-15T11:40:29.826Z\",\"txid\":\"6bdbcfab0526d30e8d68279f79dff61fb4026ace8b7b32789af016336e54f2f0\",\"returnResult\":\"success\",\"resultDescription\":\"\",\"minerId\":\"03fcfcfcd0841b0a6ed2057fa8ed404788de47ceb3390c53e79c4ecd1e05819031\",\"currentHighestBlockHash\":\"71a7374389afaec80fcabbbf08dcd82d392cf68c9a13fe29da1a0c853facef01\",\"currentHighestBlockHeight\":207,\"txSecondMempoolExpiry\":0}",
     	"signature": "03045022100f65ae83b20bc60e7a5f0e9c1bd9aceb2b26962ad0ee35472264e83e059f4b9be022010ca2334ff088d6e085eb3c2118306e61ec97781e8e1544e75224533dcc323790",
-    	"publicKey": "03fcfcfcd0841b0a6ed2057fa8ed404788de47ceb3390c53e79c4ecd1e05819031","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+    	"publicKey": "03fcfcfcd0841b0a6ed2057fa8ed404788de47ceb3390c53e79c4ecd1e05819031","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`))
 	}
 
 	// Default is valid
@@ -220,32 +221,32 @@ func (m *mockHTTPBetterRate) Do(req *http.Request) (*http.Response, error) {
 	// Valid response
 	if req.URL.String() == feeQuoteURLTaal {
 		resp.StatusCode = http.StatusOK
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
+		resp.Body = io.NopCloser(bytes.NewBufferString(`{
     	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T21:26:17.410Z\",\"expiryTime\":\"2020-10-09T21:36:17.410Z\",\"minerId\":\"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270\",\"currentHighestBlockHash\":\"0000000000000000035c5f8c0294802a01e500fa7b95337963bb3640da3bd565\",\"currentHighestBlockHeight\":656169,\"minerReputation\":null,\"fees\":[{\"id\":1,\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":475,\"bytes\":1000},\"relayFee\":{\"satoshis\":150,\"bytes\":1000}},{\"id\":2,\"feeType\":\"data\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}}]}",
    	 	"signature": "3045022100eed49f6bf75d8f975f581271e3df658fbe8ec67e6301ea8fc25a72d18c92e30e022056af253f0d24db6a8fde4e2c1ee95e7a5ecf2c7cdc93246f8328c9e0ca582fc4",
-    	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+    	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`))
 	}
 
 	if req.URL.String() == feeQuoteURLMatterPool {
 		resp.StatusCode = http.StatusOK
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
+		resp.Body = io.NopCloser(bytes.NewBufferString(`{
     	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T22:08:26.236Z\",\"expiryTime\":\"2020-10-09T22:18:26.236Z\",\"minerId\":\"0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087\",\"currentHighestBlockHash\":\"0000000000000000028285a9168c95457521a743765f499de389c094e883f42a\",\"currentHighestBlockHeight\":656171,\"minerReputation\":null,\"fees\":[{\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":405,\"bytes\":1000},\"relayFee\":{\"satoshis\":100,\"bytes\":1000}},{\"feeType\":\"data\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":100,\"bytes\":1000}}]}",
     	"signature": "3044022011f90db2661726eb2659c3447ccaa9fd3368194f87d5d86a23e673c45d5d714502200c51eb600e3370b49d759aa4d441000286937b0803037a1d6de4c5a5c559d74c",
-    	"publicKey": "0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+    	"publicKey": "0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`))
 	}
 
 	if req.URL.String() == feeQuoteURLMempool {
 		resp.StatusCode = http.StatusOK
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
+		resp.Body = io.NopCloser(bytes.NewBufferString(`{
     	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T22:09:04.433Z\",\"expiryTime\":\"2020-10-09T22:19:04.433Z\",\"minerId\":null,\"currentHighestBlockHash\":\"0000000000000000028285a9168c95457521a743765f499de389c094e883f42a\",\"currentHighestBlockHeight\":656171,\"minerReputation\":null,\"fees\":[{\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":350,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}},{\"feeType\":\"data\",\"miningFee\":{\"satoshis\":430,\"bytes\":1000},\"relayFee\":{\"satoshis\":175,\"bytes\":1000}}]}",
-    	"signature": null,"publicKey": null,"encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+    	"signature": null,"publicKey": null,"encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`))
 	}
 
 	if req.URL.String() == feeQuoteURLGorillaPool {
 		resp.StatusCode = http.StatusOK
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
+		resp.Body = io.NopCloser(bytes.NewBufferString(`{
     	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T22:09:04.433Z\",\"expiryTime\":\"2020-10-09T22:19:04.433Z\",\"minerId\":null,\"currentHighestBlockHash\":\"0000000000000000101c34c7cabadbff321f125fac9ba3c2b1294c4d81085f4a\",\"currentHighestBlockHeight\":713780,\"minerReputation\":null,\"fees\":[{\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}},{\"feeType\":\"data\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}}]}",
-    	"signature": null,"publicKey": null,"encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+    	"signature": null,"publicKey": null,"encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`))
 	}
 
 	// Default is valid
@@ -268,10 +269,10 @@ func (m *mockHTTPMissingFeeType) Do(req *http.Request) (*http.Response, error) {
 	// Valid response
 	if strings.Contains(req.URL.String(), mAPIRouteFeeQuote) {
 		resp.StatusCode = http.StatusOK
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
+		resp.Body = io.NopCloser(bytes.NewBufferString(`{
     	"payload": "{\"apiVersion\":\"` + testAPIVersion + `\",\"timestamp\":\"2020-10-09T21:26:17.410Z\",\"expiryTime\":\"2020-10-09T21:36:17.410Z\",\"minerId\":\"03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270\",\"currentHighestBlockHash\":\"0000000000000000035c5f8c0294802a01e500fa7b95337963bb3640da3bd565\",\"currentHighestBlockHeight\":656169,\"minerReputation\":null,\"fees\":[{\"id\":2,\"feeType\":\"data\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}}]}",
    	 	"signature": "3045022100eed49f6bf75d8f975f581271e3df658fbe8ec67e6301ea8fc25a72d18c92e30e022056af253f0d24db6a8fde4e2c1ee95e7a5ecf2c7cdc93246f8328c9e0ca582fc4",
-    	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+    	"publicKey": "03e92d3e5c3f7bd945dfbf48e7a99393b1bfb3f11f380ae30d286e7ff2aec5a270","encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`))
 	}
 
 	// Default is valid
@@ -288,11 +289,11 @@ func TestClient_FeeQuote(t *testing.T) {
 
 		// Create a req
 		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, response)
 
 		// Check returned values
-		assert.Equal(t, true, response.Validated)
+		assert.True(t, response.Validated)
 		assert.Equal(t, feeTestSignature, *response.Signature)
 		assert.Equal(t, feeTestPublicKey, *response.PublicKey)
 		assert.Equal(t, testEncoding, response.Encoding)
@@ -308,7 +309,7 @@ func TestClient_FeeQuote(t *testing.T) {
 
 		// Create a req
 		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, response)
 
 		// Test parsed values
@@ -319,7 +320,7 @@ func TestClient_FeeQuote(t *testing.T) {
 		assert.Equal(t, "0.1.0", response.Quote.APIVersion)
 		assert.Equal(t, "0000000000000000035c5f8c0294802a01e500fa7b95337963bb3640da3bd565", response.Quote.CurrentHighestBlockHash)
 		assert.Equal(t, uint64(656169), response.Quote.CurrentHighestBlockHeight)
-		assert.Equal(t, 2, len(response.Quote.Fees))
+		assert.Len(t, response.Quote.Fees, 2)
 	})
 
 	t.Run("get actual rates", func(t *testing.T) {
@@ -329,53 +330,53 @@ func TestClient_FeeQuote(t *testing.T) {
 
 		// Create a req
 		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, response)
 
 		// Test getting rate from request
 		var rate uint64
 		rate, err = response.Quote.CalculateFee(mapi.FeeCategoryMining, mapi.FeeTypeData, 1000)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, uint64(500), rate)
 
 		// Test relay rate
 		rate, err = response.Quote.CalculateFee(mapi.FeeCategoryRelay, mapi.FeeTypeData, 1000)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, uint64(250), rate)
 	})
 
 	t.Run("invalid miner", func(t *testing.T) {
 		client := newTestClient(&mockHTTPValidFeeQuote{})
 		response, err := client.FeeQuote(context.Background(), nil)
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, response)
 	})
 
 	t.Run("http error", func(t *testing.T) {
 		client := newTestClient(&mockHTTPError{})
 		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, response)
 	})
 
 	t.Run("bad request", func(t *testing.T) {
 		client := newTestClient(&mockHTTPBadRequest{})
 		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, response)
 	})
 
 	t.Run("invalid JSON", func(t *testing.T) {
 		client := newTestClient(&mockHTTPInvalidJSON{})
 		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, response)
 	})
 
 	t.Run("missing fees", func(t *testing.T) {
 		client := newTestClient(&mockHTTPMissingFees{})
 		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, response)
 	})
 }
@@ -415,54 +416,54 @@ func TestFeePayload_CalculateFee(t *testing.T) {
 
 		// Create a req
 		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, response)
 
 		// Mining & Data
 		var fee uint64
 		fee, err = response.Quote.CalculateFee(mapi.FeeCategoryMining, mapi.FeeTypeData, 1000)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, uint64(500), fee)
 
 		// Mining and standard
 		fee, err = response.Quote.CalculateFee(mapi.FeeCategoryMining, mapi.FeeTypeStandard, 1000)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, uint64(500), fee)
 
 		// Relay & Data
 		fee, err = response.Quote.CalculateFee(mapi.FeeCategoryRelay, mapi.FeeTypeData, 1000)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, uint64(250), fee)
 
 		// Relay and standard
 		fee, err = response.Quote.CalculateFee(mapi.FeeCategoryRelay, mapi.FeeTypeStandard, 1000)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, uint64(250), fee)
 	})
 
 	t.Run("calculate zero fee", func(t *testing.T) {
 		client := newTestClient(&mockHTTPValidFeeQuote{})
 		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, response)
 
 		// Zero tx size produces 0 fee and error
 		var fee uint64
 		fee, err = response.Quote.CalculateFee(mapi.FeeCategoryMining, mapi.FeeTypeData, 0)
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Equal(t, uint64(1), fee)
 	})
 
 	t.Run("missing fee type", func(t *testing.T) {
 		client := newTestClient(&mockHTTPMissingFeeType{})
 		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, response)
 
 		// Zero tx size produces 0 fee and error
 		var fee uint64
 		fee, err = response.Quote.CalculateFee(mapi.FeeCategoryRelay, mapi.FeeTypeStandard, 1000)
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Equal(t, uint64(1), fee)
 	})
 
@@ -513,24 +514,24 @@ func TestFeePayload_GetFee(t *testing.T) {
 
 		// Create a req
 		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, response)
 
 		// Standard
 		fee := response.Quote.GetFee(mapi.FeeTypeStandard)
-		assert.NotNil(t, fee)
+		require.NotNil(t, fee)
 		assert.Equal(t, bt.FeeTypeStandard, fee.FeeType)
 
 		// Data
 		fee = response.Quote.GetFee(mapi.FeeTypeData)
-		assert.NotNil(t, fee)
+		require.NotNil(t, fee)
 		assert.Equal(t, bt.FeeTypeData, fee.FeeType)
 	})
 
 	t.Run("missing fee type", func(t *testing.T) {
 		client := newTestClient(&mockHTTPMissingFeeType{})
 		response, err := client.FeeQuote(context.Background(), client.MinerByName(MinerTaal))
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, response)
 
 		// Standard

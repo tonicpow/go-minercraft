@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/tonicpow/go-minercraft/v2/apis/mapi"
 )
 
@@ -101,7 +102,7 @@ func TestClient_SubmitTransactions(t *testing.T) {
 				assert.EqualError(t, err, test.err.Error())
 				return
 			}
-			assert.Nil(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, test.exp, result)
 		})
 	}

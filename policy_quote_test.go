@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/tonicpow/go-minercraft/v2/apis/mapi"
 )
 
@@ -29,11 +30,11 @@ func (m *mockHTTPValidPolicyQuote) Do(req *http.Request) (*http.Response, error)
 	// Valid response
 	if strings.Contains(req.URL.String(), "/mapi/policyQuote") {
 		resp.StatusCode = http.StatusOK
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(`{
+		resp.Body = io.NopCloser(bytes.NewBufferString(`{
     "payload": "{\"apiVersion\":\"1.4.0\",\"timestamp\":\"2021-11-12T13:17:47.7498672Z\",\"expiryTime\":\"2021-11-12T13:27:47.7498672Z\",\"minerId\":\"030d1fe5c1b560efe196ba40540ce9017c20daa9504c4c4cec6184fc702d9f274e\",\"currentHighestBlockHash\":\"45628be2fe616167b7da399ab63455e60ffcf84147730f4af4affca90c7d437e\",\"currentHighestBlockHeight\":234,\"fees\":[{\"feeType\":\"standard\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}},{\"feeType\":\"data\",\"miningFee\":{\"satoshis\":500,\"bytes\":1000},\"relayFee\":{\"satoshis\":250,\"bytes\":1000}}],\"callbacks\":[{\"ipAddress\":\"123.456.789.123\"}],\"policies\":{\"skipscriptflags\":[\"MINIMALDATA\",\"DERSIG\",\"NULLDUMMY\",\"DISCOURAGE_UPGRADABLE_NOPS\",\"CLEANSTACK\"],\"maxtxsizepolicy\":99999,\"datacarriersize\":100000,\"maxscriptsizepolicy\":100000,\"maxscriptnumlengthpolicy\":100000,\"maxstackmemoryusagepolicy\":10000000,\"limitancestorcount\":1000,\"limitcpfpgroupmemberscount\":10,\"acceptnonstdoutputs\":true,\"datacarrier\":true,\"dustrelayfee\":150,\"maxstdtxvalidationduration\":99,\"maxnonstdtxvalidationduration\":100,\"dustlimitfactor\":10}}",
     "signature": "30440220708e2e62a393f53c43d172bc1459b4daccf9cf23ff77cff923f09b2b49b94e0a022033792bee7bc3952f4b1bfbe9df6407086b5dbfc161df34fdee684dc97be72731",
     "publicKey": "030d1fe5c1b560efe196ba40540ce9017c20daa9504c4c4cec6184fc702d9f274e",
-    "encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`)))
+    "encoding": "` + testEncoding + `","mimetype": "` + testMimeType + `"}`))
 	}
 
 	// Default is valid
@@ -50,7 +51,7 @@ func TestClient_PolicyQuote(t *testing.T) {
 
 		// Create a req
 		response, err := client.PolicyQuote(context.Background(), client.MinerByName(MinerTaal))
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, response)
 
 		// Check returned values
@@ -63,8 +64,8 @@ func TestClient_PolicyQuote(t *testing.T) {
 		flags := []mapi.ScriptFlag{mapi.FlagMinimalData, mapi.FlagDerSig, mapi.FlagNullDummy, mapi.FlagDiscourageUpgradableNops, mapi.FlagCleanStack}
 
 		// Confirm all policy fields are the right type
-		assert.Equal(t, true, response.Quote.Policies.AcceptNonStdOutputs)
-		assert.Equal(t, true, response.Quote.Policies.DataCarrier)
+		assert.True(t, response.Quote.Policies.AcceptNonStdOutputs)
+		assert.True(t, response.Quote.Policies.DataCarrier)
 		assert.Equal(t, uint32(10), response.Quote.Policies.LimitCpfpGroupMembersCount)
 		assert.Equal(t, uint32(100), response.Quote.Policies.MaxNonStdTxValidationDuration)
 		assert.Equal(t, uint32(1000), response.Quote.Policies.LimitAncestorCount)
@@ -80,42 +81,42 @@ func TestClient_PolicyQuote(t *testing.T) {
 	t.Run("invalid miner", func(t *testing.T) {
 		client := newTestClient(&mockHTTPValidPolicyQuote{})
 		response, err := client.PolicyQuote(context.Background(), nil)
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, response)
 	})
 
 	t.Run("http error", func(t *testing.T) {
 		client := newTestClient(&mockHTTPError{})
 		response, err := client.PolicyQuote(context.Background(), client.MinerByName(MinerTaal))
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, response)
 	})
 
 	t.Run("bad request", func(t *testing.T) {
 		client := newTestClient(&mockHTTPBadRequest{})
 		response, err := client.PolicyQuote(context.Background(), client.MinerByName(MinerTaal))
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, response)
 	})
 
 	t.Run("invalid JSON", func(t *testing.T) {
 		client := newTestClient(&mockHTTPInvalidJSON{})
 		response, err := client.PolicyQuote(context.Background(), client.MinerByName(MinerTaal))
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, response)
 	})
 
 	t.Run("invalid signature", func(t *testing.T) {
 		client := newTestClient(&mockHTTPInvalidSignature{})
 		response, err := client.PolicyQuote(context.Background(), client.MinerByName(MinerTaal))
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, response)
 	})
 
 	t.Run("missing fees", func(t *testing.T) {
 		client := newTestClient(&mockHTTPMissingFees{})
 		response, err := client.PolicyQuote(context.Background(), client.MinerByName(MinerTaal))
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, response)
 	})
 }
