@@ -52,6 +52,7 @@ type (
 		ResultDescription string                `json:"resultDescription"`
 		ReturnResult      string                `json:"returnResult"`
 		TxID              string                `json:"txid"`
+
 		// FailureRetryable if true indicates the tx can be resubmitted to mAPI.
 		FailureRetryable bool `json:"failureRetryable"`
 
@@ -100,19 +101,20 @@ func (c *Client) SubmitTransactions(ctx context.Context, miner *Miner, txs []Tra
 	}
 }
 
+// submitTransactions submits the transactions to the miner.
 func submitTransactions(ctx context.Context, client *Client, miner *Miner, txs []Transaction) (*RequestResponse, error) {
 	api, err := client.MinerAPIByMinerID(miner.MinerID, client.apiType)
 	if err != nil {
 		return nil, err
 	}
 
-	route, err := ActionRouteByAPIType(SubmitTx, client.apiType)
-	if err != nil {
+	var route string
+	if route, err = ActionRouteByAPIType(SubmitTxs, client.apiType); err != nil {
 		return nil, err
 	}
 
 	submitURL := api.URL + route
-	httpPayload := &httpPayload{
+	payload := &httpPayload{
 		Method:  http.MethodPost,
 		URL:     submitURL,
 		Token:   api.Token,
@@ -121,14 +123,16 @@ func submitTransactions(ctx context.Context, client *Client, miner *Miner, txs [
 
 	switch client.apiType {
 	case MAPI:
-		err = proceedMapiSubmitTxs(txs, httpPayload)
-		if err != nil {
+		if err = proceedMapiSubmitTxs(
+			txs, payload,
+		); err != nil {
 			return nil, err
 		}
 
 	case Arc:
-		err = proceedArcSubmitTxs(txs, httpPayload)
-		if err != nil {
+		if err = proceedArcSubmitTxs(
+			txs, payload,
+		); err != nil {
 			return nil, err
 		}
 
@@ -136,7 +140,7 @@ func submitTransactions(ctx context.Context, client *Client, miner *Miner, txs [
 		return nil, fmt.Errorf("unknown API type: %s", client.apiType)
 	}
 
-	response := httpRequest(ctx, client, httpPayload)
+	response := httpRequest(ctx, client, payload)
 	return response, nil
 }
 
@@ -176,6 +180,7 @@ func proceedArcSubmitTxs(txs []Transaction, httpPayload *httpPayload) error {
 	return nil
 }
 
+// proceedMapiSubmitTxs prepares the payload for MAPI.
 func proceedMapiSubmitTxs(txs []Transaction, httpPayload *httpPayload) error {
 	data, err := json.Marshal(txs)
 	if err != nil {
@@ -196,7 +201,9 @@ func parseRawSubmitTransactionsResponse(raw RawSubmitTransactionsResponse) (*Sub
 	}
 
 	var payload UnifiedTxsPayload
-	if err := json.Unmarshal([]byte(raw.Payload), &payload); err != nil {
+	if err := json.Unmarshal(
+		[]byte(raw.Payload), &payload,
+	); err != nil {
 		return nil, err
 	}
 	result.Payload = payload
